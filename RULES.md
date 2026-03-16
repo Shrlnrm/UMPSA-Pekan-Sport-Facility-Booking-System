@@ -15,7 +15,7 @@ https://www.figma.com/design/ZZaNH5Kw3EhNFSNOb4hSbA/UMPSA-Pekan-Sport-Facility-B
 
 ## 3. DEPLOYMENT
 https://github.com/mean1410/UMPSA-Sport-Facility-Booking-System/actions
-( Always ask before push to github because I need to review the code and run it locally first if it is okay I will tell you to push to github )
+( NEVER `git commit` and `git push` to github until explicitly told to do so because I need to review the code and run it locally first. )
 
 ## 4. DATABASE
 https://supabase.com/dashboard/project/rggqjkyjldvjryzhyqjg
