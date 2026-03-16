@@ -14,7 +14,7 @@ https://www.figma.com/design/ZZaNH5Kw3EhNFSNOb4hSbA/UMPSA-Pekan-Sport-Facility-B
 ( Connected Through MCP )
 
 ## 3. DEPLOYMENT
-https://github.com/mean1410/UMPSA-Sport-Facility-Booking/actions
+https://github.com/mean1410/UMPSA-Sport-Facility-Booking-System/actions
 ( Always ask before push to github because I need to review the code and run it locally first if it is okay I will tell you to push to github )
 
 ## 4. DATABASE
@@ -98,6 +98,5 @@ title          | VARCHAR(255) | No   |     | Announcement Title
 content        | TEXT         | No   |     | Main content of the announcement
 date_posted    | DATETIME     | No   |     | Date and time posted
 
-## 5. HOSTING
-https://mean1410.github.io/UMPSA-Sport-Facility-Booking/
+
 

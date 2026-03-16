@@ -48,12 +48,11 @@
     </style>
 </head>
 
-<body class="font-sans antialiased text-gray-900 bg-white leading-relaxed" style="zoom: 80%;">
+<body class="font-sans antialiased text-gray-900 bg-white leading-relaxed">
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white shadow-sm h-16 px-5 sm:px-10 flex items-center gap-2.5">
-        <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo"
-            class="h-11 w-auto object-contain">
+    <header class="sticky top-0 z-50 bg-white shadow-sm h-16 px-6 sm:px-12 flex items-center gap-4">
+        <img src="ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo" class="h-10 w-auto object-contain">
 
         <div class="hidden sm:block h-8 w-px bg-gray-200"></div>
 
@@ -64,58 +63,58 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="relative min-h-[480px] flex items-center justify-center px-3 overflow-hidden bg-primary-blue">
+    <section class="relative min-h-[460px] flex items-center justify-center px-4 overflow-hidden bg-primary-blue">
         <!-- Gradient Background -->
         <div class="absolute inset-0 opacity-90 pointer-events-none"
             style="background: linear-gradient(168deg, rgb(24, 62, 135) 8%, rgb(0, 156, 166) 76%);">
         </div>
 
-        <div class="relative z-10 flex flex-col items-center w-full max-w-4xl gap-2.5 py-6">
+        <div class="relative z-10 flex flex-col items-center w-full max-w-3xl gap-6 py-12">
             <div class="text-center">
-                <h1 class="text-[38.4px] leading-[48px] font-bold text-white tracking-tight mb-4 text-center">
+                <h1 class="text-[38px] leading-[44px] font-bold text-white tracking-tight mb-3 text-center">
                     UMPSA (Pekan) Sport Facility Booking System
                 </h1>
-                <p class="text-blue-100 text-[14.4px] max-w-2xl text-center leading-[28px] mx-auto">
+                <p class="text-blue-100 text-[15px] max-w-xl text-center leading-[24px] mx-auto">
                     Seamlessly book courts, fields for your recreational activities.
                 </p>
             </div>
 
             <!-- Search Widget -->
             <div
-                class="bg-white rounded-[11.2px] shadow-widget p-3 flex flex-col md:flex-row items-center md:items-end gap-0 md:gap-2.5 w-full max-w-[716.8px]">
+                class="bg-white rounded-[12px] shadow-widget p-2.5 flex flex-col md:flex-row items-center md:items-end gap-0 md:gap-3 w-full max-w-[720px]">
 
                 <!-- Activity Type -->
                 <div
-                    class="flex-1 w-full p-2 md:px-3 border-b border-gray-200 md:border-b-0 md:border-r border-gray-200">
-                    <label class="block text-xs font-bold text-primary-teal uppercase tracking-wide mb-1">
+                    class="flex-1 w-full p-1.5 md:px-3 border-b border-gray-200 md:border-b-0 md:border-r border-gray-200">
+                    <label class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide mb-1">
                         Activity Type
                     </label>
                     <input type="text"
-                        class="w-full text-[14.4px] font-medium text-gray-900 border-none outline-none bg-transparent py-1"
+                        class="w-full text-[15px] font-medium text-gray-900 border-none outline-none bg-transparent py-0.5"
                         placeholder="Badminton, Futsal, Gym...">
                 </div>
 
                 <!-- Date -->
                 <div
-                    class="flex-1 w-full p-2 md:px-3 border-b border-gray-200 md:border-b-0 md:border-r border-gray-200">
+                    class="flex-1 w-full p-1.5 md:px-3 border-b border-gray-200 md:border-b-0 md:border-r border-gray-200">
                     <label
-                        class="block text-xs font-bold text-primary-teal uppercase tracking-wide mb-1 pointer-events-none">
+                        class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide mb-1 pointer-events-none">
                         Date
                     </label>
                     <div class="relative">
                         <input type="date"
-                            class="w-full text-[14.4px] font-normal text-gray-900 border-none outline-none bg-transparent py-1 cursor-pointer relative z-10">
+                            class="w-full text-[15px] font-normal text-gray-900 border-none outline-none bg-transparent py-0.5 cursor-pointer relative z-10">
                     </div>
                 </div>
 
                 <!-- Facility Type -->
-                <div class="flex-1 w-full p-2 md:px-3">
-                    <label class="block text-xs font-bold text-primary-teal uppercase tracking-wide mb-1">
+                <div class="flex-1 w-full p-1.5 md:px-3">
+                    <label class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide mb-1">
                         Facility Type
                     </label>
                     <div class="relative">
                         <select
-                            class="w-full text-[14.4px] font-medium text-gray-900 border-none outline-none bg-transparent py-1 appearance-none cursor-pointer">
+                            class="w-full text-[15px] font-medium text-gray-900 border-none outline-none bg-transparent py-0.5 appearance-none cursor-pointer">
                             <option>All Facilities</option>
                             <option>Indoor Courts</option>
                             <option>Outdoor Fields</option>
@@ -123,26 +122,26 @@
                             <option>Water Sports</option>
                         </select>
                         <div class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                            <i data-lucide="chevron-down" class="w-2.5 h-2.5"></i>
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Search Button -->
                 <button
-                    class="bg-primary-teal hover:bg-primary-teal-hover text-white rounded-[8px] shadow-sm w-[44.8px] h-[44.8px] flex justify-center items-center flex-shrink-0 transition-colors duration-200">
-                    <i data-lucide="search" class="w-2.5 h-2.5 text-white"></i>
+                    class="bg-primary-teal hover:bg-primary-teal-hover text-white rounded-[8px] shadow-sm w-[44px] h-[44px] flex justify-center items-center flex-shrink-0 transition-colors duration-200">
+                    <i data-lucide="search" class="w-5 h-5 text-white"></i>
                 </button>
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row gap-2.5 mt-5 w-full sm:w-auto justify-center">
-                <a href="../LogInPage/LogInPage.html"
-                    class="font-bold text-[14.4px] py-2.5 px-9 rounded-full shadow-sm bg-white text-primary-blue hover:bg-gray-50 flex items-center justify-center min-w-[112px] transition-colors duration-200">
+            <div class="flex flex-col sm:flex-row gap-3 mt-5 w-full sm:w-auto justify-center">
+                <a href="LogInPage/LogInPage.html"
+                    class="font-bold text-[15px] py-2 px-8 rounded-full shadow-sm bg-white text-primary-blue hover:bg-gray-50 flex items-center justify-center min-w-[110px] transition-colors duration-200">
                     Login
                 </a>
-                <a href="../RegisterPage/RegisterPage.html"
-                    class="font-bold text-[14.4px] py-2.5 px-9 rounded-full border-2 border-white text-white hover:bg-white/10 flex items-center justify-center min-w-[112px] transition-colors duration-200 box-border">
+                <a href="RegisterPage/RegisterPage.html"
+                    class="font-bold text-[15px] py-2 px-8 rounded-full border-2 border-white text-white hover:bg-white/10 flex items-center justify-center min-w-[110px] transition-colors duration-200 box-border">
                     Register
                 </a>
             </div>
@@ -150,33 +149,33 @@
     </section>
 
     <!-- Popular Sport Facilities -->
-    <section class="py-6 px-5 w-full max-w-7xl mx-auto">
-        <div class="flex justify-between items-end mb-8">
+    <section class="py-12 px-5 w-full max-w-7xl mx-auto">
+        <div class="flex justify-between items-end mb-6">
             <div>
-                <h2 class="text-primary-blue text-[24px] font-bold mb-2 leading-9">Popular Sport Facilities</h2>
-                <p class="text-gray-500 text-base">Top rated venues at UMPSA Pekan</p>
+                <h2 class="text-primary-blue text-[24px] font-bold mb-1.5 leading-8">Popular Sport Facilities</h2>
+                <p class="text-gray-500 text-[14px]">Top rated venues at UMPSA Pekan</p>
             </div>
             <a href="#"
-                class="group text-primary-teal font-bold flex items-center gap-1 text-base no-underline hover:underline">
+                class="group text-primary-teal font-bold flex items-center gap-1 text-[14px] no-underline hover:underline">
                 View All Facilities
                 <i data-lucide="chevron-right"
-                    class="w-[9.0px] h-[9.0px] ml-1 transition-transform duration-200 group-hover:translate-x-1"
+                    class="w-[11.2px] h-[11.2px] ml-1 transition-transform duration-200 group-hover:translate-x-1"
                     style="stroke-width: 3px;"></i>
             </a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Card 1 -->
             <div
-                class="flex flex-col rounded-[11.2px] overflow-hidden bg-white shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group/card">
+                class="flex flex-col rounded-[14px] overflow-hidden bg-white shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group/card">
                 <div class="h-48 overflow-hidden relative">
-                    <img src="../ImagesForFacilities/KAYAK.webp" alt="Kayak"
+                    <img src="ImagesForFacilities/KAYAK.webp" alt="Kayak"
                         class="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105">
                 </div>
                 <div class="p-4 flex flex-col gap-1">
-                    <h3 class="font-bold text-primary-blue text-[14.4px]">Kayak</h3>
-                    <div class="flex items-center gap-1 text-gray-500 text-xs">
-                        <i data-lucide="map-pin" class="w-[9.0px] h-[9.0px]"></i>
+                    <h3 class="font-bold text-primary-blue text-[18px]">Kayak</h3>
+                    <div class="flex items-center gap-1 text-gray-500 text-sm">
+                        <i data-lucide="map-pin" class="w-[11.2px] h-[11.2px]"></i>
                         <span>Water Recreational Centre</span>
                     </div>
                 </div>
@@ -184,15 +183,15 @@
 
             <!-- Card 2 -->
             <div
-                class="flex flex-col rounded-[11.2px] overflow-hidden bg-white shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group/card">
-                <div class="h-48 overflow-hidden relative">
-                    <img src="../ImagesForFacilities/BADMINTON.jpg" alt="Badminton Court"
+                class="flex flex-col rounded-[12px] overflow-hidden bg-white shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group/card">
+                <div class="h-40 overflow-hidden relative">
+                    <img src="ImagesForFacilities/BADMINTON.jpg" alt="Badminton Court"
                         class="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105">
                 </div>
-                <div class="p-4 flex flex-col gap-1">
-                    <h3 class="font-bold text-primary-blue text-[14.4px]">Badminton Court</h3>
-                    <div class="flex items-center gap-1 text-gray-500 text-xs">
-                        <i data-lucide="map-pin" class="w-[9.0px] h-[9.0px]"></i>
+                <div class="p-3.5 flex flex-col gap-1">
+                    <h3 class="font-bold text-primary-blue text-[15px]">Badminton Court</h3>
+                    <div class="flex items-center gap-1 text-gray-500 text-sm">
+                        <i data-lucide="map-pin" class="w-[11.2px] h-[11.2px]"></i>
                         <span>Multipurpose Hall</span>
                     </div>
                 </div>
@@ -200,15 +199,15 @@
 
             <!-- Card 3 -->
             <div
-                class="flex flex-col rounded-[11.2px] overflow-hidden bg-white shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group/card">
-                <div class="h-48 overflow-hidden relative">
-                    <img src="../ImagesForFacilities/FUTSAL COURT.jpg" alt="Futsal"
+                class="flex flex-col rounded-[12px] overflow-hidden bg-white shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group/card">
+                <div class="h-40 overflow-hidden relative">
+                    <img src="ImagesForFacilities/FUTSAL COURT.jpg" alt="Futsal"
                         class="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105">
                 </div>
-                <div class="p-4 flex flex-col gap-1">
-                    <h3 class="font-bold text-primary-blue text-[14.4px]">Futsal</h3>
-                    <div class="flex items-center gap-1 text-gray-500 text-xs">
-                        <i data-lucide="map-pin" class="w-[9.0px] h-[9.0px]"></i>
+                <div class="p-3.5 flex flex-col gap-1">
+                    <h3 class="font-bold text-primary-blue text-[15px]">Futsal</h3>
+                    <div class="flex items-center gap-1 text-gray-500 text-sm">
+                        <i data-lucide="map-pin" class="w-[11.2px] h-[11.2px]"></i>
                         <span>Outdoor Court</span>
                     </div>
                 </div>
@@ -216,15 +215,15 @@
 
             <!-- Card 4 -->
             <div
-                class="flex flex-col rounded-[11.2px] overflow-hidden bg-white shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group/card">
-                <div class="h-48 overflow-hidden relative">
-                    <img src="../ImagesForFacilities/GYM PEKAN.jpg" alt="Gym Male"
+                class="flex flex-col rounded-[12px] overflow-hidden bg-white shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group/card">
+                <div class="h-40 overflow-hidden relative">
+                    <img src="ImagesForFacilities/GYM PEKAN.jpg" alt="Gym Male"
                         class="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105">
                 </div>
-                <div class="p-4 flex flex-col gap-1">
-                    <h3 class="font-bold text-primary-blue text-[14.4px]">Gym Male</h3>
-                    <div class="flex items-center gap-1 text-gray-500 text-xs">
-                        <i data-lucide="map-pin" class="w-[9.0px] h-[9.0px]"></i>
+                <div class="p-3.5 flex flex-col gap-1">
+                    <h3 class="font-bold text-primary-blue text-[15px]">Gym Male</h3>
+                    <div class="flex items-center gap-1 text-gray-500 text-sm">
+                        <i data-lucide="map-pin" class="w-[11.2px] h-[11.2px]"></i>
                         <span>Block A</span>
                     </div>
                 </div>
@@ -234,43 +233,43 @@
 
     <!-- Feature Cards -->
     <section class="py-6 px-5 w-full max-w-7xl mx-auto bg-transparent">
-        <div class="flex flex-col md:flex-row gap-2.5 w-full max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row gap-6 w-full max-w-7xl mx-auto">
             <!-- Feature 1 -->
             <div
-                class="flex-1 bg-gray-50 rounded-2xl p-6 flex flex-col items-center text-center gap-2.5 border border-gray-100 shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-shadow duration-200 hover:shadow-lg cursor-pointer">
-                <div class="w-14 h-11 rounded-full bg-[#ccfbf1] flex items-center justify-center mb-2">
+                class="flex-1 bg-gray-50 rounded-xl p-6 flex flex-col items-center text-center gap-3 border border-gray-100 shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-shadow duration-200 hover:shadow-lg cursor-pointer">
+                <div class="w-12 h-12 rounded-full bg-[#ccfbf1] flex items-center justify-center mb-1.5">
                     <i data-lucide="calendar-check" class="text-primary-teal w-[24px] h-[24px]"
                         style="color: #009ca6;"></i>
                 </div>
-                <h3 class="font-bold text-primary-blue text-[14.4px]">Check Availability</h3>
-                <p class="text-gray-600 text-xs max-w-[224px] leading-5">Real-time scheduling for all sports venues
+                <h3 class="font-bold text-primary-blue text-[15px]">Check Availability</h3>
+                <p class="text-gray-600 text-[13px] max-w-[280px] leading-5">Real-time scheduling for all sports venues
                     across both campuses.</p>
             </div>
 
             <!-- Feature 2 -->
             <div
-                class="flex-1 bg-gray-50 rounded-2xl p-6 flex flex-col items-center text-center gap-2.5 border border-gray-100 shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-shadow duration-200 hover:shadow-lg cursor-pointer">
-                <div class="w-14 h-11 rounded-full bg-[#ccfbf1] flex items-center justify-center mb-2">
+                class="flex-1 bg-gray-50 rounded-xl p-6 flex flex-col items-center text-center gap-3 border border-gray-100 shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-shadow duration-200 hover:shadow-lg cursor-pointer">
+                <div class="w-12 h-12 rounded-full bg-[#ccfbf1] flex items-center justify-center mb-1.5">
                     <i data-lucide="bus" class="text-primary-teal w-[24px] h-[24px]" style="color: #009ca6;"></i>
                 </div>
-                <h3 class="font-bold text-primary-blue text-[14.4px]">Optimized Timetable</h3>
-                <p class="text-gray-600 text-xs max-w-[224px] leading-5">The timetable is aligned with the campus bus
+                <h3 class="font-bold text-primary-blue text-[15px]">Optimized Timetable</h3>
+                <p class="text-gray-600 text-[13px] max-w-[280px] leading-5">The timetable is aligned with the campus bus
                     schedule.</p>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-primary-blue text-white pt-12 pb-8 border-t border-teal-900 px-5 md:px-10">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+    <footer class="bg-primary-blue text-white pt-12 pb-8 border-t border-teal-900 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- 1. Logo & Address -->
-            <div class="flex flex-col gap-2.5">
+            <div class="flex flex-col gap-4">
                 <!-- Logo -->
-                <div class="bg-white/10 p-4 rounded-lg w-fit backdrop-blur-sm">
-                    <img src="../ImagesForHeaderandFooter/Logo UMPSA footer.png" alt="UMPSA Logo" class="h-8 w-auto">
+                <div class="bg-white/10 p-3 rounded-lg w-fit backdrop-blur-sm">
+                    <img src="ImagesForHeaderandFooter/Logo UMPSA footer.png" alt="UMPSA Logo" class="h-10 w-auto">
                 </div>
                 <!-- Address -->
-                <div class="text-xs text-gray-300 leading-relaxed">
+                <div class="text-[13px] text-gray-300 leading-relaxed">
                     <p>Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA)</p>
                     <p>26600 Pekan, Pahang Darul Makmur.</p>
                 </div>
@@ -278,8 +277,8 @@
 
             <!-- 2. Quick Links -->
             <div>
-                <h3 class="font-bold text-base mb-5 text-white">Quick Links</h3>
-                <ul class="flex flex-col gap-2.5 text-xs text-gray-300 list-none pl-0">
+                <h3 class="font-bold text-base mb-4 text-white">Quick Links</h3>
+                <ul class="flex flex-col gap-2.5 text-[13px] text-gray-300 list-none pl-0">
                     <li class="leading-5"><a href="#"
                             class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">Facility
                             Rules</a></li>
@@ -300,16 +299,16 @@
 
             <!-- 3. Contact -->
             <div>
-                <h3 class="font-bold text-base mb-5 text-white">Contact</h3>
-                <ul class="flex flex-col gap-2.5 text-xs text-gray-300 list-none pl-0">
+                <h3 class="font-bold text-base mb-4 text-white">Contact</h3>
+                <ul class="flex flex-col gap-2.5 text-[13px] text-gray-300 list-none pl-0">
                     <li class="flex items-center gap-2 leading-5">
-                        <i data-lucide="phone" class="w-[9.0px] h-[9.0px] opacity-70"></i>
+                        <i data-lucide="phone" class="w-[11.2px] h-[11.2px] opacity-70"></i>
                         <a href="tel:+6094245000"
                             class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">+609
                             424 5000</a>
                     </li>
                     <li class="flex items-center gap-2 leading-5">
-                        <i data-lucide="mail" class="w-[9.0px] h-[9.0px] opacity-70"></i>
+                        <i data-lucide="mail" class="w-[11.2px] h-[11.2px] opacity-70"></i>
                         <a href="mailto:sports@umpsa.edu.my"
                             class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">sports@umpsa.edu.my</a>
                     </li>
