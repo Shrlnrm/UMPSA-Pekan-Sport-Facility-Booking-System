@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -166,7 +168,6 @@
             <!-- Main Scrollable Area -->
             <main class="flex-1 overflow-y-auto bg-gray-50 pb-16">
 
-                <!-- ===================== PAGE: DASHBOARD ===================== -->
                 <div id="page-dashboard" class="p-6">
                     <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
                         <i data-lucide="home" class="w-3.5 h-3.5"></i>
@@ -192,7 +193,7 @@
                             </button>
                         </div>
                         <!-- Table -->
-                        <div class="p-6 flex-1 flex flex-col">
+                        <div class="p-6 flex-1 flex flex-col h-[400px]">
                             <h3 id="booking-list-title" class="text-sm font-semibold text-primary-blue mb-4">List of confirmed booking</h3>
                             <div class="grid grid-cols-7 gap-4 pb-3 border-b border-gray-100 text-[10px] text-gray-400 font-medium tracking-wide uppercase">
                                 <div>#</div>
@@ -203,8 +204,11 @@
                                 <div>Event Date</div>
                                 <div>Action</div>
                             </div>
-                            <div class="flex-1 flex items-center justify-center py-12">
-                                <span class="text-sm text-gray-400">No record.</span>
+                            <div id="booking-list-rows" class="flex-1 flex flex-col divide-y divide-gray-50 overflow-y-auto">
+                                <!-- Empty State -->
+                                <div id="booking-empty" class="flex-1 flex items-center justify-center py-12">
+                                    <span class="text-sm text-gray-400">No record.</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -254,7 +258,6 @@
                                 <div class="text-center">
                                     <i data-lucide="building-2" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
                                     <p class="text-sm text-gray-400">No facilities available.</p>
-                                    <p class="text-xs text-gray-400">Facilities will appear here once added by an admin.</p>
                                 </div>
                             </div>
                         </div>
@@ -312,49 +315,155 @@
     <script>
         lucide.createIcons();
 
+        // ---- Auth Check ----
+        const currentUser = {
+            id: sessionStorage.getItem('user_id'),
+            email: sessionStorage.getItem('user_email'),
+            role: sessionStorage.getItem('user_role')
+        };
+
+        if (!currentUser.id) {
+            window.location.href = '../LogInPage/LogInPage.html';
+        } else {
+            document.querySelector('.text-white\\/90').textContent = currentUser.email;
+            document.querySelector('.w-8.h-8.rounded-full').textContent = currentUser.email.charAt(0).toUpperCase();
+        }
+
         // ---- App Shell: show/hide pages ----
         const pages = ['dashboard', 'search', 'report', 'announcement'];
 
         function showPage(pageId, navEl) {
-            // Hide all pages
             pages.forEach(p => {
                 const el = document.getElementById('page-' + p);
                 if (el) el.classList.add('hidden');
             });
-            // Show target page
             const target = document.getElementById('page-' + pageId);
             if (target) target.classList.remove('hidden');
 
-            // Update sidebar active state
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             if (navEl) navEl.classList.add('active');
 
-            // Re-init lucide icons (new page may have icons)
+            if (pageId === 'dashboard') fetchBookings();
+            if (pageId === 'search') fetchFacilities();
+
             lucide.createIcons();
         }
 
-        // ---- Booking sub-tabs ----
+        // ---- Booking Tab Logic ----
+        let currentSubTab = 'confirmed';
+        let allUserBookings = [];
+
         function setMainTab(tab) {
             document.querySelectorAll('.main-tab').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + tab).classList.add('active');
         }
 
         function setSubTab(tab) {
+            currentSubTab = tab;
             document.querySelectorAll('.sub-tab').forEach(el => el.classList.remove('active'));
             document.getElementById('subtab-' + tab).classList.add('active');
             document.getElementById('booking-list-title').textContent = 'List of ' + tab + ' booking';
+            renderBookings();
         }
 
-        // ---- Facility card rendering (empty state for now) ----
-        let allFacilities = []; // will be populated from Supabase later
+        // ---- Supabase: Fetch Bookings ----
+        async function fetchBookings() {
+            if (!currentUser.id) return;
+
+            const { data, error } = await db
+                .from('Booking')
+                .select(`
+                    booking_id,
+                    num_of_participant,
+                    date,
+                    created_at,
+                    status,
+                    Facility ( name )
+                `)
+                .eq('user_id', currentUser.id);
+
+            if (error) {
+                console.error('Error fetching bookings:', error);
+                return;
+            }
+
+            allUserBookings = data;
+            renderBookings();
+        }
+
+        function renderBookings() {
+            const container = document.getElementById('booking-list-rows');
+            const emptyEl = document.getElementById('booking-empty');
+            
+            // Filter by subtab (Confirmed/Cancelled)
+            // Note: DB status is 'Confirmed', 'Cancelled', 'Pending'
+            const statusMap = {
+                'confirmed': 'Confirmed',
+                'cancelled': 'Cancelled'
+            };
+            const filtered = allUserBookings.filter(b => b.status === statusMap[currentSubTab]);
+
+            // Clear rows (except the hidden empty state template if you want)
+            container.innerHTML = '';
+
+            if (filtered.length === 0) {
+                container.appendChild(emptyEl);
+                emptyEl.classList.remove('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            filtered.forEach((b, index) => {
+                const bookingDate = new Date(b.created_at).toLocaleDateString();
+                const eventDate = new Date(b.date).toLocaleDateString();
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-7 gap-4 py-4 text-xs text-gray-600 items-center border-b border-gray-50';
+                row.innerHTML = `
+                    <div class="font-medium">${index + 1}</div>
+                    <div>INV-${b.booking_id.toString().padStart(5, '0')}</div>
+                    <div>${b.num_of_participant} person</div>
+                    <div class="font-medium text-primary-blue">${b.Facility ? b.Facility.name : 'Unknown'}</div>
+                    <div>${bookingDate}</div>
+                    <div>${eventDate}</div>
+                    <div>
+                        <button class="text-primary-teal hover:underline font-medium">View Result</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // ---- Supabase: Fetch Facilities ----
+        let allFacilities = [];
+
+        async function fetchFacilities() {
+            const { data, error } = await db
+                .from('Facility')
+                .select('*');
+
+            if (error) {
+                console.error('Error fetching facilities:', error);
+                return;
+            }
+
+            allFacilities = data;
+            renderFacilities();
+        }
 
         function renderFacilities() {
+            // Internal search text
             const query = (document.getElementById('facility-search-input')?.value || '').toLowerCase();
-            const filtered = allFacilities.filter(f =>
-                f.name.toLowerCase().includes(query) ||
-                f.type.toLowerCase().includes(query) ||
-                f.location.toLowerCase().includes(query)
-            );
+            
+            // Sidebar filters
+            const filterCategory = document.getElementById('filter-category').value;
+            // (Note: event type and date filters can be added here once logic is defined)
+
+            const filtered = allFacilities.filter(f => {
+                const matchesSearch = f.name.toLowerCase().includes(query) || 
+                                    f.location.toLowerCase().includes(query);
+                const matchesCategory = !filterCategory || f.type === filterCategory;
+                return matchesSearch && matchesCategory;
+            });
 
             const container = document.getElementById('facility-cards');
             const emptyEl = document.getElementById('facility-empty');
@@ -362,7 +471,7 @@
 
             countEl.textContent = `Found ${filtered.length} facilit${filtered.length !== 1 ? 'ies' : 'y'} in UMPSA Pekan`;
 
-            // Remove existing cards (not the empty state div)
+            // Remove existing cards
             container.querySelectorAll('.facility-card').forEach(c => c.remove());
 
             if (filtered.length === 0) {
@@ -406,14 +515,14 @@
             renderFacilities();
         }
 
-        // ---- Logout ----
         function handleLogout() {
             sessionStorage.clear();
             window.location.href = '../LogInPage/LogInPage.html';
         }
 
-        // Init
-        renderFacilities();
+        // Init loads
+        fetchBookings();
+        fetchFacilities();
     </script>
 </body>
 </html>
