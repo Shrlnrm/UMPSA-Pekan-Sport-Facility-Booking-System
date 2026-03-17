@@ -483,28 +483,38 @@
             filtered.forEach(f => {
                 const typeIcon = f.type === 'Indoor' ? 'home' : 'sun';
                 const card = document.createElement('div');
-                card.className = 'facility-card bg-white border border-gray-200 rounded-lg p-5 flex items-start justify-between gap-4 hover:border-primary-blue hover:shadow-sm transition-all';
+                card.className = 'facility-card bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col md:flex-row items-stretch gap-0 hover:border-primary-blue hover:shadow-sm transition-all';
                 card.innerHTML = `
-                    <div class="flex flex-col gap-2 flex-1">
-                        <h4 class="text-sm font-semibold text-primary-blue">${f.name}</h4>
-                        <div class="flex flex-wrap gap-4 text-xs text-gray-500">
-                            <span class="flex items-center gap-1.5">
-                                <i data-lucide="${typeIcon}" class="w-3.5 h-3.5 text-gray-400"></i>
-                                ${f.type}
-                            </span>
-                            <span class="flex items-center gap-1.5">
-                                <i data-lucide="users" class="w-3.5 h-3.5 text-gray-400"></i>
-                                Max. Capacity: ${f.max_capacity} person
-                            </span>
-                            <span class="flex items-center gap-1.5">
-                                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-gray-400"></i>
-                                ${f.location}
-                            </span>
-                        </div>
+                    <!-- Image Section -->
+                    <div class="w-full md:w-32 h-32 md:h-auto flex-shrink-0 bg-gray-100 relative">
+                        <img src="${f.image_url || '../ImagesForFacilities/placeholder.jpg'}" 
+                             alt="${f.name}" 
+                             class="absolute inset-0 w-full h-full object-cover">
                     </div>
-                    <button class="flex-shrink-0 bg-primary-blue hover:bg-blue-900 text-white text-xs font-semibold px-4 py-2 rounded-md transition-colors">
-                        Book Now
-                    </button>
+
+                    <!-- Content Section -->
+                    <div class="p-5 flex flex-col justify-between items-start gap-4 flex-1">
+                        <div class="flex flex-col gap-2">
+                            <h4 class="text-sm font-semibold text-primary-blue">${f.name}</h4>
+                            <div class="flex flex-wrap gap-4 text-xs text-gray-500">
+                                <span class="flex items-center gap-1.5">
+                                    <i data-lucide="${typeIcon}" class="w-3.5 h-3.5 text-gray-400"></i>
+                                    ${f.type}
+                                </span>
+                                <span class="flex items-center gap-1.5">
+                                    <i data-lucide="users" class="w-3.5 h-3.5 text-gray-400"></i>
+                                    Max. Capacity: ${f.max_capacity} person
+                                </span>
+                                <span class="flex items-center gap-1.5">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-gray-400"></i>
+                                    ${f.location}
+                                </span>
+                            </div>
+                        </div>
+                        <button class="bg-primary-blue hover:bg-blue-900 text-white text-xs font-semibold px-4 py-2 rounded-md transition-colors self-end md:self-auto">
+                            Book Now
+                        </button>
+                    </div>
                 `;
                 container.appendChild(card);
             });
