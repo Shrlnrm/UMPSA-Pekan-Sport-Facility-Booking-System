@@ -50,7 +50,7 @@ facility_id  | INT(11)      | No   | PK  | Unique ID for the facility
 admin_id     | INT(11)      | No   | FK  | Links to Admin who manages the facility
 name         | VARCHAR(100) | No   |     | Facility Name
 type         | VARCHAR(50)  | No   |     | Category of facility (Indoor / Outdoor)
-status       | VARCHAR(20)  | No   |     | Status (Active/Maintenance)
+status       | VARCHAR(20)  | No   |     | Available / In Maintenance
 max_capacity | INT(11)      | No   |     | Maximum capacity of the facility
 location     | VARCHAR(255) | No   |     | Physical location/address of the facility
 image_url    | TEXT         | Yes  |     | Path/URL to the facility image
