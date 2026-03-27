@@ -51,15 +51,16 @@
 <body class="font-sans antialiased text-gray-900 bg-white leading-relaxed">
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white shadow-sm h-16 px-6 sm:px-12 flex items-center gap-4">
-        <img src="ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo" class="h-10 w-auto object-contain">
-
-        <div class="hidden sm:block h-8 w-px bg-gray-200"></div>
-
-        <div class="hidden sm:flex flex-col justify-center">
-            <h1 class="font-bold text-primary-blue text-xs leading-tight tracking-wide">UNIVERSITI MALAYSIA PAHANG</h1>
-            <h1 class="font-bold text-primary-blue text-xs leading-tight tracking-wide">AL-SULTAN ABDULLAH</h1>
-        </div>
+    <header class="bg-white shadow-sm flex-shrink-0 h-16 px-4 sm:px-12 flex items-center gap-4 z-50 relative text-nowrap overflow-hidden">
+        <a href="index.html" class="flex items-center gap-4 flex-1 min-w-0">
+            <img src="ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo"
+                class="h-10 w-auto object-contain flex-shrink-0">
+            <div class="h-8 w-px bg-gray-200 flex-shrink-0"></div>
+            <div class="flex flex-col justify-center min-w-0">
+                <h1 class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide">UNIVERSITI MALAYSIA PAHANG</h1>
+                <h1 class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide">AL-SULTAN ABDULLAH</h1>
+            </div>
+        </a>
     </header>
 
     <!-- Hero Section -->
@@ -69,52 +70,52 @@
             style="background: linear-gradient(168deg, rgb(24, 62, 135) 8%, rgb(0, 156, 166) 76%);">
         </div>
 
-        <div class="relative z-10 flex flex-col items-center w-full max-w-3xl gap-6 py-12">
+        <div class="relative z-10 flex flex-col items-center w-full max-w-3xl gap-5 py-10 px-2">
             <div class="text-center">
-                <h1 class="text-[38px] leading-[44px] font-bold text-white tracking-tight mb-3 text-center">
-                    UMPSA (Pekan) Sport Facility Booking System
+                <h1 class="text-[26px] sm:text-[34px] lg:text-[38px] leading-[32px] sm:leading-[40px] lg:leading-[44px] font-bold text-white tracking-tight mb-2 sm:mb-3 text-center">
+                    UMPSA Pekan Sport Facility Booking System
                 </h1>
-                <p class="text-blue-100 text-[15px] max-w-xl text-center leading-[24px] mx-auto">
+                <p class="text-blue-100 text-[14px] sm:text-[15px] max-w-xl text-center leading-[22px] sm:leading-[24px] mx-auto">
                     Seamlessly book courts, fields for your recreational activities.
                 </p>
             </div>
 
             <!-- Search Widget -->
             <div
-                class="bg-white rounded-[12px] shadow-widget p-2.5 flex flex-col md:flex-row items-center md:items-end gap-0 md:gap-3 w-full max-w-[720px]">
+                class="bg-white rounded-[12px] shadow-widget p-2.5 flex flex-col md:flex-row items-center md:items-center gap-0 md:gap-3 w-full max-w-[720px]">
 
                 <!-- Activity Type -->
                 <div
-                    class="flex-1 w-full p-1.5 md:px-3 border-b border-gray-200 md:border-b-0 md:border-r border-gray-200">
+                    class="flex-1 w-full p-2 md:px-3 border-b border-gray-200 md:border-b-0 md:border-r border-gray-200">
                     <label class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide mb-1">
                         Activity Type
                     </label>
                     <input type="text"
-                        class="w-full text-[15px] font-medium text-gray-900 border-none outline-none bg-transparent py-0.5"
+                        class="w-full text-[14px] sm:text-[15px] font-medium text-gray-900 border-none outline-none bg-transparent py-0.5"
                         placeholder="Badminton, Futsal, Gym...">
                 </div>
 
                 <!-- Date -->
                 <div
-                    class="flex-1 w-full p-1.5 md:px-3 border-b border-gray-200 md:border-b-0 md:border-r border-gray-200">
+                    class="flex-1 w-full p-2 md:px-3 border-b border-gray-200 md:border-b-0 md:border-r border-gray-200">
                     <label
                         class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide mb-1 pointer-events-none">
                         Date
                     </label>
                     <div class="relative">
                         <input type="date"
-                            class="w-full text-[15px] font-normal text-gray-900 border-none outline-none bg-transparent py-0.5 cursor-pointer relative z-10">
+                            class="w-full text-[14px] sm:text-[15px] font-normal text-gray-900 border-none outline-none bg-transparent py-0.5 cursor-pointer relative z-10">
                     </div>
                 </div>
 
                 <!-- Facility Category -->
-                <div class="flex-1 w-full p-1.5 md:px-3">
+                <div class="flex-1 w-full p-2 md:px-3">
                     <label class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide mb-1">
                         Facility Category
                     </label>
                     <div class="relative">
                         <select
-                            class="w-full text-[15px] font-medium text-gray-900 border-none outline-none bg-transparent py-0.5 appearance-none cursor-pointer">
+                            class="w-full text-[14px] sm:text-[15px] font-medium text-gray-900 border-none outline-none bg-transparent py-0.5 appearance-none cursor-pointer">
                             <option value="All" selected>All Facilities</option>
                             <option value="Indoor">Indoor</option>
                             <option value="Outdoor">Outdoor</option>
@@ -127,19 +128,19 @@
 
                 <!-- Search Button -->
                 <button
-                    class="bg-primary-blue hover:bg-blue-900 text-white rounded-[8px] shadow-sm w-[44px] h-[44px] flex justify-center items-center flex-shrink-0 transition-colors duration-200">
-                    <i data-lucide="search" class="w-5 h-5 text-white"></i>
+                    class="bg-primary-blue hover:bg-blue-900 text-white rounded-[8px] shadow-sm w-full md:w-auto px-6 h-[44px] flex justify-center items-center flex-shrink-0 transition-colors duration-200 mt-2 md:mt-0 font-bold text-xs uppercase">
+                    SEARCH
                 </button>
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row gap-3 mt-5 w-full sm:w-auto justify-center">
+            <div class="flex flex-col sm:flex-row gap-3 mt-2 sm:mt-5 w-full sm:w-auto justify-center px-4 sm:px-0">
                 <a href="LogInPage/LogInPage.html"
-                    class="font-bold text-[15px] py-2 px-8 rounded-full shadow-sm bg-white text-primary-blue hover:bg-gray-50 flex items-center justify-center min-w-[110px] transition-colors duration-200">
+                    class="font-bold text-[15px] py-2.5 px-8 rounded-full shadow-sm bg-white text-primary-blue hover:bg-gray-50 flex items-center justify-center min-w-[110px] transition-colors duration-200">
                     Login
                 </a>
                 <a href="RegisterPage/RegisterPage.html"
-                    class="font-bold text-[15px] py-2 px-8 rounded-full border-2 border-white text-white hover:bg-white/10 flex items-center justify-center min-w-[110px] transition-colors duration-200 box-border">
+                    class="font-bold text-[15px] py-2.5 px-8 rounded-full border-2 border-white text-white hover:bg-white/10 flex items-center justify-center min-w-[110px] transition-colors duration-200 box-border">
                     Register
                 </a>
             </div>
@@ -153,13 +154,6 @@
                 <h2 class="text-primary-blue text-[24px] font-bold mb-1.5 leading-8">Popular Sport Facilities</h2>
                 <p class="text-gray-500 text-[14px]">Top rated venues at UMPSA Pekan</p>
             </div>
-            <a href="#"
-                class="group text-primary-teal font-bold flex items-center gap-1 text-[14px] no-underline hover:underline">
-                View All Facilities
-                <i data-lucide="chevron-right"
-                    class="w-[11.2px] h-[11.2px] ml-1 transition-transform duration-200 group-hover:translate-x-1"
-                    style="stroke-width: 3px;"></i>
-            </a>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -170,12 +164,11 @@
                     <img src="ImagesForFacilities/BADMINTON.jpg" alt="Badminton Court"
                         class="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105">
                 </div>
-                <div class="p-5 flex flex-col gap-1.5">
-                    <h3 class="font-bold text-primary-blue text-[18px]">Badminton Court</h3>
-                    <div class="flex items-center gap-1.5 text-gray-500 text-sm">
-                        <i data-lucide="map-pin" class="w-[14px] h-[14px]"></i>
-                        <span>Multipurpose Hall</span>
-                    </div>
+                <div class="p-5 flex items-center justify-between gap-4">
+                    <h3 class="font-bold text-primary-blue text-[17px] sm:text-[18px]">Badminton Court</h3>
+                    <a href="LogInPage/LogInPage.html" class="bg-primary-blue hover:bg-blue-900 text-white px-4 py-2 rounded-md font-bold text-[10px] sm:text-xs transition-colors uppercase whitespace-nowrap shadow-sm">
+                        Book Now
+                    </a>
                 </div>
             </div>
 
@@ -186,12 +179,11 @@
                     <img src="ImagesForFacilities/FUTSAL COURT.jpg" alt="Futsal"
                         class="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105">
                 </div>
-                <div class="p-5 flex flex-col gap-1.5">
-                    <h3 class="font-bold text-primary-blue text-[18px]">Futsal</h3>
-                    <div class="flex items-center gap-1.5 text-gray-500 text-sm">
-                        <i data-lucide="map-pin" class="w-[14px] h-[14px]"></i>
-                        <span>Outdoor Court</span>
-                    </div>
+                <div class="p-5 flex items-center justify-between gap-4">
+                    <h3 class="font-bold text-primary-blue text-[17px] sm:text-[18px]">Futsal</h3>
+                    <a href="LogInPage/LogInPage.html" class="bg-primary-blue hover:bg-blue-900 text-white px-4 py-2 rounded-md font-bold text-[10px] sm:text-xs transition-colors uppercase whitespace-nowrap shadow-sm">
+                        Book Now
+                    </a>
                 </div>
             </div>
 
@@ -202,12 +194,11 @@
                     <img src="ImagesForFacilities/GYM PEKAN.jpg" alt="Gym Male"
                         class="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105">
                 </div>
-                <div class="p-5 flex flex-col gap-1.5">
-                    <h3 class="font-bold text-primary-blue text-[18px]">Gym Male</h3>
-                    <div class="flex items-center gap-1.5 text-gray-500 text-sm">
-                        <i data-lucide="map-pin" class="w-[14px] h-[14px]"></i>
-                        <span>Block A</span>
-                    </div>
+                <div class="p-5 flex items-center justify-between gap-4">
+                    <h3 class="font-bold text-primary-blue text-[17px] sm:text-[18px]">Gym Male</h3>
+                    <a href="LogInPage/LogInPage.html" class="bg-primary-blue hover:bg-blue-900 text-white px-4 py-2 rounded-md font-bold text-[10px] sm:text-xs transition-colors uppercase whitespace-nowrap shadow-sm">
+                        Book Now
+                    </a>
                 </div>
             </div>
         </div>
