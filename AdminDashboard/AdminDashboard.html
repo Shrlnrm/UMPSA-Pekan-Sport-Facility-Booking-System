@@ -82,7 +82,7 @@
     </style>
 </head>
 
-<body class="font-sans antialiased text-gray-900 flex flex-col bg-white" style="height:100vh; overflow:hidden;">
+<body class="font-sans antialiased text-gray-900 flex flex-col bg-white" style="height:100dvh; overflow:hidden;">
 
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2" style="pointer-events:none;"></div>
@@ -446,6 +446,12 @@
             </main>
         </div>
     </div>
+
+    <!-- Fixed Global Footer -->
+    <footer class="w-full bg-[#183e87] text-center text-white/70 text-[10px] sm:text-xs px-6 py-3 mt-auto flex-shrink-0 border-t border-teal-900/50 z-50 relative">
+        UMPSA Pekan - Sport Facility Booking System © 2026
+    </footer>
+
     <!-- ===================== CANCEL BOOKING MODAL ===================== -->
     <div id="cancel-booking-modal" class="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden flex flex-col">
@@ -1562,13 +1568,5 @@
         fetchRecentReports();
         fetchRecentBookings();
     </script>
-
-    <!-- Footer inside main -->
-        <footer class="w-full bg-[#183e87] text-white/70 text-xs px-6 py-3 mt-auto flex-shrink-0">
-            UMPSA Pekan - Sport Facility Booking System © 2026
-        </footer>
-    </main>
-</div>
-</div>
 </body>
 </html>
