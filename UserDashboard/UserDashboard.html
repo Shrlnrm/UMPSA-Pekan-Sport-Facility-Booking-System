@@ -90,7 +90,8 @@
     </style>
 </head>
 
-<body class="font-sans antialiased text-gray-900 flex flex-col bg-white" style="height:100dvh; overflow:hidden;">
+<body class="font-sans antialiased text-gray-900 bg-white">
+    <div class="fixed inset-0 flex flex-col overflow-hidden">
 
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2" style="pointer-events:none;"></div>
@@ -330,10 +331,8 @@
                         </div>
 
                         <!-- Pagination -->
-                        <div class="px-6 pb-5 flex items-center justify-end gap-1 border-t border-gray-100 pt-4">
-                            <button class="w-8 h-8 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors">&lt;</button>
-                            <button class="w-8 h-8 flex items-center justify-center bg-primary-blue rounded text-xs text-white font-semibold">1</button>
-                            <button class="w-8 h-8 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors">&gt;</button>
+                        <div id="fac-pagination-container" class="px-6 pb-5 flex items-center justify-end gap-2 border-t border-gray-100 pt-4 hidden">
+                            <!-- Dynamic UI from JS -->
                         </div>
                     </div>
                 </div>
@@ -426,9 +425,6 @@
                     <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-3 sm:p-8">
                         <div class="flex items-center justify-between mb-3 sm:mb-6 flex-wrap gap-2">
                             <h3 class="text-primary-blue font-bold text-sm">Weekly Availability</h3>
-                            <div class="flex items-center gap-1 sm:gap-1.5" id="weekly-nav-controls">
-                                <!-- Navigation buttons rendered by JS -->
-                            </div>
                         </div>
 
                         <div class="border border-gray-100 rounded-lg overflow-x-auto">
@@ -473,22 +469,27 @@
                         </div>
 
                         <!-- Legend -->
-                        <div class="mt-3 sm:mt-6 flex flex-wrap items-center gap-3 sm:gap-6 text-[9px] sm:text-[10px] text-gray-400 font-medium">
-                            <div class="flex items-center gap-2">
-                                <div class="w-4 h-4 bg-gray-50 border border-gray-100 rounded-sm"></div>
-                                <span>Available</span>
+                        <div class="mt-3 sm:mt-6 flex flex-wrap items-center justify-between gap-3 text-[9px] sm:text-[10px] text-gray-400 font-medium">
+                            <div class="flex items-center gap-3 sm:gap-6 flex-wrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-gray-50 border border-gray-100 rounded-sm"></div>
+                                    <span>Available</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-gray-200 rounded-sm text-center flex items-center justify-center text-[8px] text-white">/</div>
+                                    <span>Passed</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-primary-teal rounded-sm"></div>
+                                    <span>Selected / Booked</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-red-900 rounded-sm"></div>
+                                    <span>Closed / M'nance</span>
+                                </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-4 h-4 bg-gray-200 rounded-sm text-center flex items-center justify-center text-[8px] text-white">/</div>
-                                <span>Passed</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-4 h-4 bg-primary-teal rounded-sm"></div>
-                                <span>Booked</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-4 h-4 bg-red-900 rounded-sm"></div>
-                                <span>Close</span>
+                            <div class="flex items-center gap-1 sm:gap-1.5" id="weekly-nav-controls">
+                                <!-- Navigation buttons rendered by JS -->
                             </div>
                         </div>
                     </div>
@@ -657,6 +658,7 @@
                                 <table class="w-full text-xs sm:text-sm text-left">
                                     <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100">
                                         <tr>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Report ID</th>
                                             <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Facility</th>
                                             <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Date</th>
                                             <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Issue</th>
@@ -667,7 +669,7 @@
                                     <tbody id="report-list-rows" class="divide-y divide-gray-50">
                                         <!-- Empty State Table Body -->
                                         <tr>
-                                            <td colspan="5" class="py-10 text-center text-sm text-gray-400 border-none">No record.</td>
+                                            <td colspan="6" class="py-10 text-center text-sm text-gray-400 border-none">No record.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -689,17 +691,29 @@
                     <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
                         
                         <!-- Announcement Main Tab -->
-                        <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden">
-                            <button class="main-tab active px-8 py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl cursor-default">
+                        <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden shadow-sm z-10">
+                            <button class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl cursor-default">
                                 Announcements
                             </button>
                         </div>
                         
-                        <!-- Sub Tabs -->
-                        <div class="flex px-6 gap-8 border-b border-gray-100">
-                            <button class="sub-tab active py-3 text-sm font-medium text-gray-500 cursor-default">
-                                Recent Updates
+                        <!-- Sub-tab Row (Teal Underline style) -->
+                        <div class="flex px-6 gap-8 border-b border-gray-100 z-10 bg-white shadow-sm relative">
+                            <button class="sub-tab active py-3 text-sm font-medium text-gray-500 cursor-default border-b-2 border-primary-teal">
+                                All Announcements
                             </button>
+                        </div>
+
+                        <!-- Search Bar Row (Full Width) -->
+                        <div class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0 relative bg-white z-0">
+                            <div class="relative w-full">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i data-lucide="search" class="w-4 h-4"></i>
+                                </div>
+                                <input id="announcement-search-input" type="text" placeholder="Search announcements..."
+                                    oninput="fetchAnnouncements()"
+                                    class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                            </div>
                         </div>
 
                         <!-- Card List -->
@@ -714,9 +728,10 @@
     </div>
 
     <!-- Fixed Global Footer -->
-    <footer class="w-full bg-[#183e87] text-center text-white/70 text-[10px] sm:text-xs px-6 py-3 mt-auto flex-shrink-0 border-t border-teal-900/50 z-50 relative">
-        UMPSA Pekan - Sport Facility Booking System © 2026
+    <footer class="w-full bg-[#183e87] text-left text-white/70 text-[10px] sm:text-xs px-6 py-3 mt-auto flex-shrink-0 border-t border-teal-900/50 z-50 relative">
+        <div class="text-left w-full">UMPSA Pekan - Sport Facility Booking System © 2026</div>
     </footer>
+    </div>
 
     <script>
         lucide.createIcons();
@@ -806,10 +821,9 @@
                     selectionStart = null;
                     selectionEnd = null;
                     currentWeekOffset = 0; // reset to this week on open
-                    highlightSelectionRange(); // This will clear the highlights since selectionStart is null
-
+                    
                     // Set default dates to today
-                    const today = new Date().toISOString().split('T')[0];
+                    const today = new Date().toLocaleDateString('en-CA');
                     document.querySelectorAll('#page-booking-form input[type="date"]').forEach(input => {
                         input.value = today;
                         input.min = today; // Restrict past dates in date picker
@@ -1156,6 +1170,18 @@
         // ---- Supabase: Fetch Facilities ----
 
         let allFacilities = [];
+        let currentFacilityPage = 1;
+        const FACILITIES_PER_PAGE = 4;
+        let filteredFacilitiesCache = [];
+
+        function changeFacilityPage(offset) {
+            const maxPage = Math.ceil(filteredFacilitiesCache.length / FACILITIES_PER_PAGE) || 1;
+            currentFacilityPage += offset;
+            if (currentFacilityPage < 1) currentFacilityPage = 1;
+            if (currentFacilityPage > maxPage) currentFacilityPage = maxPage;
+            
+            renderFacilitiesPage();
+        }
 
         async function fetchFacilities() {
             const { data, error } = await db
@@ -1182,7 +1208,7 @@
             const filterMaxCapacity = document.getElementById('filter-max-capacity').value;
             const filterStatus = document.getElementById('filter-status').value;
 
-            const filtered = allFacilities.filter(f => {
+            filteredFacilitiesCache = allFacilities.filter(f => {
                 const matchesSearch = f.name.toLowerCase().includes(query) || 
                                     f.location.toLowerCase().includes(query);
                 const matchesCategory = !filterCategory || f.type === filterCategory;
@@ -1191,23 +1217,67 @@
                 
                 return matchesSearch && matchesCategory && matchesCapacity && matchesStatus;
             });
+            
+            // Reset to page 1 on search
+            currentFacilityPage = 1;
+            renderFacilitiesPage();
+        }
 
+        function renderFacilitiesPage() {
             const container = document.getElementById('facility-cards');
             const emptyEl = document.getElementById('facility-empty');
             const countEl = document.getElementById('facility-count');
+            
+            countEl.textContent = `Found ${filteredFacilitiesCache.length} facilit${filteredFacilitiesCache.length !== 1 ? 'ies' : 'y'} in UMPSA Pekan`;
 
-            countEl.textContent = `Found ${filtered.length} facilit${filtered.length !== 1 ? 'ies' : 'y'} in UMPSA Pekan`;
+            // Max page calc
+            const maxPage = Math.ceil(filteredFacilitiesCache.length / FACILITIES_PER_PAGE) || 1;
+            
+            const paginationContainer = document.getElementById('fac-pagination-container');
+            if (paginationContainer) {
+                if (filteredFacilitiesCache.length <= FACILITIES_PER_PAGE) {
+                    paginationContainer.classList.add('hidden');
+                } else {
+                    paginationContainer.classList.remove('hidden');
+                    paginationContainer.innerHTML = '';
+                    
+                    if (currentFacilityPage > 1) {
+                        const prevBtn = document.createElement('button');
+                        prevBtn.onclick = () => changeFacilityPage(-1);
+                        prevBtn.className = "w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg text-sm text-primary-blue bg-white hover:bg-gray-50 transition-colors shadow-sm font-semibold";
+                        prevBtn.innerHTML = '<';
+                        paginationContainer.appendChild(prevBtn);
+                    }
+                    
+                    const pageBtn = document.createElement('div');
+                    pageBtn.className = "w-8 h-8 flex items-center justify-center bg-primary-blue text-white rounded-lg font-bold text-sm shadow-sm cursor-default";
+                    pageBtn.textContent = currentFacilityPage;
+                    paginationContainer.appendChild(pageBtn);
+                    
+                    if (currentFacilityPage < maxPage) {
+                        const nextBtn = document.createElement('button');
+                        nextBtn.onclick = () => changeFacilityPage(1);
+                        nextBtn.className = "w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg text-sm text-primary-blue bg-white hover:bg-gray-50 transition-colors shadow-sm font-semibold";
+                        nextBtn.innerHTML = '>';
+                        paginationContainer.appendChild(nextBtn);
+                    }
+                }
+            }
 
             // Remove existing cards
             container.querySelectorAll('.facility-card').forEach(c => c.remove());
 
-            if (filtered.length === 0) {
+            if (filteredFacilitiesCache.length === 0) {
                 emptyEl.classList.remove('hidden');
                 return;
             }
 
             emptyEl.classList.add('hidden');
-            filtered.forEach(f => {
+            
+            const startIdx = (currentFacilityPage - 1) * FACILITIES_PER_PAGE;
+            const paginated = filteredFacilitiesCache.slice(startIdx, startIdx + FACILITIES_PER_PAGE);
+
+            paginated.forEach(f => {
                 const card = document.createElement('div');
                 card.className = 'facility-card bg-white border border-gray-100 rounded-xl p-6 flex flex-col md:flex-row items-center gap-8 hover:shadow-md transition-all';
                 
@@ -1414,35 +1484,44 @@
             const event = document.getElementById('booking-event').value;
             const participants = document.getElementById('booking-participants').value;
 
-            // Capacity Validation (Prioritize this error message for UX)
-            if (participants) {
-                const parsedParticipants = parseInt(participants);
-                if (parsedParticipants > selectedFacility.max_capacity) {
-                    showToast(`Number of participants exceeds facility capacity (Max: ${selectedFacility.max_capacity}).`, 'warning');
-                    return;
-                }
-                if (parsedParticipants < 1) {
-                    showToast('Number of participants must be at least 1.', 'warning');
-                    return;
-                }
-            }
-
-            // Simple validation for empty fields
+            // Simple validation for empty fields First
             if (!startDate || !startTime || !endDate || !endTime || !event || !participants) {
                 showToast('Please fill in all required fields marked with *', 'warning');
                 return;
             }
 
-            // Past date validation via typing
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            // Capacity Validation (After ensuring it's filled)
+            const parsedParticipants = parseInt(participants);
+            if (parsedParticipants > selectedFacility.max_capacity) {
+                showToast(`Number of participants exceeds facility capacity (Max: ${selectedFacility.max_capacity}).`, 'warning');
+                return;
+            }
+            if (parsedParticipants < 1) {
+                showToast('Number of participants must be at least 1.', 'warning');
+                return;
+            }
+
+            // Past date validation
+            const todayStr = new Date().toLocaleDateString('en-CA'); // Gets YYYY-MM-DD in local time
             
-            const selectedStartDate = new Date(startDate);
-            selectedStartDate.setHours(0,0,0,0);
-            
-            if (selectedStartDate < today) {
+            if (startDate < todayStr || endDate < todayStr) {
                 showToast('You cannot book past dates.', 'warning');
                 return;
+            }
+
+            if (startDate > endDate) {
+                showToast('End Date must be after or equal to Start Date.', 'warning');
+                return;
+            }
+            
+            if (startDate === endDate) {
+                // Check if end time is before start time
+                const sTimeIdx = slotTimes.findIndex(t => t.start === startTime);
+                const eTimeIdx = slotTimes.findIndex(t => t.end === endTime);
+                if (sTimeIdx > eTimeIdx) {
+                    showToast('End Time cannot be before Start Time.', 'warning');
+                    return;
+                }
             }
 
 
@@ -1726,7 +1805,7 @@
             container.innerHTML = '';
 
             if (!reports || reports.length === 0) {
-                container.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-sm text-gray-400 border-none">No record.</td></tr>`;
+                container.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-sm text-gray-400 border-none">No record.</td></tr>`;
                 return;
             }
 
@@ -1734,16 +1813,17 @@
                 const reportDate = new Date(r.created_at).toLocaleDateString();
                 const facilityName = r.Facility ? r.Facility.name : 'Unknown';
                 const baseStyle = "font-bold uppercase inline-block text-[10px]";
-                let statusHtml = '';
-                if (r.status === 'Pending') {
-                    statusHtml = `<span class="${baseStyle} text-yellow-500">PENDING</span>`;
-                } else {
-                    statusHtml = `<span class="${baseStyle} text-primary-teal">RESOLVED</span>`;
-                }
+                
+                const statusHtml = r.status === 'Pending' 
+                    ? `<span class="${baseStyle} text-yellow-500">PENDING</span>` 
+                    : `<span class="${baseStyle} text-primary-teal">RESOLVED</span>`;
+                
+                const reportIdStr = r.report_id ? `REP-${r.report_id.toString().padStart(3, '0')}` : '-';
 
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50 transition-colors';
                 tr.innerHTML = `
+                    <td class="px-6 py-4 font-bold text-primary-blue text-xs">${reportIdStr}</td>
                     <td class="px-6 py-4 font-medium text-primary-teal text-xs">${facilityName}</td>
                     <td class="px-6 py-4 text-xs text-gray-600">${reportDate}</td>
                     <td class="px-6 py-4 text-xs text-gray-600 max-w-xs truncate" title="${r.issue_description}">${r.issue_description}</td>
@@ -1776,8 +1856,14 @@
             const container = document.getElementById('announcement-list');
             if(!container) return;
             container.innerHTML = '';
+            
+            const query = (document.getElementById('announcement-search-input')?.value || '').toLowerCase();
+            const filtered = announcements.filter(a => 
+                a.title.toLowerCase().includes(query) || 
+                a.content.toLowerCase().includes(query)
+            );
 
-            if (!announcements || announcements.length === 0) {
+            if (!filtered || filtered.length === 0) {
                 container.innerHTML = `<div class="text-center py-12">
                             <i data-lucide="megaphone" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
                             <p class="text-sm text-gray-400">No announcements yet.</p>
@@ -1786,7 +1872,7 @@
                 return;
             }
 
-            announcements.forEach(a => {
+            filtered.forEach(a => {
                 const datePosted = new Date(a.date_posted).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                 
                 const card = document.createElement('div');
