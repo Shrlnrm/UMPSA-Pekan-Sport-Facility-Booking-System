@@ -1410,7 +1410,20 @@
             const event = document.getElementById('booking-event').value;
             const participants = document.getElementById('booking-participants').value;
 
-            // Simple validation
+            // Capacity Validation (Prioritize this error message for UX)
+            if (participants) {
+                const parsedParticipants = parseInt(participants);
+                if (parsedParticipants > selectedFacility.max_capacity) {
+                    showToast(`Number of participants exceeds facility capacity (Max: ${selectedFacility.max_capacity}).`, 'warning');
+                    return;
+                }
+                if (parsedParticipants < 1) {
+                    showToast('Number of participants must be at least 1.', 'warning');
+                    return;
+                }
+            }
+
+            // Simple validation for empty fields
             if (!startDate || !startTime || !endDate || !endTime || !event || !participants) {
                 showToast('Please fill in all required fields marked with *', 'warning');
                 return;
@@ -1427,17 +1440,7 @@
                 showToast('You cannot book past dates.', 'warning');
                 return;
             }
-            
-            // Capacity Validation
-            const parsedParticipants = parseInt(participants);
-            if (parsedParticipants > selectedFacility.max_capacity) {
-                showToast(`Number of participants exceeds facility capacity (Max: ${selectedFacility.max_capacity}).`, 'warning');
-                return;
-            }
-            if (parsedParticipants < 1) {
-                showToast('Number of participants must be at least 1.', 'warning');
-                return;
-            }
+
 
             // Save data
             const slotsToBook = getSlotsInRange(startDate, endDate, startTime, endTime);
