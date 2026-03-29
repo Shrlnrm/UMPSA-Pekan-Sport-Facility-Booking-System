@@ -426,10 +426,8 @@
                     <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-3 sm:p-8">
                         <div class="flex items-center justify-between mb-3 sm:mb-6 flex-wrap gap-2">
                             <h3 class="text-primary-blue font-bold text-sm">Weekly Availability</h3>
-                            <div class="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-[11px] font-medium">
-                                <button class="text-primary-blue hover:underline">Last Week</button>
-                                <span class="text-primary-blue font-bold">This Week</span>
-                                <button class="text-primary-blue hover:underline">Next Week</button>
+                            <div class="flex items-center gap-1 sm:gap-1.5" id="weekly-nav-controls">
+                                <!-- Navigation buttons rendered by JS -->
                             </div>
                         </div>
 
@@ -477,8 +475,12 @@
                         <!-- Legend -->
                         <div class="mt-3 sm:mt-6 flex flex-wrap items-center gap-3 sm:gap-6 text-[9px] sm:text-[10px] text-gray-400 font-medium">
                             <div class="flex items-center gap-2">
-                                <div class="w-4 h-4 bg-gray-100 rounded-sm"></div>
+                                <div class="w-4 h-4 bg-gray-50 border border-gray-100 rounded-sm"></div>
                                 <span>Available</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-gray-200 rounded-sm text-center flex items-center justify-center text-[8px] text-white">/</div>
+                                <span>Passed</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <div class="w-4 h-4 bg-primary-teal rounded-sm"></div>
@@ -799,13 +801,18 @@
                     // Reset Selection State
                     selectionStart = null;
                     selectionEnd = null;
+                    currentWeekOffset = 0; // reset to this week on open
                     highlightSelectionRange(); // This will clear the highlights since selectionStart is null
 
                     // Set default dates to today
                     const today = new Date().toISOString().split('T')[0];
                     document.querySelectorAll('#page-booking-form input[type="date"]').forEach(input => {
                         input.value = today;
+                        input.min = today; // Restrict past dates in date picker
                     });
+                    
+                    // Set max participants
+                    document.getElementById('booking-participants').placeholder = `Max ${facility.max_capacity}`;
 
                     renderAvailability(extra);
                 }
@@ -853,7 +860,10 @@
             grid.innerHTML = '<div class="p-8 text-center text-xs text-gray-400">Loading availability...</div>';
 
             // Update Header Dates
-            const now = new Date();
+            const baseNow = new Date();
+            const now = new Date(baseNow);
+            now.setDate(baseNow.getDate() + (currentWeekOffset * 7));
+            
             const currentDay = now.getDay(); // 0 (Sun) to 6 (Sat)
             const diffToMonday = currentDay === 0 ? -6 : 1 - currentDay;
             const monday = new Date(now);
@@ -904,6 +914,24 @@
                 '04:00 pm - 05:30 pm', '05:30 pm - 07:00 pm'
             ];
 
+            // Update Navigation Controls
+            const navContainer = document.getElementById('weekly-nav-controls');
+            if (navContainer) {
+                let navHtml = '';
+                if (currentWeekOffset > 0) {
+                    navHtml += `<button onclick="changeWeek(-1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&lt;</button>`;
+                }
+                
+                const weekNum = currentWeekOffset + 1;
+                navHtml += `<button class="w-7 h-7 flex items-center justify-center bg-[#183e87] hover:bg-blue-900 transition-colors rounded text-xs text-white font-semibold shadow-sm">${weekNum}</button>`;
+                
+                navHtml += `<button onclick="changeWeek(1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&gt;</button>`;
+                navContainer.innerHTML = navHtml;
+            }
+
+            const nowMidnight = new Date();
+            nowMidnight.setHours(0, 0, 0, 0);
+
             timeSlots.forEach((slot, index) => {
                 const row = document.createElement('div');
                 row.className = 'grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 sm:h-12 items-center';
@@ -917,31 +945,36 @@
                     let status = 'Available';
                     let statusClass = 'text-blue-400';
 
-                    // Check Closures
-                    const isClosed = closures.some(c => {
-                        return c.date === dateStr && (c.time_slot === slot || c.time_slot === '07:00 am - 07:00 pm');
-                    });
-
-                    if (isClosed) {
-                        status = 'Close';
-                        statusClass = 'bg-red-900 text-white h-full flex items-center justify-center';
+                    if (cellDate < nowMidnight) {
+                        status = 'Passed';
+                        statusClass = 'bg-gray-100 text-gray-400 h-full flex items-center justify-center font-medium';
                     } else {
-                        // Check Bookings
-                        const isBooked = bookings && bookings.some(b => {
-                            return isSlotBooked(dateStr, slot, b);
+                        // Check Closures
+                        const isClosed = closures.some(c => {
+                            return c.date === dateStr && (c.time_slot === slot || c.time_slot === '07:00 am - 07:00 pm');
                         });
 
-                        if (isBooked) {
-                            status = 'Booked';
-                            statusClass = 'bg-primary-teal text-white h-full flex items-center justify-center';
+                        if (isClosed) {
+                            status = 'Close';
+                            statusClass = 'bg-red-900 text-white h-full flex items-center justify-center';
                         } else {
-                            // Available - make it interactive
-                            statusClass = 'text-blue-400 cursor-pointer hover:bg-blue-50 transition-colors h-full flex items-center justify-center slot-cell';
-                            status = `<div class="w-full h-full flex items-center justify-center" 
-                                           data-date="${dateStr}" 
-                                           data-index="${index}" 
-                                           data-day="${day}"
-                                           onclick="selectSlot('${dateStr}', ${index}, ${day}, this)">Available</div>`;
+                            // Check Bookings
+                            const isBooked = bookings && bookings.some(b => {
+                                return isSlotBooked(dateStr, slot, b);
+                            });
+
+                            if (isBooked) {
+                                status = 'Booked';
+                                statusClass = 'bg-primary-teal text-white h-full flex items-center justify-center';
+                            } else {
+                                // Available - make it interactive
+                                statusClass = 'text-blue-400 cursor-pointer hover:bg-blue-50 transition-colors h-full flex items-center justify-center slot-cell';
+                                status = `<div class="w-full h-full flex items-center justify-center" 
+                                               data-date="${dateStr}" 
+                                               data-index="${index}" 
+                                               data-day="${day}"
+                                               onclick="selectSlot('${dateStr}', ${index}, ${day}, this)">Available</div>`;
+                            }
                         }
                     }
 
@@ -1247,6 +1280,14 @@
         let bookingData = {};
         let selectionStart = null; // { date, index, day }
         let selectionEnd = null;   // { date, index, day }
+        let currentWeekOffset = 0;
+
+        function changeWeek(offset) {
+            currentWeekOffset += offset;
+            if (selectedFacility) {
+                renderAvailability(selectedFacility.facility_id);
+            }
+        }
 
         function selectSlot(date, index, day, el) {
             if (!selectionStart || (selectionStart && selectionEnd)) {
@@ -1372,6 +1413,29 @@
             // Simple validation
             if (!startDate || !startTime || !endDate || !endTime || !event || !participants) {
                 showToast('Please fill in all required fields marked with *', 'warning');
+                return;
+            }
+
+            // Past date validation via typing
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const selectedStartDate = new Date(startDate);
+            selectedStartDate.setHours(0,0,0,0);
+            
+            if (selectedStartDate < today) {
+                showToast('You cannot book past dates.', 'warning');
+                return;
+            }
+            
+            // Capacity Validation
+            const parsedParticipants = parseInt(participants);
+            if (parsedParticipants > selectedFacility.max_capacity) {
+                showToast(`Number of participants exceeds facility capacity (Max: ${selectedFacility.max_capacity}).`, 'warning');
+                return;
+            }
+            if (parsedParticipants < 1) {
+                showToast('Number of participants must be at least 1.', 'warning');
                 return;
             }
 
