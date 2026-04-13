@@ -273,7 +273,7 @@
                                     <tbody id="booking-list-rows" class="divide-y divide-gray-50">
                                         <!-- Empty State -->
                                         <tr id="booking-empty">
-                                            <td colspan="6" class="py-10 text-center text-sm text-gray-400 border-none">No record.</td>
+                                            <td colspan="7" class="py-10 text-center text-sm text-gray-400 border-none">No record.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -425,6 +425,12 @@
                     <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-3 sm:p-8">
                         <div class="flex items-center justify-between mb-3 sm:mb-6 flex-wrap gap-2">
                             <h3 class="text-primary-blue font-bold text-sm">Weekly Availability</h3>
+                            <div class="flex items-center gap-1.5">
+                                <select id="month-selector" onchange="onMonthSelectorChange(this.value)" class="bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-xs font-medium text-primary-blue outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all cursor-pointer">
+                                </select>
+                                <select id="year-selector" onchange="onYearSelectorChange(this.value)" class="bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-xs font-medium text-primary-blue outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all cursor-pointer">
+                                </select>
+                            </div>
                         </div>
 
                         <div class="border border-gray-100 rounded-lg overflow-x-auto">
@@ -476,16 +482,16 @@
                                     <span>Available</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <div class="w-4 h-4 bg-gray-200 rounded-sm text-center flex items-center justify-center text-[8px] text-white">/</div>
+                                    <div class="w-4 h-4 bg-gray-200 rounded-sm"></div>
                                     <span>Passed</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="w-4 h-4 bg-primary-teal rounded-sm"></div>
-                                    <span>Selected / Booked</span>
+                                    <span>Booked</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="w-4 h-4 bg-red-900 rounded-sm"></div>
-                                    <span>Closed / M'nance</span>
+                                    <span>Closed</span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-1 sm:gap-1.5" id="weekly-nav-controls">
@@ -733,6 +739,24 @@
     </footer>
     </div>
 
+    <!-- View Reason Modal -->
+    <div id="view-reason-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-lg w-[400px] overflow-hidden flex flex-col">
+            <div class="p-6">
+                <div class="flex items-center gap-3 text-yellow-500 mb-4">
+                    <i data-lucide="info" class="w-6 h-6"></i>
+                    <h3 class="font-bold text-[15px] text-gray-800">Cancellation Reason</h3>
+                </div>
+                <p class="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-md border border-gray-100" id="view-reason-text">
+                    <!-- Reason text will go here -->
+                </p>
+                <div class="mt-6 flex justify-end">
+                    <button onclick="document.getElementById('view-reason-modal').classList.add('hidden')" class="px-5 py-2 text-sm font-medium text-white bg-primary-blue hover:bg-blue-900 rounded-md transition-colors shadow-sm">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
 
@@ -820,7 +844,8 @@
                     // Reset Selection State
                     selectionStart = null;
                     selectionEnd = null;
-                    currentWeekOffset = 0; // reset to this week on open
+                    currentWeekMonday = getMondayOfWeek(new Date());
+                    selectedMonth = null;
                     
                     // Set default dates to today
                     const today = new Date().toLocaleDateString('en-CA');
@@ -877,15 +902,18 @@
             const grid = document.getElementById('availability-grid');
             grid.innerHTML = '<div class="p-8 text-center text-xs text-gray-400">Loading availability...</div>';
 
-            // Update Header Dates
-            const baseNow = new Date();
-            const now = new Date(baseNow);
-            now.setDate(baseNow.getDate() + (currentWeekOffset * 7));
-            
-            const currentDay = now.getDay(); // 0 (Sun) to 6 (Sat)
-            const diffToMonday = currentDay === 0 ? -6 : 1 - currentDay;
-            const monday = new Date(now);
-            monday.setDate(now.getDate() + diffToMonday);
+            // Initialize week if not set
+            if (!currentWeekMonday) {
+                currentWeekMonday = getMondayOfWeek(new Date());
+            }
+            if (!selectedMonth) {
+                const now = new Date();
+                selectedMonth = { year: now.getFullYear(), month: now.getMonth() };
+            }
+            populateYearSelector();
+            populateMonthSelector(selectedMonth.year);
+
+            const monday = new Date(currentWeekMonday);
             monday.setHours(0, 0, 0, 0);
 
             const sunday = new Date(monday);
@@ -935,15 +963,34 @@
             // Update Navigation Controls
             const navContainer = document.getElementById('weekly-nav-controls');
             if (navContainer) {
+                // Determine if we can go back/forward within the selected month
+                const prevMonday = new Date(monday);
+                prevMonday.setDate(prevMonday.getDate() - 7);
+                const prevSunday = new Date(prevMonday);
+                prevSunday.setDate(prevMonday.getDate() + 6);
+                const nextMonday = new Date(monday);
+                nextMonday.setDate(nextMonday.getDate() + 7);
+
+                const firstOfMonth = selectedMonth ? new Date(selectedMonth.year, selectedMonth.month, 1) : new Date(0);
+                const lastOfMonth = selectedMonth ? new Date(selectedMonth.year, selectedMonth.month + 1, 0) : new Date(9999, 11, 31);
+
+                const canGoBack = prevSunday >= firstOfMonth;
+                const canGoForward = nextMonday <= lastOfMonth;
+
+                // Calculate week number within the month
+                const firstMondayOfMonth = getMondayOfWeek(firstOfMonth);
+                const weekNum = Math.floor((monday - firstMondayOfMonth) / (7 * 24 * 60 * 60 * 1000)) + 1;
+
                 let navHtml = '';
-                if (currentWeekOffset > 0) {
+                if (canGoBack) {
                     navHtml += `<button onclick="changeWeek(-1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&lt;</button>`;
                 }
                 
-                const weekNum = currentWeekOffset + 1;
                 navHtml += `<button class="w-7 h-7 flex items-center justify-center bg-[#183e87] hover:bg-blue-900 transition-colors rounded text-xs text-white font-semibold shadow-sm">${weekNum}</button>`;
                 
-                navHtml += `<button onclick="changeWeek(1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&gt;</button>`;
+                if (canGoForward) {
+                    navHtml += `<button onclick="changeWeek(1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&gt;</button>`;
+                }
                 navContainer.innerHTML = navHtml;
             }
 
@@ -969,8 +1016,23 @@
                     } else {
                         // Check Closures
                         const isClosed = closures.some(c => {
-                            return c.date === dateStr && (c.time_slot === slot || c.time_slot === '07:00 am - 07:00 pm');
-                        });
+                            if (c.date !== dateStr) return false;
+                            if (c.time_slot === '07:00 am - 07:00 pm' || c.time_slot === slot) return true;
+                            
+                            // Check overlap for different hour configurations
+                            if (c.time_slot && c.time_slot.includes(' - ')) {
+                                const [cStart, cEnd] = c.time_slot.split(' - ');
+                                const closureStart = parseTimeMins(cStart);
+                                const closureEnd = parseTimeMins(cEnd);
+
+                                const [sStart, sEnd] = slot.split(' - ');
+                                const slotStart = parseTimeMins(sStart);
+                                const slotEnd = parseTimeMins(sEnd);
+
+                                return (slotStart < closureEnd && slotEnd > closureStart);
+                            }
+                            return false;
+                        }) || selectedFacility.status === 'In Maintenance';
 
                         if (isClosed) {
                             status = 'Close';
@@ -1022,11 +1084,11 @@
             const actionCol = document.getElementById('booking-action-col');
             const emptyStateColspan = document.querySelector('#booking-empty td');
             if (tab === 'cancelled') {
-                actionCol.classList.add('hidden');
-                if (emptyStateColspan) emptyStateColspan.setAttribute('colspan', '5');
+                actionCol.textContent = 'Reason';
+                if (emptyStateColspan) emptyStateColspan.setAttribute('colspan', '7');
             } else {
-                actionCol.classList.remove('hidden');
-                if (emptyStateColspan) emptyStateColspan.setAttribute('colspan', '6');
+                actionCol.textContent = 'Action';
+                if (emptyStateColspan) emptyStateColspan.setAttribute('colspan', '7');
             }
 
             renderBookings();
@@ -1065,7 +1127,6 @@
             const emptyEl = document.getElementById('booking-empty');
             
             // Filter by subtab (Confirmed/Cancelled)
-            // Note: DB status is 'Confirmed', 'Cancelled', 'Pending'
             const statusMap = {
                 'confirmed': 'Confirmed',
                 'cancelled': 'Cancelled'
@@ -1118,7 +1179,6 @@
                     : g.dateRange[0];
 
                 let actionHtml = '';
-                let isCancelled = g.status === 'Cancelled';
                 let statusHtml = '';
                 const baseStyle = "font-bold uppercase inline-block text-[10px]";
 
@@ -1126,11 +1186,14 @@
                     statusHtml = `<span class="${baseStyle} text-primary-teal">CONFIRMED</span>`;
                     actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"><button onclick="cancelBooking('${g.invoice}')" class="border border-red-200 hover:bg-[#e53e3e] hover:text-white hover:border-[#e53e3e] text-red-500 px-3 py-1 rounded text-[10px] font-bold transition-all uppercase">CANCEL</button></td>`;
                 } else if (g.status === 'Cancelled') {
-                    statusHtml = `<div class="flex flex-col gap-1 items-start"><span class="${baseStyle} text-red-500">CANCELLED</span>${g.cancel_reason ? `<span class="text-[9px] text-gray-400 max-w-[120px] truncate" title="${g.cancel_reason}">Reason: ${g.cancel_reason}</span>` : ''}</div>`;
-                    actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"></td>`;
-                } else if (g.status === 'Pending') {
-                    statusHtml = `<span class="${baseStyle} text-yellow-500">PENDING</span>`;
-                    actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"></td>`;
+                    statusHtml = `<div class="flex flex-col gap-1 items-start"><span class="${baseStyle} text-red-500">CANCELLED</span></div>`;
+                    
+                    if (g.cancel_reason && g.cancel_reason !== 'null' && g.cancel_reason !== 'undefined' && g.cancel_reason.trim() !== '') {
+                        const safeReason = g.cancel_reason.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                        actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"><button onclick="viewCancelReason('${safeReason}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-[10px] font-bold transition-all uppercase shadow-sm">REASON</button></td>`;
+                    } else {
+                        actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"></td>`;
+                    }
                 } else {
                     statusHtml = `<span class="${baseStyle} text-gray-600">${g.status?.toUpperCase() || '-'}</span>`;
                     actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"></td>`;
@@ -1328,10 +1391,15 @@
 
                     <!-- Right: Button -->
                     <div class="w-full md:w-auto flex-shrink-0">
-                        <button onclick="showPage('booking-form', ${f.facility_id})" 
+                        ${f.status === 'In Maintenance' 
+                            ? `<button disabled class="w-full md:w-auto bg-gray-300 text-gray-500 cursor-not-allowed px-8 py-3 rounded-md font-medium text-sm transition-all shadow-sm">
+                                Under Maintenance
+                               </button>`
+                            : `<button onclick="showPage('booking-form', ${f.facility_id})" 
                                 class="w-full md:w-auto bg-[#183e87] hover:bg-blue-900 text-white px-8 py-3 rounded-md font-medium text-sm transition-all shadow-sm">
-                            Book Now
-                        </button>
+                                Book Now
+                               </button>`
+                        }
                     </div>
                 `;
                 container.appendChild(card);
@@ -1353,15 +1421,137 @@
         let selectedFacility = null;
         let bookingData = {};
         let selectionStart = null; // { date, index, day }
+        
+        // View Reason Modal Function
+        window.viewCancelReason = function(reason) {
+            document.getElementById('view-reason-text').textContent = reason;
+            document.getElementById('view-reason-modal').classList.remove('hidden');
+        };
+
         let selectionEnd = null;   // { date, index, day }
-        let currentWeekOffset = 0;
+        let currentWeekMonday = null; // The Monday of the currently displayed week
+        let selectedMonth = null; // { year, month } for the month selector
+
+        // Get the Monday of the week containing a given date
+        function getMondayOfWeek(d) {
+            const date = new Date(d);
+            const day = date.getDay(); // 0=Sun, 1=Mon...
+            const diff = day === 0 ? -6 : 1 - day;
+            date.setDate(date.getDate() + diff);
+            date.setHours(0, 0, 0, 0);
+            return date;
+        }
+
+        // Populate year selector: current year + next 4 years (5 total)
+        function populateYearSelector() {
+            const sel = document.getElementById('year-selector');
+            if (!sel) return;
+            sel.innerHTML = '';
+            const currentYear = new Date().getFullYear();
+            for (let i = 0; i < 5; i++) {
+                const y = currentYear + i;
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                if (selectedMonth && y === selectedMonth.year) opt.selected = true;
+                sel.appendChild(opt);
+            }
+        }
+
+        // Populate month selector: month names only, based on given year
+        function populateMonthSelector(forYear) {
+            const sel = document.getElementById('month-selector');
+            if (!sel) return;
+            sel.innerHTML = '';
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            const startMonth = (forYear === currentYear) ? currentMonth : 0;
+
+            for (let m = startMonth; m <= 11; m++) {
+                const d = new Date(forYear, m, 1);
+                const opt = document.createElement('option');
+                opt.value = `${forYear}-${m}`;
+                opt.textContent = d.toLocaleDateString('en-GB', { month: 'long' });
+                if (selectedMonth && forYear === selectedMonth.year && m === selectedMonth.month) {
+                    opt.selected = true;
+                }
+                sel.appendChild(opt);
+            }
+        }
+
+        // When year selector changes — repopulate months and jump
+        function onYearSelectorChange(year) {
+            year = parseInt(year);
+            const now = new Date();
+            // If switching to current year, clamp month to at least current month
+            const newMonth = (year === now.getFullYear())
+                ? Math.max(selectedMonth ? selectedMonth.month : now.getMonth(), now.getMonth())
+                : (selectedMonth ? selectedMonth.month : 0);
+            selectedMonth = { year, month: newMonth };
+            populateMonthSelector(year);
+            // Sync month dropdown selection
+            const mSel = document.getElementById('month-selector');
+            if (mSel) mSel.value = `${year}-${newMonth}`;
+            const firstOfMonth = new Date(year, newMonth, 1);
+            currentWeekMonday = getMondayOfWeek(firstOfMonth);
+            selectionStart = null;
+            selectionEnd = null;
+            if (selectedFacility) renderAvailability(selectedFacility.facility_id);
+        }
+
+        // When the month selector changes
+        function onMonthSelectorChange(val) {
+            const [year, month] = val.split('-').map(Number);
+            selectedMonth = { year, month };
+            const firstOfMonth = new Date(year, month, 1);
+            currentWeekMonday = getMondayOfWeek(firstOfMonth);
+            selectionStart = null;
+            selectionEnd = null;
+            if (selectedFacility) renderAvailability(selectedFacility.facility_id);
+        }
 
         function changeWeek(offset) {
-            currentWeekOffset += offset;
+            const newMonday = new Date(currentWeekMonday);
+            newMonday.setDate(newMonday.getDate() + (offset * 7));
+            // Clamp: the week's Sunday must still be in the selected month, or the Monday must still be in it
+            const newSunday = new Date(newMonday);
+            newSunday.setDate(newMonday.getDate() + 6);
+            if (selectedMonth) {
+                if (offset > 0) {
+                    // Going forward: Monday of new week must start before the end of selected month
+                    const lastOfMonth = new Date(selectedMonth.year, selectedMonth.month + 1, 0);
+                    if (newMonday > lastOfMonth) return; // can't go further
+                } else {
+                    // Going backward: Sunday of new week must be on or after the 1st of selected month
+                    const firstOfMonth = new Date(selectedMonth.year, selectedMonth.month, 1);
+                    if (newSunday < firstOfMonth) return; // can't go earlier
+                }
+            }
+            currentWeekMonday = newMonday;
             if (selectedFacility) {
                 renderAvailability(selectedFacility.facility_id);
             }
         }
+
+        // Sync: when user changes the Start Date input, jump the weekly view
+        document.addEventListener('DOMContentLoaded', () => {
+            const startDateInput = document.getElementById('booking-start-date');
+            if (startDateInput) {
+                startDateInput.addEventListener('change', function() {
+                    if (!this.value || !selectedFacility) return;
+                    const picked = new Date(this.value + 'T00:00:00');
+                    currentWeekMonday = getMondayOfWeek(picked);
+                    // Update the month selector to match
+                    selectedMonth = { year: picked.getFullYear(), month: picked.getMonth() };
+                    populateYearSelector();
+                    populateMonthSelector(picked.getFullYear());
+                    selectionStart = null;
+                    selectionEnd = null;
+                    renderAvailability(selectedFacility.facility_id);
+                });
+            }
+        });
 
         function selectSlot(date, index, day, el) {
             if (!selectionStart || (selectionStart && selectionEnd)) {
@@ -1875,6 +2065,15 @@
             filtered.forEach(a => {
                 const datePosted = new Date(a.date_posted).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                 
+                let imageHtml = '';
+                if (a.image_url) {
+                    imageHtml = `
+                        <div class="w-full mt-4 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+                            <img src="${a.image_url}" alt="Announcement Image" class="w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity" onclick="window.open('${a.image_url}', '_blank')">
+                        </div>
+                    `;
+                }
+
                 const card = document.createElement('div');
                 card.className = "bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-all group";
                 card.innerHTML = `
@@ -1886,6 +2085,7 @@
                             </span>
                         </div>
                         <p class="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">${a.content}</p>
+                        ${imageHtml}
                     </div>
                 `;
                 container.appendChild(card);

@@ -268,10 +268,7 @@
                             </button>
                         </div>
                         <div class="flex px-3 sm:px-6 gap-3 sm:gap-8 overflow-x-auto border-b border-gray-100 z-10 bg-white shadow-sm relative">
-                            <button id="admin-subtab-all-bookings" class="sub-tab active py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap" onclick="setAdminBookingsTab('all')">
-                                All
-                            </button>
-                            <button id="admin-subtab-confirmed" class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap" onclick="setAdminBookingsTab('confirmed')">
+                            <button id="admin-subtab-confirmed" class="sub-tab active py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap" onclick="setAdminBookingsTab('confirmed')">
                                 Confirmed
                             </button>
                             <button id="admin-subtab-cancelled" class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap" onclick="setAdminBookingsTab('cancelled')">
@@ -547,6 +544,14 @@
                         <textarea id="ann-content" placeholder="Enter announcement details..."
                             class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-3 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all h-32 resize-none placeholder:text-gray-400"></textarea>
                     </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-bold text-primary-blue uppercase tracking-wide">Announcement Image <span class="text-gray-400 normal-case font-normal">(optional)</span></label>
+                        <input type="file" id="ann-image-file" accept="image/*" class="hidden" onchange="handleFacImageFile(this, 'ann-image-preview')">
+                        <label for="ann-image-file" id="ann-image-dropzone" class="w-full border-2 border-dashed border-gray-200 rounded-md bg-gray-50 flex flex-col items-center justify-center py-4 cursor-pointer hover:bg-gray-100 hover:border-primary-teal transition-colors">
+                            <i data-lucide="upload-cloud" class="w-5 h-5 text-gray-400 mb-1"></i>
+                            <span id="ann-image-preview" class="text-primary-teal text-xs font-medium">Click to upload image or drag and drop</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -630,9 +635,27 @@
         </div>
     </div>
 
+    <!-- View Reason Modal -->
+    <div id="view-reason-modal" class="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-lg w-[400px] overflow-hidden flex flex-col">
+            <div class="p-6">
+                <div class="flex items-center gap-3 text-yellow-500 mb-4">
+                    <i data-lucide="info" class="w-6 h-6"></i>
+                    <h3 class="font-bold text-[15px] text-gray-800">Cancellation Reason</h3>
+                </div>
+                <p class="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-md border border-gray-100" id="view-reason-text">
+                    <!-- Reason text will go here -->
+                </p>
+                <div class="mt-6 flex justify-end">
+                    <button onclick="document.getElementById('view-reason-modal').classList.add('hidden')" class="px-5 py-2 text-sm font-medium text-white bg-primary-blue hover:bg-blue-900 rounded-md transition-colors shadow-sm">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ===================== EDIT FACILITY MODAL ===================== -->
     <div id="edit-facility-modal" class="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-xl shadow-lg w-[98vw] max-w-7xl overflow-hidden flex flex-col max-h-[90vh]">
             <!-- Header -->
             <div class="p-6 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
                 <h3 class="font-bold text-primary-blue text-[15px]">Edit Facility</h3>
@@ -642,9 +665,10 @@
             </div>
             
             <!-- Body -->
-            <div class="p-6 bg-white overflow-y-auto">
+            <div class="p-4 sm:p-6 bg-white overflow-y-auto flex flex-col md:flex-row gap-6 sm:gap-8">
                 <input id="edit-fac-id" type="hidden">
-                <div class="flex flex-col gap-4">
+                <!-- Left: Form -->
+                <div class="w-full md:w-1/3 flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
                         <label class="text-[11px] font-bold text-primary-blue uppercase tracking-wide">Facility Name *</label>
                         <input id="edit-fac-name" type="text" placeholder="e.g. Futsal Court"
@@ -661,7 +685,7 @@
                         </div>
                         <div class="flex flex-col gap-2">
                             <label class="text-[11px] font-bold text-primary-blue uppercase tracking-wide">Status *</label>
-                            <select id="edit-fac-status"
+                            <select id="edit-fac-status" onchange="handleAdminStatusChange()"
                                 class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-3 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all">
                                 <option value="Available">Available</option>
                                 <option value="In Maintenance">In Maintenance</option>
@@ -687,6 +711,49 @@
                         </label>
                     </div>
                 </div>
+
+                <!-- Right: Slot Management -->
+                <div class="w-full md:w-2/3 flex flex-col gap-4 border-t md:border-t-0 md:border-l border-gray-100 md:pl-8 pt-6 md:pt-0">
+                    <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                        <div>
+                            <h4 class="text-[13px] font-bold text-primary-blue uppercase tracking-wide">Slot Management</h4>
+                            <p class="text-[10px] text-gray-400 mt-1">Click on an available slot to close it, or a red slot to open it.</p>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <select id="admin-month-selector" onchange="onAdminMonthSelectorChange(this.value)" class="bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-xs font-medium text-primary-blue outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all cursor-pointer">
+                            </select>
+                            <select id="admin-year-selector" onchange="onAdminYearSelectorChange(this.value)" class="bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-xs font-medium text-primary-blue outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all cursor-pointer">
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="admin-maintenance-banner" class="hidden mb-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-3 py-2 rounded flex items-center gap-2">
+                        <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                        <span>Facility is In Maintenance. All slots are currently blocked and user bookings are disabled.</span>
+                    </div>
+
+                    <div class="border border-gray-100 rounded-lg overflow-x-auto relative">
+                        <div id="admin-grid-overlay" class="absolute inset-0 bg-white/60 z-10 hidden flex flex-col items-center justify-center backdrop-blur-[1px]"></div>
+                        <div style="min-width:380px">
+                            <div id="admin-grid-header" class="grid grid-cols-8 divide-x divide-gray-100 text-center text-[7px] sm:text-[9px] font-bold uppercase text-white">
+                            </div>
+                            <div id="admin-grid-body" class="divide-y divide-gray-100 bg-gray-50">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3 text-[9px] sm:text-[10px] text-gray-400 font-medium">
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-white border border-gray-200 rounded-sm"></div><span>Available</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-gray-200 rounded-sm"></div><span>Passed</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-primary-teal rounded-sm"></div><span>Booked</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-red-900 rounded-sm"></div><span>Closed</span></div>
+                        </div>
+                        <div class="flex items-center gap-1.5" id="admin-weekly-nav-controls">
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 flex-shrink-0">
@@ -950,10 +1017,10 @@
         }
 
         // ---- Manage Bookings Logic ----
-        let currentAdminBookingTab = 'all';
+        const ADMIN_BOOKINGS_PER_PAGE = 8;
+        let currentAdminBookingsTab = 'confirmed';
         let allAdminBookings = [];
         let currentAdminBookingPage = 1;
-        const ADMIN_BOOKINGS_PER_PAGE = 4;
 
         window.changeAdminBookingPage = function(offset) {
             currentAdminBookingPage += offset;
@@ -961,21 +1028,22 @@
         };
 
         window.setAdminBookingsTab = function(tab) {
-            currentAdminBookingTab = tab;
+            currentAdminBookingsTab = tab;
             currentAdminBookingPage = 1;
             document.querySelectorAll('#page-manage-bookings .sub-tab').forEach(el => el.classList.remove('active'));
-            let tabId = tab === 'all' ? 'all-bookings' : tab === 'confirmed' ? 'confirmed' : 'cancelled';
-            document.getElementById('admin-subtab-' + tabId).classList.add('active');
-
-            const actionCol = document.getElementById('admin-action-col-bookings');
-            if (tab === 'cancelled') {
-                actionCol.classList.add('hidden');
-            } else {
-                actionCol.classList.remove('hidden');
+            document.getElementById(`admin-subtab-${tab}`).classList.add('active');
+            
+            const actionCol = document.getElementById('admin-booking-action-col');
+            if (actionCol) {
+                if(tab === 'cancelled') {
+                    actionCol.textContent = 'Reason';
+                } else {
+                    actionCol.textContent = 'Action';
+                }
             }
 
             renderAdminBookings();
-        }
+        };
 
         async function fetchAdminBookings() {
             const { data, error } = await db
@@ -1012,10 +1080,8 @@
                 'cancelled': 'Cancelled'
             };
             const searchVal = document.getElementById('admin-booking-search')?.value.toLowerCase() || '';
-            const targetStatus = statusMap[currentAdminBookingTab];
-            let filtered = currentAdminBookingTab === 'all' 
-                ? allAdminBookings 
-                : allAdminBookings.filter(b => b.status === targetStatus);
+            const targetStatus = statusMap[currentAdminBookingsTab];
+            let filtered = allAdminBookings.filter(b => b.status === targetStatus);
                 
             if (searchVal) {
                 filtered = filtered.filter(b => 
@@ -1026,7 +1092,7 @@
             }
 
             if (filtered.length === 0) {
-                container.innerHTML = `<tr><td colspan="${currentAdminBookingTab === 'cancelled' ? 5 : 6}" class="py-12 text-center text-sm text-gray-400 border-none">No records found.</td></tr>`;
+                container.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-sm text-gray-400 border-none">No records found.</td></tr>`;
                 return;
             }
 
@@ -1073,15 +1139,21 @@
 
                 let statusHtml = '';
                 if (g.status === 'Confirmed') statusHtml = `<span class="${baseStyle} text-primary-teal">CONFIRMED</span>`;
-                else if (g.status === 'Cancelled') statusHtml = `<div class="flex flex-col gap-1 items-start"><span class="${baseStyle} text-red-500">CANCELLED</span>${g.cancel_reason ? `<span class="text-[9px] text-gray-400 max-w-[150px] truncate" title="${g.cancel_reason}">Reason: ${g.cancel_reason}</span>` : ''}</div>`;
+                else if (g.status === 'Cancelled') statusHtml = `<div class="flex flex-col gap-1 items-start"><span class="${baseStyle} text-red-500">CANCELLED</span></div>`;
                 else if (g.status === 'Pending') statusHtml = `<span class="${baseStyle} text-yellow-500">PENDING</span>`;
                 else statusHtml = `<span class="${baseStyle} text-gray-600">${g.status?.toUpperCase() || '-'}</span>`;
 
                 let actionHtml = '';
-                let isCancelled = g.status === 'Cancelled';
 
                 if (g.status === 'Confirmed') {
-                    actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"><button onclick="adminCancelBooking('${g.invoice}')" class="border border-red-200 hover:bg-[#e53e3e] hover:text-white hover:border-[#e53e3e] text-red-500 px-3 py-1 rounded text-[10px] font-bold transition-all uppercase">CANCEL</button></td>`;
+                    actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4 flex items-center justify-center min-h-[56px] h-full"><button onclick="adminCancelBooking('${g.invoice}')" class="border border-red-200 hover:bg-[#e53e3e] hover:text-white hover:border-[#e53e3e] text-red-500 px-3 py-1 rounded text-[10px] font-bold transition-all uppercase">CANCEL</button></td>`;
+                } else if (g.status === 'Cancelled') {
+                    if (g.cancel_reason && g.cancel_reason !== 'null' && g.cancel_reason !== 'undefined' && g.cancel_reason.trim() !== '') {
+                        const safeReason = g.cancel_reason.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                        actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4 flex items-center justify-center min-h-[56px] h-full"><button onclick="viewCancelReason('${safeReason}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-[10px] font-bold transition-all uppercase shadow-sm">REASON</button></td>`;
+                    } else {
+                        actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4 flex items-center justify-center min-h-[56px] h-full"></td>`;
+                    }
                 }
 
                 const tr = document.createElement('tr');
@@ -1091,14 +1163,19 @@
                     <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs text-gray-600">${g.userEmail}</td>
                     <td class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-primary-teal text-xs">${g.facility}</td>
                     <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs text-gray-600">${eventDateDisplay}</td>
-                    <td class="px-2 sm:px-6 py-2 sm:py-4 flex items-center justify-start min-h-[56px]">${statusHtml}</td>
-                    ${!isCancelled ? actionHtml : ''}
+                    <td class="px-2 sm:px-6 py-2 sm:py-4">${statusHtml}</td>
+                    ${actionHtml}
                 `;
                 container.appendChild(tr);
             });
         }
 
         let invoiceToCancel = null;
+
+        window.viewCancelReason = function(reason) {
+            document.getElementById('view-reason-text').textContent = reason;
+            document.getElementById('view-reason-modal').classList.remove('hidden');
+        };
 
         window.adminCancelBooking = function(invoice) {
             invoiceToCancel = invoice;
@@ -1299,6 +1376,27 @@
             return null;
         }
 
+        async function uploadAnnouncementImage(file) {
+            const fileName = `announcement_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '')}`;
+            const { data, error } = await db.storage.from('announcement-images').upload(fileName, file);
+            if (error) throw error;
+            const { data: urlData } = db.storage.from('announcement-images').getPublicUrl(fileName);
+            return urlData.publicUrl;
+        }
+
+        async function resolveAnnouncementImage(fileInputId) {
+            const fileInput = document.getElementById(fileInputId);
+            if (fileInput.files && fileInput.files[0]) {
+                try {
+                    return await uploadAnnouncementImage(fileInput.files[0]);
+                } catch (e) {
+                    console.warn('Image upload failed:', e.message);
+                    return null;
+                }
+            }
+            return null;
+        }
+
         window.adminAddFacility = function() {
             document.getElementById('fac-name').value = '';
             document.getElementById('fac-type').value = 'Indoor';
@@ -1347,6 +1445,325 @@
             }
         }
 
+        // ---- Edit Facility: Slot Management State ----
+        let adminCurrentWeekMonday = null;
+        let adminSelectedMonth = null; // { year, month } 
+        
+        function getMondayOfWeekAdmin(d) {
+            const date = new Date(d);
+            const day = date.getDay();
+            const diff = day === 0 ? -6 : 1 - day;
+            date.setDate(date.getDate() + diff);
+            date.setHours(0, 0, 0, 0);
+            return date;
+        }
+
+        window.handleAdminStatusChange = function() {
+            const status = document.getElementById('edit-fac-status').value;
+            const overlay = document.getElementById('admin-grid-overlay');
+            const banner = document.getElementById('admin-maintenance-banner');
+            
+            if (status === 'In Maintenance') {
+                overlay.classList.remove('hidden');
+                banner.classList.remove('hidden');
+            } else {
+                overlay.classList.add('hidden');
+                banner.classList.add('hidden');
+            }
+        }
+
+        window.populateAdminYearSelector = function() {
+            const sel = document.getElementById('admin-year-selector');
+            if (!sel) return;
+            sel.innerHTML = '';
+            const currentYear = new Date().getFullYear();
+            for (let i = 0; i < 5; i++) {
+                const y = currentYear + i;
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                if (adminSelectedMonth && y === adminSelectedMonth.year) opt.selected = true;
+                sel.appendChild(opt);
+            }
+        }
+
+        window.populateAdminMonthSelector = function(forYear) {
+            const sel = document.getElementById('admin-month-selector');
+            if (!sel) return;
+            sel.innerHTML = '';
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            const startMonth = (forYear === currentYear) ? currentMonth : 0;
+
+            for (let m = startMonth; m <= 11; m++) {
+                const d = new Date(forYear, m, 1);
+                const opt = document.createElement('option');
+                opt.value = `${forYear}-${m}`;
+                opt.textContent = d.toLocaleDateString('en-GB', { month: 'long' });
+                if (adminSelectedMonth && forYear === adminSelectedMonth.year && m === adminSelectedMonth.month) {
+                    opt.selected = true;
+                }
+                sel.appendChild(opt);
+            }
+        }
+
+        window.onAdminYearSelectorChange = function(yearStr) {
+            const year = parseInt(yearStr);
+            const now = new Date();
+            const newMonth = (year === now.getFullYear())
+                ? Math.max(adminSelectedMonth ? adminSelectedMonth.month : now.getMonth(), now.getMonth())
+                : (adminSelectedMonth ? adminSelectedMonth.month : 0);
+            
+            adminSelectedMonth = { year, month: newMonth };
+            populateAdminMonthSelector(year);
+            document.getElementById('admin-month-selector').value = `${year}-${newMonth}`;
+            
+            const firstOfMonth = new Date(year, newMonth, 1);
+            adminCurrentWeekMonday = getMondayOfWeekAdmin(firstOfMonth);
+            const facId = document.getElementById('edit-fac-id').value;
+            if (facId) renderAdminAvailability(facId);
+        }
+
+        window.onAdminMonthSelectorChange = function(val) {
+            const [year, month] = val.split('-').map(Number);
+            adminSelectedMonth = { year, month };
+            const firstOfMonth = new Date(year, month, 1);
+            adminCurrentWeekMonday = getMondayOfWeekAdmin(firstOfMonth);
+            const facId = document.getElementById('edit-fac-id').value;
+            if (facId) renderAdminAvailability(facId);
+        }
+
+        window.changeAdminWeek = function(offset) {
+            const newMonday = new Date(adminCurrentWeekMonday);
+            newMonday.setDate(newMonday.getDate() + (offset * 7));
+            const newSunday = new Date(newMonday);
+            newSunday.setDate(newMonday.getDate() + 6);
+            if (adminSelectedMonth) {
+                if (offset > 0) {
+                    const lastOfMonth = new Date(adminSelectedMonth.year, adminSelectedMonth.month + 1, 0);
+                    if (newMonday > lastOfMonth) return;
+                } else {
+                    const firstOfMonth = new Date(adminSelectedMonth.year, adminSelectedMonth.month, 1);
+                    if (newSunday < firstOfMonth) return;
+                }
+            }
+            adminCurrentWeekMonday = newMonday;
+            const facId = document.getElementById('edit-fac-id').value;
+            if (facId) renderAdminAvailability(facId);
+        }
+
+        window.adminToggleClosure = async function(facilityId, dateStr, timeSlot, isAlreadyClosed) {
+            // Optimistic UI updates could go here, but re-rendering is safer to get the fresh ID
+            if (isAlreadyClosed) {
+                // Delete closure
+                const { error } = await db.from('Facility_Closure').delete()
+                    .eq('facility_id', facilityId)
+                    .eq('date', dateStr)
+                    .in('time_slot', [timeSlot, '07:00 am - 07:00 pm']);
+                if (error) showToast('Failed to open slot: ' + error.message, 'error');
+            } else {
+                // Insert closure
+                let adminId = parseInt(sessionStorage.getItem('admin_id') || localStorage.getItem('admin_id'), 10);
+                
+                // Fail-safe: Verify if the admin ID actually exists in the database
+                if (adminId) {
+                    const { data: adminExists } = await db.from('Admin').select('admin_id').eq('admin_id', adminId).maybeSingle();
+                    if (!adminExists) adminId = null; // Mark as invalid if it doesn't exist
+                }
+                
+                // If invalid or empty, find ANY valid admin as fallback
+                if (!adminId) {
+                    const { data: firstAdmin } = await db.from('Admin').select('admin_id').limit(1).maybeSingle();
+                    if (firstAdmin) adminId = firstAdmin.admin_id;
+                }
+
+                const payload = {
+                    facility_id: facilityId,
+                    date: dateStr,
+                    time_slot: timeSlot,
+                    reason: 'Admin Closed'
+                };
+                if (adminId) {
+                    payload.admin_id = adminId;
+                }
+
+                const { error } = await db.from('Facility_Closure').insert([payload]);
+                if (error) showToast('Failed to close slot: ' + error.message, 'error');
+            }
+            // Re-render
+            renderAdminAvailability(facilityId);
+        }
+
+        async function renderAdminAvailability(facilityId) {
+            const gridBody = document.getElementById('admin-grid-body');
+            gridBody.innerHTML = '<div class="p-8 text-center text-xs text-gray-400">Loading slots...</div>';
+
+            if (!adminCurrentWeekMonday) {
+                adminCurrentWeekMonday = getMondayOfWeekAdmin(new Date());
+            }
+            if (!adminSelectedMonth) {
+                const now = new Date();
+                adminSelectedMonth = { year: now.getFullYear(), month: now.getMonth() };
+            }
+            populateAdminYearSelector();
+            populateAdminMonthSelector(adminSelectedMonth.year);
+
+            const monday = new Date(adminCurrentWeekMonday);
+            monday.setHours(0, 0, 0, 0);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            sunday.setHours(23, 59, 59, 999);
+
+            const weekDates = [];
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(monday);
+                date.setDate(monday.getDate() + i);
+                weekDates.push(date);
+            }
+
+            // Fetch Bookings and Closures in this range
+            const { data: bookings } = await db.from('Booking')
+                .select('*')
+                .eq('facility_id', facilityId)
+                .neq('status', 'Cancelled')
+                .gte('date', monday.toISOString())
+                .lte('date', sunday.toISOString());
+
+            const { data: closures } = await db.from('Facility_Closure')
+                .select('*')
+                .eq('facility_id', facilityId)
+                .gte('date', monday.toISOString())
+                .lte('date', sunday.toISOString());
+
+            const timeSlots = [
+                '07:00 am - 08:00 am', '08:00 am - 10:00 am', '10:00 am - 12:00 pm',
+                '12:00 pm - 02:00 pm', '02:00 pm - 04:00 pm', '04:00 pm - 06:00 pm',
+                '06:00 pm - 07:00 pm', '07:00 pm - 08:00 pm', '08:00 pm - 10:00 pm',
+                '10:00 pm - 11:00 pm'
+            ];
+
+            // Render Header
+            const headerContainer = document.getElementById('admin-grid-header');
+            let headerHtml = `<div class="bg-primary-blue py-1.5 sm:py-3">Time</div>`;
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            weekDates.forEach((d, i) => {
+                headerHtml += `<div class="bg-primary-blue py-1.5 sm:py-3 flex flex-col gap-0.5">
+                    <span>${days[i]}</span>
+                    <span class="text-white/80 font-normal">${d.getDate()}/${d.getMonth() + 1}</span>
+                </div>`;
+            });
+            headerContainer.innerHTML = headerHtml;
+
+            // Render Nav
+            const navContainer = document.getElementById('admin-weekly-nav-controls');
+            if (adminSelectedMonth && navContainer) {
+                const firstOfMonth = new Date(adminSelectedMonth.year, adminSelectedMonth.month, 1);
+                const lastOfMonth = new Date(adminSelectedMonth.year, adminSelectedMonth.month + 1, 0);
+                
+                const canGoBack = monday > firstOfMonth;
+                const canGoForward = sunday < lastOfMonth;
+                const firstMondayOfMonth = getMondayOfWeekAdmin(firstOfMonth);
+                const weekNum = Math.floor((monday - firstMondayOfMonth) / (7 * 24 * 60 * 60 * 1000)) + 1;
+
+                let navHtml = '';
+                if (canGoBack) navHtml += `<button onclick="changeAdminWeek(-1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&lt;</button>`;
+                navHtml += `<button class="w-7 h-7 flex items-center justify-center bg-[#183e87] hover:bg-blue-900 transition-colors rounded text-xs text-white font-semibold shadow-sm">${weekNum}</button>`;
+                if (canGoForward) navHtml += `<button onclick="changeAdminWeek(1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&gt;</button>`;
+                navContainer.innerHTML = navHtml;
+            }
+
+            const nowMidnight = new Date();
+            nowMidnight.setHours(0, 0, 0, 0);
+
+            gridBody.innerHTML = '';
+            
+            // Helper function to check if slot is booked by user
+            function isSlotBooked(cellDateStr, cellSlot, b) {
+                const parseTimeMins = (t) => {
+                    const parts = t.trim().split(' ');
+                    let [hours, minutes] = parts[0].split(':');
+                    hours = parseInt(hours, 10);
+                    if (hours === 12) hours = 0;
+                    if (parts[1] && parts[1].toLowerCase() === 'pm') hours += 12;
+                    return hours * 60 + parseInt(minutes, 10);
+                };
+
+                const [cStart] = cellSlot.split(' - ');
+                const cellStartTime = parseTimeMins(cStart);
+                
+                const bEndDateStr = b.end_date || b.date;
+                const [bStart, bEnd] = b.time_slot.split(' - ');
+                const bookingStartTime = parseTimeMins(bStart);
+                const bookingEndTime = parseTimeMins(bEnd);
+
+                if (cellDateStr < b.date || cellDateStr > bEndDateStr) return false;
+                if (cellDateStr > b.date && cellDateStr < bEndDateStr) return true;
+
+                if (b.date === bEndDateStr) {
+                    if (cellDateStr !== b.date) return false;
+                    return cellStartTime >= bookingStartTime && cellStartTime < bookingEndTime;
+                }
+
+                if (cellDateStr === b.date) return cellStartTime >= bookingStartTime;
+                if (cellDateStr === bEndDateStr) return cellStartTime < bookingEndTime;
+                
+                return false;
+            }
+
+            timeSlots.forEach((slot) => {
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 items-center';
+                const slotShort = slot.replace(' am', 'am').replace(' pm', 'pm').replace(' - ', '-');
+                
+                let cellsHtml = `<div class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">${slotShort}</div>`;
+                
+                for (let day = 0; day < 7; day++) {
+                    const cellDate = weekDates[day];
+                    const dateStr = cellDate.toISOString().split('T')[0];
+                    
+                    let bgClass = 'bg-white hover:bg-blue-50 cursor-pointer text-blue-400';
+                    let text = 'Available';
+                    let isAlreadyClosed = false;
+                    let isAlreadyBooked = false;
+                    let isPassed = false;
+
+                    if (cellDate < nowMidnight) {
+                        isPassed = true;
+                        bgClass = 'bg-gray-100 text-gray-400 cursor-not-allowed cursor-default';
+                        text = 'Passed';
+                    } else {
+                        // Check exact Closures (including full day 07:00 am - 07:00 pm fallback support)
+                        isAlreadyClosed = closures && closures.some(c => 
+                            c.date === dateStr && (c.time_slot === slot || c.time_slot === '07:00 am - 07:00 pm')
+                        );
+                        
+                        // Check Bookings
+                        isAlreadyBooked = bookings && bookings.some(b => isSlotBooked(dateStr, slot, b));
+
+                        if (isAlreadyClosed) {
+                            bgClass = 'bg-red-900 text-white cursor-pointer hover:bg-red-800';
+                            text = 'Close';
+                        } else if (isAlreadyBooked) {
+                            bgClass = 'bg-primary-teal text-white cursor-not-allowed';
+                            text = 'Booked';
+                        }
+                    }
+
+                    if (isPassed || isAlreadyBooked) {
+                        // Cannot click passed or booked slots
+                        cellsHtml += `<div class="${bgClass} h-full flex items-center justify-center font-medium transition-colors">${text}</div>`;
+                    } else {
+                        // Click adds or removes closure
+                        cellsHtml += `<div onclick="adminToggleClosure(${facilityId}, '${dateStr}', '${slot}', ${isAlreadyClosed})" class="${bgClass} h-full flex items-center justify-center font-medium transition-colors">${text}</div>`;
+                    }
+                }
+                
+                row.innerHTML = cellsHtml;
+                gridBody.appendChild(row);
+            });
+        }
+
         window.adminEditFacility = async function(id) {
             const facility = allAdminFacilities.find(f => f.facility_id === id);
             if (!facility) { showToast('Facility not found.', 'error'); return; }
@@ -1358,13 +1775,21 @@
             document.getElementById('edit-fac-location').value = facility.location;
             document.getElementById('edit-fac-capacity').value = facility.max_capacity;
             document.getElementById('edit-fac-image-file').value = '';
+            
             const previewEl = document.getElementById('edit-fac-image-preview');
             if (facility.image_url) {
                 previewEl.textContent = 'Current image saved. Upload only to replace it.';
             } else {
                 previewEl.textContent = 'Click to upload image or drag and drop';
             }
+            
+            // Initialization for Slot Management grid
+            adminCurrentWeekMonday = null;
+            adminSelectedMonth = null;
             document.getElementById('edit-facility-modal').classList.remove('hidden');
+            handleAdminStatusChange(); // sync visual state for maintenance
+            renderAdminAvailability(id);
+            
             lucide.createIcons();
         }
 
@@ -1628,6 +2053,15 @@
                 const card = document.createElement('div');
                 card.className = 'bg-white border border-gray-100 rounded-xl p-6 flex flex-col md:flex-row items-center gap-6 hover:shadow-md transition-all group';
                 
+                let imageHtml = '';
+                if (a.image_url) {
+                    imageHtml = `
+                        <div class="w-full mt-4 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+                            <img src="${a.image_url}" alt="Announcement Image" class="w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity" onclick="window.open('${a.image_url}', '_blank')">
+                        </div>
+                    `;
+                }
+
                 card.innerHTML = `
                     <!-- Info -->
                     <div class="flex-1 flex flex-col gap-2 w-full">
@@ -1638,6 +2072,7 @@
                             </span>
                         </div>
                         <p class="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">${a.content}</p>
+                        ${imageHtml}
                     </div>
 
                     <!-- Right: Buttons -->
@@ -1665,6 +2100,8 @@
             submitBtn.classList.remove('flex', 'items-center', 'gap-2');
             document.getElementById('ann-title').value = '';
             document.getElementById('ann-content').value = '';
+            document.getElementById('ann-image-file').value = '';
+            document.getElementById('ann-image-preview').textContent = 'Click to upload image or drag and drop';
             document.getElementById('add-announcement-modal').classList.remove('hidden');
             lucide.createIcons();
         }
@@ -1683,12 +2120,19 @@
                 return;
             }
 
+            const imageUrl = await resolveAnnouncementImage('ann-image-file');
+
             if (editAnnouncementId) {
                 // UPDATE
-                const { error } = await db.from('Announcement').update({
+                const updatePayload = {
                     title,
                     content
-                }).eq('announcement_id', editAnnouncementId);
+                };
+                if (imageUrl) {
+                    updatePayload.image_url = imageUrl;
+                }
+
+                const { error } = await db.from('Announcement').update(updatePayload).eq('announcement_id', editAnnouncementId);
 
                 if (error) {
                     showToast('Failed to update announcement: ' + error.message, 'error');
@@ -1699,11 +2143,16 @@
                 }
             } else {
                 // INSERT
-                const { error } = await db.from('Announcement').insert({
+                const insertPayload = {
                     admin_id: currentAdmin.id,
                     title,
                     content
-                });
+                };
+                if (imageUrl) {
+                    insertPayload.image_url = imageUrl;
+                }
+
+                const { error } = await db.from('Announcement').insert(insertPayload);
 
                 if (error) {
                     showToast('Failed to post announcement: ' + error.message, 'error');
@@ -1725,6 +2174,12 @@
             
             document.getElementById('ann-title').value = ann.title;
             document.getElementById('ann-content').value = ann.content;
+            document.getElementById('ann-image-file').value = '';
+            if (ann.image_url) {
+                document.getElementById('ann-image-preview').textContent = 'Existing image attached (Upload to replace)';
+            } else {
+                document.getElementById('ann-image-preview').textContent = 'Click to upload image or drag and drop';
+            }
             document.getElementById('add-announcement-modal').classList.remove('hidden');
             lucide.createIcons();
         }
