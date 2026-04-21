@@ -907,8 +907,24 @@
                     <div class="flex flex-col gap-2">
                         <label class="text-[11px] font-bold text-primary-blue uppercase tracking-wide">Max Capacity
                             *</label>
-                        <input id="fac-capacity" type="number" min="1" placeholder="e.g. 30"
-                            class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-3 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                        <div class="flex items-center gap-4 mt-1">
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                                <input type="radio" name="fac-capacity-mode" value="no-limit" checked
+                                    onchange="document.getElementById('fac-capacity-wrapper').classList.add('hidden');"
+                                    class="accent-primary-teal w-4 h-4">
+                                No Limit
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                                <input type="radio" name="fac-capacity-mode" value="set-limit"
+                                    onchange="document.getElementById('fac-capacity-wrapper').classList.remove('hidden');"
+                                    class="accent-primary-teal w-4 h-4">
+                                Set Limit
+                            </label>
+                        </div>
+                        <div id="fac-capacity-wrapper" class="hidden">
+                            <input id="fac-capacity" type="number" min="1" placeholder="e.g. 30"
+                                class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-3 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                        </div>
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="text-[11px] font-bold text-primary-blue uppercase tracking-wide">Facility Image
@@ -1010,8 +1026,24 @@
                     <div class="flex flex-col gap-2">
                         <label class="text-[11px] font-bold text-primary-blue uppercase tracking-wide">Max Capacity
                             *</label>
-                        <input id="edit-fac-capacity" type="number" min="1" placeholder="e.g. 30"
-                            class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-3 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                        <div class="flex items-center gap-4 mt-1">
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                                <input type="radio" name="edit-fac-capacity-mode" value="no-limit" checked
+                                    onchange="document.getElementById('edit-fac-capacity-wrapper').classList.add('hidden');"
+                                    class="accent-primary-teal w-4 h-4">
+                                No Limit
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                                <input type="radio" name="edit-fac-capacity-mode" value="set-limit"
+                                    onchange="document.getElementById('edit-fac-capacity-wrapper').classList.remove('hidden');"
+                                    class="accent-primary-teal w-4 h-4">
+                                Set Limit
+                            </label>
+                        </div>
+                        <div id="edit-fac-capacity-wrapper" class="hidden">
+                            <input id="edit-fac-capacity" type="number" min="1" placeholder="e.g. 30"
+                                class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-3 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                        </div>
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="text-[11px] font-bold text-primary-blue uppercase tracking-wide">Facility Image
@@ -1685,7 +1717,7 @@
                             <!-- Max Capacity -->
                             <div class="flex items-center gap-2.5 text-gray-500 text-[13px]">
                                 <i data-lucide="users" class="w-4 h-4 opacity-70"></i>
-                                <span>Max. Capacity: ${f.max_capacity} person</span>
+                                <span>Max. Capacity: ${f.max_capacity != null ? f.max_capacity + ' person' : 'No Limit'}</span>
                             </div>
 
                             <!-- Status -->
@@ -1771,6 +1803,8 @@
             document.getElementById('fac-status').value = 'Available';
             document.getElementById('fac-location').value = '';
             document.getElementById('fac-capacity').value = '';
+            document.querySelector('input[name="fac-capacity-mode"][value="no-limit"]').checked = true;
+            document.getElementById('fac-capacity-wrapper').classList.add('hidden');
             document.getElementById('fac-image-file').value = '';
             document.getElementById('fac-image-preview').textContent = 'Click to upload image or drag and drop';
             document.getElementById('add-facility-modal').classList.remove('hidden');
@@ -1785,9 +1819,10 @@
             const type = document.getElementById('fac-type').value;
             const status = document.getElementById('fac-status').value;
             const location = document.getElementById('fac-location').value.trim();
-            const capacity = parseInt(document.getElementById('fac-capacity').value);
+            const capacityMode = document.querySelector('input[name="fac-capacity-mode"]:checked').value;
+            const capacity = capacityMode === 'no-limit' ? null : parseInt(document.getElementById('fac-capacity').value);
 
-            if (!name || !location || !capacity) {
+            if (!name || !location || (capacityMode === 'set-limit' && (!capacity || capacity < 1))) {
                 showToast('Please fill in all required fields.', 'warning');
                 return;
             }
@@ -2141,7 +2176,16 @@
             document.getElementById('edit-fac-type').value = facility.type;
             document.getElementById('edit-fac-status').value = facility.status;
             document.getElementById('edit-fac-location').value = facility.location;
-            document.getElementById('edit-fac-capacity').value = facility.max_capacity;
+            // Set capacity radio and input
+            if (facility.max_capacity == null) {
+                document.querySelector('input[name="edit-fac-capacity-mode"][value="no-limit"]').checked = true;
+                document.getElementById('edit-fac-capacity-wrapper').classList.add('hidden');
+                document.getElementById('edit-fac-capacity').value = '';
+            } else {
+                document.querySelector('input[name="edit-fac-capacity-mode"][value="set-limit"]').checked = true;
+                document.getElementById('edit-fac-capacity-wrapper').classList.remove('hidden');
+                document.getElementById('edit-fac-capacity').value = facility.max_capacity;
+            }
             document.getElementById('edit-fac-image-file').value = '';
 
             const previewEl = document.getElementById('edit-fac-image-preview');
@@ -2171,9 +2215,10 @@
             const type = document.getElementById('edit-fac-type').value;
             const status = document.getElementById('edit-fac-status').value;
             const location = document.getElementById('edit-fac-location').value.trim();
-            const capacity = parseInt(document.getElementById('edit-fac-capacity').value);
+            const editCapacityMode = document.querySelector('input[name="edit-fac-capacity-mode"]:checked').value;
+            const capacity = editCapacityMode === 'no-limit' ? null : parseInt(document.getElementById('edit-fac-capacity').value);
 
-            if (!name || !location || !capacity) {
+            if (!name || !location || (editCapacityMode === 'set-limit' && (!capacity || capacity < 1))) {
                 showToast('Please fill in all required fields.', 'warning');
                 return;
             }

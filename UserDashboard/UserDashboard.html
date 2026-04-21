@@ -876,7 +876,11 @@
                     });
                     
                     // Set max participants
-                    document.getElementById('booking-participants').placeholder = `Max ${facility.max_capacity}`;
+                    if (facility.max_capacity != null) {
+                        document.getElementById('booking-participants').placeholder = `Max ${facility.max_capacity}`;
+                    } else {
+                        document.getElementById('booking-participants').placeholder = 'No limit';
+                    }
 
                     renderAvailability(extra);
                 }
@@ -1025,6 +1029,11 @@
 
             const nowMidnight = new Date();
             nowMidnight.setHours(0, 0, 0, 0);
+            const todayStr = toLocalDateStr(nowMidnight);
+
+            // Current time in minutes (Malaysia Time UTC+8)
+            const nowMalaysia = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kuala_Lumpur' }));
+            const currentTimeMins = nowMalaysia.getHours() * 60 + nowMalaysia.getMinutes();
 
             timeSlots.forEach((slot, index) => {
                 const row = document.createElement('div');
@@ -1032,6 +1041,10 @@
                 const slotShort = slot.replace(' am', 'am').replace(' pm', 'pm').replace(' - ', '-');
                 let cellsHtml = `<div class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">${slotShort}</div>`;
                 
+                // Parse slot start time for today's past-slot check
+                const [slotStartStr] = slot.split(' - ');
+                const slotStartMins = parseTimeMins(slotStartStr);
+
                 for (let day = 0; day < 7; day++) {
                     const cellDate = weekDates[day];
                     const dateStr = toLocalDateStr(cellDate);
@@ -1039,7 +1052,7 @@
                     let status = 'Available';
                     let statusClass = 'text-blue-400';
 
-                    if (cellDate < nowMidnight) {
+                    if (cellDate < nowMidnight || (dateStr === todayStr && slotStartMins <= currentTimeMins)) {
                         status = 'Passed';
                         statusClass = 'bg-gray-100 text-gray-400 h-full flex items-center justify-center font-medium';
                     } else {
@@ -1068,7 +1081,7 @@
                             statusClass = 'bg-red-900 text-white h-full flex items-center justify-center';
                         } else {
                             // Check Bookings
-                            const isBooked = bookings && bookings.some(b => {
+                            const isBooked = (selectedFacility.max_capacity != null) && bookings && bookings.some(b => {
                                 return isSlotBooked(dateStr, slot, b);
                             });
 
@@ -1453,7 +1466,7 @@
                             <!-- Max Capacity -->
                             <div class="flex items-center gap-2.5 text-gray-500 text-[13px]">
                                 <i data-lucide="users" class="w-4 h-4 opacity-70"></i>
-                                <span>Max. Capacity: ${f.max_capacity} person</span>
+                                <span>Max. Capacity: ${f.max_capacity != null ? f.max_capacity + ' person' : 'No Limit'}</span>
                             </div>
 
                             <!-- Status -->
@@ -1755,9 +1768,9 @@
                 return;
             }
 
-            // Capacity Validation (After ensuring it's filled)
+            // Capacity Validation (After ensuring it's filled) — skip for no-limit facilities
             const parsedParticipants = parseInt(participants);
-            if (parsedParticipants > selectedFacility.max_capacity) {
+            if (selectedFacility.max_capacity != null && parsedParticipants > selectedFacility.max_capacity) {
                 showToast(`Number of participants exceeds facility capacity (Max: ${selectedFacility.max_capacity}).`, 'warning');
                 return;
             }
