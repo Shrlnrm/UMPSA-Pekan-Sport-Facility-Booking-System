@@ -5,6 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - UMPSA Sport Facility Booking System</title>
+    <!-- Auth Guard -->
+    <script>
+        const adminId = localStorage.getItem('admin_id') || sessionStorage.getItem('admin_id');
+        if (!adminId) {
+            window.location.href = '../LogInPage/LogInPage.html';
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -280,7 +287,7 @@
                         <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0"></i>
                         <span class="text-sm font-medium">Manage Facilities</span>
                     </a>
-                    <a href="#" data-nav="manage-report"
+                    <a href="#" id="sidebar-manage-report"
                         class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden"
                         onclick="showPage('manage-report', this)">
                         <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
@@ -363,7 +370,7 @@
                             <div class="p-3 sm:p-6 flex-1 flex flex-col">
                                 <!-- Recent Reports -->
                                 <h3 class="text-sm font-semibold text-primary-blue mb-4">Pending Facility Reports</h3>
-                                <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white mb-6 sm:mb-8">
+                                <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white mb-2">
                                     <table class="w-full text-xs sm:text-sm text-left">
                                         <thead
                                             class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100">
@@ -383,6 +390,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <div id="dashboard-reports-pagination" class="flex items-center justify-center gap-2 mb-6 sm:mb-8 hidden"></div>
 
                                 <!-- Recent Bookings -->
                                 <h3 class="text-sm font-semibold text-primary-blue mb-4">Recent Bookings</h3>
@@ -407,6 +415,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <div id="dashboard-bookings-pagination" class="flex items-center justify-center gap-2 mt-4 hidden"></div>
                             </div>
                         </div>
                     </div>
@@ -509,21 +518,26 @@
                                     Manage Facilities
                                 </button>
                             </div>
-                            <div class="flex px-6 gap-8 border-b border-gray-100 z-10 bg-white shadow-sm relative">
+                            <div class="flex px-6 gap-8 border-b border-gray-100 z-10 bg-white shadow-sm relative overflow-x-auto">
                                 <button id="admin-subtab-all-facilities"
-                                    class="sub-tab active py-3 text-sm font-medium text-gray-500"
+                                    class="sub-tab active py-3 text-sm font-medium text-gray-500 whitespace-nowrap"
                                     onclick="setAdminFacilitiesTab('all')">
                                     All Facilities
                                 </button>
                                 <button id="admin-subtab-available-fac"
-                                    class="sub-tab py-3 text-sm font-medium text-gray-500"
+                                    class="sub-tab py-3 text-sm font-medium text-gray-500 whitespace-nowrap"
                                     onclick="setAdminFacilitiesTab('Available')">
                                     Available
                                 </button>
                                 <button id="admin-subtab-maintenance-fac"
-                                    class="sub-tab py-3 text-sm font-medium text-gray-500"
+                                    class="sub-tab py-3 text-sm font-medium text-gray-500 whitespace-nowrap"
                                     onclick="setAdminFacilitiesTab('In Maintenance')">
                                     In Maintenance
+                                </button>
+                                <button id="admin-subtab-generate-fac-rep"
+                                    class="sub-tab py-3 text-sm font-medium text-gray-500 whitespace-nowrap"
+                                    onclick="setAdminFacilitiesTab('Generate')">
+                                    Facility Report
                                 </button>
                             </div>
                             <div
@@ -548,89 +562,7 @@
                                     id="admin-facility-pagination">
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- ===================== PAGE: MANAGE REPORT ===================== -->
-                    <div id="page-manage-report" class="p-3 sm:p-6 hidden">
-                        <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
-                            <i data-lucide="home" class="w-3.5 h-3.5"></i>
-                            <a href="../index.html" class="hover:text-[#009ca6] transition-colors">Home</a>
-                            <span>/</span>
-                            <span class="text-primary-blue font-medium">Manage Report</span>
-                        </div>
-                        <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
-                            <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden shadow-sm z-10">
-                                <button
-                                    class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl cursor-default">
-                                    Manage Report
-                                </button>
-                            </div>
-                            <div class="flex px-6 gap-8 border-b border-gray-100 z-10 bg-white shadow-sm relative">
-                                <button id="admin-subtab-pending-rep"
-                                    class="sub-tab active py-3 text-sm font-medium text-gray-500 flex items-center gap-1.5"
-                                    onclick="setAdminReportsTab('Pending')">
-                                    Pending Reports
-                                    <span id="badge-tab-pending-rep" class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
-                                </button>
-                                <button id="admin-subtab-resolved-rep"
-                                    class="sub-tab py-3 text-sm font-medium text-gray-500"
-                                    onclick="setAdminReportsTab('Resolved')">
-                                    Resolved Reports
-                                </button>
-                                <button id="admin-subtab-generate-rep"
-                                    class="sub-tab py-3 text-sm font-medium text-gray-500"
-                                    onclick="setAdminReportsTab('Generate')">
-                                    Generate Report
-                                </button>
-                            </div>
-                            <div
-                                class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0 relative bg-white z-0">
-                                <div class="relative w-full">
-                                    <div
-                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                        <i data-lucide="search" class="w-4 h-4"></i>
-                                    </div>
-                                    <input id="admin-report-search" type="text"
-                                        placeholder="Search report ID, facility, or description..."
-                                        oninput="renderAdminReports()"
-                                        class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
-                                </div>
-                            </div>
-                            <div class="p-3 sm:p-6 flex-1 flex flex-col bg-gray-50/30">
-                                <div
-                                    class="border border-gray-100 rounded-lg overflow-x-auto bg-white relative shadow-sm">
-                                    <table class="w-full text-xs sm:text-sm text-left">
-                                        <thead
-                                            class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-gray-50/50">
-                                            <tr>
-                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Report ID
-                                                </th>
-                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Facility
-                                                </th>
-                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Description
-                                                </th>
-                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Date</th>
-                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Proof</th>
-                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Status</th>
-                                                <th id="admin-action-col-reports"
-                                                    class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="admin-report-list-rows" class="divide-y divide-gray-50">
-                                            <tr>
-                                                <td colspan="6"
-                                                    class="py-12 text-center text-sm text-gray-400 border-none">
-                                                    Loading...</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!-- Pagination -->
-                                <div class="mt-4 flex items-center justify-end gap-2 hidden"
-                                    id="admin-report-pagination"></div>
-                            </div>
-
+                            
                             <!-- Generate Report Panel -->
                             <div id="generate-report-panel" class="p-3 sm:p-6 flex-1 flex-col bg-gray-50/30 hidden">
                                 <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
@@ -694,6 +626,85 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== PAGE: MANAGE REPORT ===================== -->
+                    <div id="page-manage-report" class="p-3 sm:p-6 hidden">
+                        <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                            <a href="../index.html" class="hover:text-[#009ca6] transition-colors">Home</a>
+                            <span>/</span>
+                            <span class="text-primary-blue font-medium">Manage Report</span>
+                        </div>
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
+                            <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden shadow-sm z-10">
+                                <button
+                                    class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl cursor-default">
+                                    Manage Report
+                                </button>
+                            </div>
+                            <div class="flex px-6 gap-8 border-b border-gray-100 z-10 bg-white shadow-sm relative">
+                                <button id="admin-subtab-pending-rep"
+                                    class="sub-tab active py-3 text-sm font-medium text-gray-500 flex items-center gap-1.5"
+                                    onclick="setAdminReportsTab('Pending')">
+                                    Pending Reports
+                                    <span id="badge-tab-pending-rep" class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
+                                </button>
+                                <button id="admin-subtab-resolved-rep"
+                                    class="sub-tab py-3 text-sm font-medium text-gray-500"
+                                    onclick="setAdminReportsTab('Resolved')">
+                                    Resolved Reports
+                                </button>
+                            </div>
+                            <div
+                                class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0 relative bg-white z-0">
+                                <div class="relative w-full">
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                    </div>
+                                    <input id="admin-report-search" type="text"
+                                        placeholder="Search report ID, facility, or description..."
+                                        oninput="renderAdminReports()"
+                                        class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                                </div>
+                            </div>
+                            <div class="p-3 sm:p-6 flex-1 flex flex-col bg-gray-50/30">
+                                <div
+                                    class="border border-gray-100 rounded-lg overflow-x-auto bg-white relative shadow-sm">
+                                    <table class="w-full text-xs sm:text-sm text-left">
+                                        <thead
+                                            class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-gray-50/50">
+                                            <tr>
+                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Report ID
+                                                </th>
+                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Facility
+                                                </th>
+                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Description
+                                                </th>
+                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Date</th>
+                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Proof</th>
+                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Status</th>
+                                                <th id="admin-action-col-reports"
+                                                    class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="admin-report-list-rows" class="divide-y divide-gray-50">
+                                            <tr>
+                                                <td colspan="6"
+                                                    class="py-12 text-center text-sm text-gray-400 border-none">
+                                                    Loading...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Pagination -->
+                                <div class="mt-4 flex items-center justify-end gap-2 hidden"
+                                    id="admin-report-pagination"></div>
+                            </div>
+
+
                         </div>
                     </div>
 
@@ -1144,6 +1155,22 @@
             </div>
         </div>
     </div>
+    <!-- Reusable Confirm Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[99] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="p-6 text-center">
+                <div id="confirm-modal-icon-wrap" class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i id="confirm-modal-icon" data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+                </div>
+                <h3 id="confirm-modal-title" class="text-xl font-bold text-gray-900 mb-2">Are you sure?</h3>
+                <p id="confirm-modal-text" class="text-sm text-gray-500 mb-6">This action cannot be undone.</p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="closeConfirmModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancel</button>
+                    <button onclick="executeConfirmAction()" id="confirm-modal-btn" class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <script>
@@ -1290,6 +1317,22 @@
             }
         }
 
+        // ---- Dashboard Summary Pagination State ----
+        const DASHBOARD_PER_PAGE = 5;
+        let allDashboardReports = [];
+        let currentDashboardReportPage = 1;
+        let allDashboardBookings = [];
+        let currentDashboardBookingPage = 1;
+
+        window.changeDashboardReportPage = function(delta) {
+            currentDashboardReportPage += delta;
+            renderRecentReports();
+        };
+        window.changeDashboardBookingPage = function(delta) {
+            currentDashboardBookingPage += delta;
+            renderRecentBookings();
+        };
+
         // ---- Fetch Recent Reports ----
         async function fetchRecentReports() {
             const { data, error } = await db
@@ -1299,26 +1342,37 @@
                     Facility ( name )
                 `)
                 .eq('status', 'Pending')
-                .order('created_at', { ascending: false })
-                .limit(5);
+                .order('created_at', { ascending: false });
 
             if (error) {
                 console.error('Error fetching recent reports:', error);
                 return;
             }
-            renderRecentReports(data);
+            allDashboardReports = data || [];
+            currentDashboardReportPage = 1;
+            renderRecentReports();
         }
 
-        function renderRecentReports(reports) {
+        function renderRecentReports() {
             const container = document.getElementById('recent-reports-rows');
             container.innerHTML = '';
 
-            if (!reports || reports.length === 0) {
-                container.innerHTML = `<tr><td colspan="3" class="py-12 text-center text-sm text-gray-400 border-none">No pending reports.</td></tr>`;
+            if (!allDashboardReports || allDashboardReports.length === 0) {
+                container.innerHTML = `<tr><td colspan="4" class="py-12 text-center text-sm text-gray-400 border-none">No pending reports.</td></tr>`;
+                renderPaginationControls('dashboard-reports-pagination', 1, 1, 'changeDashboardReportPage');
                 return;
             }
 
-            reports.forEach(r => {
+            const totalPages = Math.ceil(allDashboardReports.length / DASHBOARD_PER_PAGE) || 1;
+            if (currentDashboardReportPage < 1) currentDashboardReportPage = 1;
+            if (currentDashboardReportPage > totalPages) currentDashboardReportPage = totalPages;
+
+            const startIdx = (currentDashboardReportPage - 1) * DASHBOARD_PER_PAGE;
+            const paginated = allDashboardReports.slice(startIdx, startIdx + DASHBOARD_PER_PAGE);
+
+            renderPaginationControls('dashboard-reports-pagination', currentDashboardReportPage, totalPages, 'changeDashboardReportPage');
+
+            paginated.forEach(r => {
                 const reportIdFmt = 'REP-' + r.report_id.toString().padStart(3, '0');
                 const facilityName = r.Facility ? r.Facility.name : 'Unknown';
                 const reportDate = new Date(r.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -1358,27 +1412,38 @@
                     User ( email ),
                     Facility ( name )
                 `)
-                .order('created_at', { ascending: false })
-                .limit(5);
+                .order('created_at', { ascending: false });
 
             if (error) {
                 console.error('Error fetching recent bookings:', error);
                 return;
             }
 
-            renderRecentBookings(data);
+            allDashboardBookings = data || [];
+            currentDashboardBookingPage = 1;
+            renderRecentBookings();
         }
 
-        function renderRecentBookings(bookings) {
+        function renderRecentBookings() {
             const container = document.getElementById('recent-bookings-rows');
             container.innerHTML = '';
 
-            if (!bookings || bookings.length === 0) {
+            if (!allDashboardBookings || allDashboardBookings.length === 0) {
                 container.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-sm text-gray-400 border-none">No recent bookings.</td></tr>`;
+                renderPaginationControls('dashboard-bookings-pagination', 1, 1, 'changeDashboardBookingPage');
                 return;
             }
 
-            bookings.forEach(b => {
+            const totalPages = Math.ceil(allDashboardBookings.length / DASHBOARD_PER_PAGE) || 1;
+            if (currentDashboardBookingPage < 1) currentDashboardBookingPage = 1;
+            if (currentDashboardBookingPage > totalPages) currentDashboardBookingPage = totalPages;
+
+            const startIdx = (currentDashboardBookingPage - 1) * DASHBOARD_PER_PAGE;
+            const paginated = allDashboardBookings.slice(startIdx, startIdx + DASHBOARD_PER_PAGE);
+
+            renderPaginationControls('dashboard-bookings-pagination', currentDashboardBookingPage, totalPages, 'changeDashboardBookingPage');
+
+            paginated.forEach(b => {
                 const userEmail = b.User ? b.User.email : 'Unknown';
                 const facilityName = b.Facility ? b.Facility.name : 'Unknown';
                 const bookingDate = new Date(b.date).toLocaleDateString();
@@ -1409,7 +1474,7 @@
         }
 
         // ---- Manage Bookings Logic ----
-        const ADMIN_BOOKINGS_PER_PAGE = 8;
+        const ADMIN_BOOKINGS_PER_PAGE = 5;
         let currentAdminBookingsTab = 'confirmed';
         let allAdminBookings = [];
         let currentAdminBookingPage = 1;
@@ -1626,9 +1691,59 @@
             currentAdminFacilityTab = tab;
             currentAdminFacilityPage = 1;
             document.querySelectorAll('#page-manage-facilities .sub-tab').forEach(el => el.classList.remove('active'));
-            let tabId = tab === 'all' ? 'all-facilities' : tab === 'Available' ? 'available-fac' : 'maintenance-fac';
+            
+            let tabId = tab === 'all' ? 'all-facilities' : 
+                        tab === 'Available' ? 'available-fac' : 
+                        tab === 'In Maintenance' ? 'maintenance-fac' : 'generate-fac-rep';
             document.getElementById('admin-subtab-' + tabId).classList.add('active');
+            
+            const facilityTableArea = document.querySelector('#page-manage-facilities .p-3.sm\\:p-6.flex-1.flex.flex-col.bg-gray-50\\/30');
+            const searchBar = document.querySelector('#page-manage-facilities .px-3.sm\\:px-6.py-3.sm\\:py-4.border-b');
+            const generatePanel = document.getElementById('generate-report-panel');
+            
+            if (tab === 'Generate') {
+                if (facilityTableArea) facilityTableArea.style.display = 'none';
+                if (searchBar) searchBar.style.display = 'none';
+                if (generatePanel) {
+                    generatePanel.classList.remove('hidden');
+                    generatePanel.style.display = 'flex';
+                }
+                lucide.createIcons();
+                return;
+            } else {
+                if (facilityTableArea) facilityTableArea.style.display = '';
+                if (searchBar) searchBar.style.display = '';
+                if (generatePanel) {
+                    generatePanel.classList.add('hidden');
+                    generatePanel.style.display = '';
+                }
+            }
+
             renderAdminFacilities();
+        }
+
+        function isCurrentTimeInSlot(slotStr) {
+            if (!slotStr) return false;
+            const now = new Date();
+            const currTotalMins = now.getHours() * 60 + now.getMinutes();
+        
+            const parts = slotStr.split('-');
+            if (parts.length !== 2) return false;
+            
+            function parseTime(tStr) {
+                tStr = tStr.trim().toLowerCase();
+                let [time, period] = tStr.split(' ');
+                if (!time || !period) return 0;
+                let [h, m] = time.split(':').map(Number);
+                if (period === 'pm' && h !== 12) h += 12;
+                if (period === 'am' && h === 12) h = 0;
+                return h * 60 + m;
+            }
+        
+            const startMins = parseTime(parts[0]);
+            const endMins = parseTime(parts[1]);
+        
+            return currTotalMins >= startMins && currTotalMins <= endMins;
         }
 
         window.fetchAdminFacilities = async function () {
@@ -1637,7 +1752,28 @@
                 console.error('Error fetching admin facilities:', error);
                 return;
             }
-            allAdminFacilities = data;
+
+            const today = new Date().toISOString().split('T')[0];
+            const { data: bookings } = await db
+                .from('Booking')
+                .select('facility_id, num_of_participant, time_slot')
+                .eq('status', 'Confirmed')
+                .gte('end_date', today)
+                .lte('date', today);
+
+            const activeCounts = {};
+            if (bookings) {
+                bookings.forEach(b => {
+                    if (isCurrentTimeInSlot(b.time_slot)) {
+                        activeCounts[b.facility_id] = (activeCounts[b.facility_id] || 0) + (b.num_of_participant || 0);
+                    }
+                });
+            }
+
+            allAdminFacilities = data.map(f => ({
+                ...f,
+                current_capacity: activeCounts[f.facility_id] || 0
+            }));
             renderAdminFacilities();
         }
 
@@ -1720,6 +1856,12 @@
                                 <span>Max. Capacity: ${f.max_capacity != null ? f.max_capacity + ' person' : 'No Limit'}</span>
                             </div>
 
+                            <!-- Currently Using -->
+                            <div class="flex items-center gap-2.5 text-gray-500 text-[13px]">
+                                <i data-lucide="activity" class="w-4 h-4 opacity-70"></i>
+                                <span>Currently Using: ${f.current_capacity} person</span>
+                            </div>
+
                             <!-- Status -->
                             <div class="flex items-center gap-2.5 text-[13px] ${status.color} font-medium mt-1">
                                 <i data-lucide="${status.icon}" class="w-4 h-4"></i>
@@ -1748,8 +1890,22 @@
         // ---- Image Upload Helper ----
         window.handleFacImageFile = function (input, previewId) {
             const preview = document.getElementById(previewId);
+            const dropzone = preview.closest('label');
+            
+            // Remove existing thumbnail if any
+            const existingThumb = dropzone.querySelector('.img-preview-thumb');
+            if (existingThumb) existingThumb.remove();
+            
             if (input.files && input.files[0]) {
-                preview.textContent = input.files[0].name;
+                const file = input.files[0];
+                preview.textContent = file.name;
+                
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.className = 'img-preview-thumb w-full h-32 object-cover rounded-md mt-3 border border-gray-200 shadow-sm';
+                    dropzone.appendChild(img);
+                }
             } else {
                 preview.textContent = 'Click to upload image or drag and drop';
             }
@@ -2248,24 +2404,30 @@
             }
         }
 
-        window.adminDeleteFacility = async function (id, name) {
-            if (!confirm(`Are you sure you want to delete facility: ${name}?`)) return;
+        window.adminDeleteFacility = function (id, name) {
+            showConfirmModal(
+                'Delete Facility',
+                `Are you sure you want to delete facility: ${name}?`,
+                'Delete',
+                'bg-red-500 hover:bg-red-600',
+                async () => {
+                    const { error } = await db.from('Facility').delete().eq('facility_id', id);
 
-            const { error } = await db.from('Facility').delete().eq('facility_id', id);
-
-            if (error) {
-                showToast('Failed to delete facility: ' + error.message, 'error');
-            } else {
-                showToast('Facility deleted successfully.', 'success');
-                fetchAdminFacilities();
-            }
+                    if (error) {
+                        showToast('Failed to delete facility: ' + error.message, 'error');
+                    } else {
+                        showToast('Facility deleted successfully.', 'success');
+                        fetchAdminFacilities();
+                    }
+                }
+            );
         }
 
         // ---- Manage Reports Logic ----
         let currentAdminReportTab = 'Pending';
         let allAdminReports = [];
         let currentAdminReportPage = 1;
-        const ADMIN_REPORTS_PER_PAGE = 4;
+        const ADMIN_REPORTS_PER_PAGE = 5;
 
         window.changeAdminReportPage = function (offset) {
             currentAdminReportPage += offset;
@@ -2278,30 +2440,15 @@
             document.querySelectorAll('#page-manage-report .sub-tab').forEach(el => el.classList.remove('active'));
 
             // Determine which sub-tab button to activate
-            let tabId;
-            if (tab === 'Pending') tabId = 'pending-rep';
-            else if (tab === 'Resolved') tabId = 'resolved-rep';
-            else tabId = 'generate-rep';
+            let tabId = tab === 'Pending' ? 'pending-rep' : 'resolved-rep';
             document.getElementById('admin-subtab-' + tabId).classList.add('active');
 
-            // Toggle report table vs generate panel
+            // Force table and search to be visible
             const reportTableArea = document.querySelector('#page-manage-report .p-3.sm\\:p-6.flex-1.flex.flex-col.bg-gray-50\\/30');
             const searchBar = document.querySelector('#page-manage-report .px-3.sm\\:px-6.py-3.sm\\:py-4.border-b');
-            const generatePanel = document.getElementById('generate-report-panel');
-
-            if (tab === 'Generate') {
-                if (reportTableArea) reportTableArea.style.display = 'none';
-                if (searchBar) searchBar.style.display = 'none';
-                generatePanel.classList.remove('hidden');
-                generatePanel.style.display = 'flex';
-                lucide.createIcons();
-                return;
-            } else {
-                if (reportTableArea) reportTableArea.style.display = '';
-                if (searchBar) searchBar.style.display = '';
-                generatePanel.classList.add('hidden');
-                generatePanel.style.display = '';
-            }
+            
+            if (reportTableArea) reportTableArea.style.display = '';
+            if (searchBar) searchBar.style.display = '';
 
             // Mark pending reports as seen when viewing pending tab
             if (tab === 'Pending') {
@@ -2464,21 +2611,28 @@
             lucide.createIcons();
         }
 
-        window.adminResolveFullReport = async function (reportId) {
-            if (!confirm('Mark this report as resolved?')) return;
+        window.adminResolveFullReport = function (reportId) {
+            showConfirmModal(
+                'Resolve Report',
+                'Mark this report as resolved?',
+                'Resolve',
+                'bg-primary-blue hover:bg-blue-900',
+                async () => {
+                    const { error } = await db
+                        .from('Report')
+                        .update({ status: 'Resolved' })
+                        .eq('report_id', reportId);
 
-            const { error } = await db
-                .from('Report')
-                .update({ status: 'Resolved' })
-                .eq('report_id', reportId);
-
-            if (error) {
-                showToast('Failed to resolve report: ' + error.message, 'error');
-            } else {
-                showToast('Report marked as resolved.', 'success');
-                fetchAdminAllReports();
-                fetchRecentReports();
-            }
+                    if (error) {
+                        showToast('Failed to resolve report: ' + error.message, 'error');
+                    } else {
+                        showToast('Report marked as resolved.', 'success');
+                        fetchAdminAllReports();
+                        fetchRecentReports();
+                    }
+                },
+                'help-circle', 'bg-yellow-100', 'text-yellow-500'
+            );
         }
 
         // ---- Generate Report Chart Logic ----
@@ -2696,7 +2850,7 @@
         let allAdminAnnouncements = [];
         let editAnnouncementId = null;
         let currentAdminAnnouncementPage = 1;
-        const ADMIN_ANNOUNCEMENTS_PER_PAGE = 4;
+        const ADMIN_ANNOUNCEMENTS_PER_PAGE = 5;
 
         window.changeAdminAnnouncementPage = function (offset) {
             currentAdminAnnouncementPage += offset;
@@ -2890,16 +3044,65 @@
             lucide.createIcons();
         }
 
-        window.adminDeleteAnnouncement = async function (id) {
-            if (!confirm('Are you sure you want to delete this announcement?')) return;
+        window.adminDeleteAnnouncement = function (id) {
+            showConfirmModal(
+                'Delete Announcement',
+                'Are you sure you want to delete this announcement?',
+                'Delete',
+                'bg-red-500 hover:bg-red-600',
+                async () => {
+                    const { error } = await db.from('Announcement').delete().eq('announcement_id', id);
 
-            const { error } = await db.from('Announcement').delete().eq('announcement_id', id);
+                    if (error) {
+                        showToast('Failed to delete announcement: ' + error.message, 'error');
+                    } else {
+                        showToast('Announcement deleted successfully.', 'success');
+                        fetchAdminAnnouncements();
+                    }
+                }
+            );
+        }
 
-            if (error) {
-                showToast('Failed to delete announcement: ' + error.message, 'error');
-            } else {
-                showToast('Announcement deleted successfully.', 'success');
-            }
+        // ---- Confirm Modal Logic ----
+        let confirmActionCallback = null;
+
+        window.showConfirmModal = function(title, text, confirmBtnText, confirmBtnColor, callback, iconName, iconBg, iconColor) {
+            document.getElementById('confirm-modal-title').textContent = title;
+            document.getElementById('confirm-modal-text').textContent = text;
+            
+            const btn = document.getElementById('confirm-modal-btn');
+            btn.textContent = confirmBtnText;
+            btn.className = `flex-1 px-4 py-2 text-white rounded-lg font-medium transition-colors ${confirmBtnColor}`;
+
+            // Update icon dynamically (Lucide replaces <i> with <svg>, so rebuild innerHTML each time)
+            const iconWrap = document.getElementById('confirm-modal-icon-wrap');
+            iconWrap.className = `w-16 h-16 ${iconBg || 'bg-red-100'} rounded-full flex items-center justify-center mx-auto mb-4`;
+            iconWrap.innerHTML = `<i data-lucide="${iconName || 'alert-triangle'}" class="w-8 h-8 ${iconColor || 'text-red-500'}"></i>`;
+            lucide.createIcons();
+            
+            confirmActionCallback = callback;
+            
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.children[0].classList.remove('scale-95');
+            }, 10);
+        }
+
+        window.closeConfirmModal = function() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('opacity-0');
+            modal.children[0].classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                confirmActionCallback = null;
+            }, 300);
+        }
+
+        window.executeConfirmAction = function() {
+            if (confirmActionCallback) confirmActionCallback();
+            closeConfirmModal();
         }
 
         // ---- Init ----

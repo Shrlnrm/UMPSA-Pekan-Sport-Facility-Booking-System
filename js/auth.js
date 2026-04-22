@@ -27,6 +27,36 @@ function showSuccess(msgId, text) {
     el.classList.remove('hidden');
 }
 
+// ─── UI Helpers ────────────────────────────────────────────────────────────
+function togglePasswordVisibility(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (!input || !icon) return;
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+    } else {
+        input.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+    }
+    lucide.createIcons();
+}
+
+function setButtonLoading(btnId, isLoading, defaultText = '') {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    if (isLoading) {
+        btn.disabled = true;
+        btn.classList.add('opacity-75', 'cursor-not-allowed');
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin inline-block mr-2"></i> Processing...`;
+        lucide.createIcons();
+    } else {
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        btn.innerHTML = defaultText;
+    }
+}
+
 // ─── REGISTER ──────────────────────────────────────────────────────────────
 async function handleRegister() {
     const email    = document.getElementById('registerEmail').value.trim();
@@ -35,30 +65,38 @@ async function handleRegister() {
     const role     = document.getElementById('registerRole').value;
     const errorEl  = 'registerError';
     const successEl = 'registerSuccess';
+    const btnId    = 'registerBtn';
 
     hideMessage(errorEl);
     hideMessage(successEl);
+    
+    const setError = (msg) => {
+        setButtonLoading(btnId, false, 'Register');
+        return showError(errorEl, msg);
+    };
 
     if (!email || !pass || !confirm || !role) {
-        return showError(errorEl, 'All fields are required.');
+        return setError('All fields are required.');
     }
     if (role === 'student') {
         if (!email.endsWith('@adab.umpsa.edu.my')) {
-            return showError(errorEl, 'Student registration requires an @adab.umpsa.edu.my email address.');
+            return setError('Student registration requires an @adab.umpsa.edu.my email address.');
         }
     } else if (role === 'staff') {
         if (!email.endsWith('@umpsa.edu.my') || email.endsWith('@adab.umpsa.edu.my')) {
-            return showError(errorEl, 'Staff registration requires an @umpsa.edu.my email address.');
+            return setError('Staff registration requires an @umpsa.edu.my email address.');
         }
     } else {
-        return showError(errorEl, 'Invalid role selected.');
+        return setError('Invalid role selected.');
     }
     if (pass.length < 8) {
-        return showError(errorEl, 'Password must be at least 8 characters.');
+        return setError('Password must be at least 8 characters.');
     }
     if (pass !== confirm) {
-        return showError(errorEl, 'Passwords do not match.');
+        return setError('Passwords do not match.');
     }
+
+    setButtonLoading(btnId, true);
 
     // Check if email already registered
     const { data: existing, error: checkError } = await db
@@ -67,8 +105,8 @@ async function handleRegister() {
         .eq('email', email)
         .maybeSingle();
 
-    if (checkError) return showError(errorEl, 'Error checking email. Please try again.');
-    if (existing)  return showError(errorEl, 'This email is already registered.');
+    if (checkError) return setError('Error checking email. Please try again.');
+    if (existing)  return setError('This email is already registered.');
 
     const hashedPass = await hashPassword(pass);
 
@@ -76,10 +114,19 @@ async function handleRegister() {
         .from('User')
         .insert([{ email, password: hashedPass, role }]);
 
-    if (insertError) return showError(errorEl, 'Registration failed. Please try again.');
+    if (insertError) return setError('Registration failed. Please try again.');
 
     showSuccess(successEl, 'Account created successfully!');
-    setTimeout(() => { window.location.href = '../LogInPage/LogInPage.html'; }, 2000);
+    setButtonLoading(btnId, false, 'Redirecting...');
+    setTimeout(() => { 
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectFacility = urlParams.get('redirect_facility');
+        if (redirectFacility) {
+            window.location.href = `../LogInPage/LogInPage.html?redirect_facility=${redirectFacility}`;
+        } else {
+            window.location.href = '../LogInPage/LogInPage.html'; 
+        }
+    }, 2000);
 }
 
 // ─── LOGIN ─────────────────────────────────────────────────────────────────
@@ -88,14 +135,22 @@ async function handleLogin() {
     const pass    = document.getElementById('loginPassword').value;
     const role    = document.getElementById('roleSelect').value;
     const errorEl = 'loginError';
+    const btnId   = 'loginBtn';
     const rememberMe = document.getElementById('rememberMe')?.checked || false;
     const store = rememberMe ? localStorage : sessionStorage;
 
     hideMessage(errorEl);
 
+    const setError = (msg) => {
+        setButtonLoading(btnId, false, 'Login');
+        return showError(errorEl, msg);
+    };
+
     if (!email || !pass || !role) {
-        return showError(errorEl, 'All fields are required.');
+        return setError('All fields are required.');
     }
+
+    setButtonLoading(btnId, true);
 
     const hashedPass = await hashPassword(pass);
 
@@ -110,13 +165,14 @@ async function handleLogin() {
             .maybeSingle();
 
         if (error || !admin) {
-            return showError(errorEl, 'Invalid admin credentials.');
+            return setError('Invalid admin credentials.');
         }
 
         store.setItem('admin_id',    admin.admin_id);
         store.setItem('admin_email', admin.email);
         store.setItem('admin_role',  admin.role);
 
+        setButtonLoading(btnId, false, 'Redirecting...');
         window.location.href = '../AdminDashboard/AdminDashboard.html';
         return;
     }
@@ -131,14 +187,24 @@ async function handleLogin() {
         .maybeSingle();
 
     if (error || !user) {
-        return showError(errorEl, 'Invalid email, password, or role.');
+        return setError('Invalid email, password, or role.');
     }
 
     store.setItem('user_id',    user.user_id);
     store.setItem('user_email', user.email);
     store.setItem('user_role',  user.role);
 
-    window.location.href = '../UserDashboard/UserDashboard.html';
+    setButtonLoading(btnId, false, 'Redirecting...');
+    
+    // Check if there's a redirect_facility in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectFacility = urlParams.get('redirect_facility');
+    
+    if (redirectFacility) {
+        window.location.href = `../UserDashboard/UserDashboard.html?open_booking=${redirectFacility}`;
+    } else {
+        window.location.href = '../UserDashboard/UserDashboard.html';
+    }
 }
 
 // ─── FORGOT PASSWORD (send email link) ───────────────────────────────────────
@@ -146,11 +212,19 @@ async function handleForgotPassword() {
     const email   = document.getElementById('forgotEmail').value.trim();
     const errorEl = 'forgotError';
     const successEl = 'forgotSuccess';
+    const btnId   = 'forgotBtn';
 
     hideMessage(errorEl);
     hideMessage(successEl);
 
-    if (!email) return showError(errorEl, 'Please enter your email address.');
+    const setError = (msg) => {
+        setButtonLoading(btnId, false, 'Send Reset Link');
+        return showError(errorEl, msg);
+    };
+
+    if (!email) return setError('Please enter your email address.');
+
+    setButtonLoading(btnId, true);
 
     // 1. Check if user exists in User or Admin table
     let table = 'User';
@@ -161,7 +235,7 @@ async function handleForgotPassword() {
         table = 'Admin';
         const { data: admin, adminError } = await db.from('Admin').select('admin_id').eq('email', email).maybeSingle();
         if (adminError || !admin) {
-            return showError(errorEl, 'No account found with that email address.');
+            return setError('No account found with that email address.');
         }
         account = admin;
     }
@@ -175,7 +249,7 @@ async function handleForgotPassword() {
         .update({ reset_token: token, reset_token_expires: expiresAt })
         .eq('email', email);
 
-    if (updateError) return showError(errorEl, 'System error setting up reset. Please try again.');
+    if (updateError) return setError('System error setting up reset. Please try again.');
 
     // 4. Generate the reset link (based on current URL path)
     const baseUrl = window.location.href.split('?')[0].replace(/NewPasswordPage/g, 'ResetPasswordPage');
@@ -189,9 +263,10 @@ async function handleForgotPassword() {
     if (edgeError || !edgeData?.success) {
         console.error('Edge Function Error:', edgeError || edgeData);
         const detailedError = edgeData?.details?.message || edgeData?.error || (edgeError && edgeError.message) || 'Unknown error';
-        return showError(errorEl, `Failed to send email: ${detailedError}`);
+        return setError(`Failed to send email: ${detailedError}`);
     }
 
+    setButtonLoading(btnId, false, 'Send Reset Link');
     showSuccess(successEl, 'Reset link sent successfully!');
 }
 
@@ -201,6 +276,7 @@ async function handleResetPassword() {
     const confirmPass = document.getElementById('confirmNewPassword').value;
     const errorEl     = 'resetError';
     const successEl   = 'resetSuccess';
+    const btnId       = 'resetBtn';
     
     // Read from URL params
     const urlParams = new URLSearchParams(window.location.search);
@@ -211,21 +287,28 @@ async function handleResetPassword() {
     hideMessage(errorEl);
     hideMessage(successEl);
 
+    const setError = (msg) => {
+        setButtonLoading(btnId, false, 'Reset Password');
+        return showError(errorEl, msg);
+    };
+
     if (!email || !token || !table) {
-        return showError(errorEl, 'Invalid or broken reset link. Please request a new one.');
+        return setError('Invalid or broken reset link. Please request a new one.');
     }
     if (table !== 'User' && table !== 'Admin') {
-        return showError(errorEl, 'Invalid account type.');
+        return setError('Invalid account type.');
     }
     if (!newPass || !confirmPass) {
-        return showError(errorEl, 'All fields are required.');
+        return setError('All fields are required.');
     }
     if (newPass.length < 8) {
-        return showError(errorEl, 'Password must be at least 8 characters.');
+        return setError('Password must be at least 8 characters.');
     }
     if (newPass !== confirmPass) {
-        return showError(errorEl, 'Passwords do not match.');
+        return setError('Passwords do not match.');
     }
+
+    setButtonLoading(btnId, true);
 
     // 1. Verify token & expiration
     const { data: userData, error: fetchError } = await db.from(table)
@@ -234,15 +317,15 @@ async function handleResetPassword() {
         .maybeSingle();
 
     if (fetchError || !userData) {
-        return showError(errorEl, 'Account not found.');
+        return setError('Account not found.');
     }
 
     if (userData.reset_token !== token) {
-        return showError(errorEl, 'Invalid reset token. Please request a new link.');
+        return setError('Invalid reset token. Please request a new link.');
     }
 
     if (new Date(userData.reset_token_expires) < new Date()) {
-        return showError(errorEl, 'Reset link has expired. Please request a new one.');
+        return setError('Reset link has expired. Please request a new one.');
     }
 
     // 2. Hash new password & update
@@ -256,8 +339,9 @@ async function handleResetPassword() {
         })
         .eq('email', email);
 
-    if (updateError) return showError(errorEl, 'Failed to reset password. Please try again.');
+    if (updateError) return setError('Failed to reset password. Please try again.');
 
     showSuccess(successEl, 'Password reset successfully!');
+    setButtonLoading(btnId, false, 'Redirecting...');
     setTimeout(() => { window.location.href = '../LogInPage/LogInPage.html'; }, 2000);
 }

@@ -71,8 +71,8 @@
             </div>
 
             <!-- Form Section -->
-            <div class="p-6 pb-8">
-                <form class="flex flex-col gap-4">
+            <div class="px-6 py-8">
+                <form class="flex flex-col gap-4" onsubmit="event.preventDefault(); handleRegister();">
                     
                     <!-- Email Input -->
                     <div class="flex flex-col gap-1.5">
@@ -88,8 +88,13 @@
                         <label class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide">
                             PASSWORD
                         </label>
-                        <input id="registerPassword" type="password" placeholder="Enter your password"
-                            class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-[13px] rounded-[6px] px-3.5 py-2.5 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                        <div class="relative">
+                            <input id="registerPassword" type="password" placeholder="Enter your password"
+                                class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-[13px] rounded-[6px] px-3.5 py-2.5 pr-10 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                            <button type="button" onclick="togglePasswordVisibility('registerPassword', 'registerEyeIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                                <i id="registerEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Verify Password Input -->
@@ -97,8 +102,13 @@
                         <label class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide">
                             VERIFY PASSWORD
                         </label>
-                        <input id="registerConfirmPassword" type="password" placeholder="Re-enter your password"
-                            class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-[13px] rounded-[6px] px-3.5 py-2.5 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                        <div class="relative">
+                            <input id="registerConfirmPassword" type="password" placeholder="Re-enter your password"
+                                class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-[13px] rounded-[6px] px-3.5 py-2.5 pr-10 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                            <button type="button" onclick="togglePasswordVisibility('registerConfirmPassword', 'registerConfirmEyeIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                                <i id="registerConfirmEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Role Select -->
@@ -125,7 +135,7 @@
                     <div id="registerSuccess" class="hidden text-[12.5px] font-medium text-primary-teal text-center tracking-wide"></div>
 
                     <!-- Register Button -->
-                    <button type="button" onclick="handleRegister()"
+                    <button id="registerBtn" type="submit"
                         class="w-full bg-primary-blue hover:bg-blue-900 text-white font-medium text-[14px] py-2.5 rounded-full mt-1.5 transition-colors shadow-sm">
                         Register
                     </button>
@@ -133,9 +143,19 @@
                     <!-- Login Link -->
                     <div class="text-center mt-2">
                         <span class="text-[13px] text-gray-600">Already have an account? </span>
-                        <a href="../LogInPage/LogInPage.html" class="text-[13px] text-primary-teal hover:text-primary-teal-hover transition-colors">Login here</a>
+                        <a id="loginLink" href="../LogInPage/LogInPage.html" class="text-[13px] text-primary-teal hover:text-primary-teal-hover transition-colors">Login here</a>
                     </div>
                 </form>
+                
+                <script>
+                    // Pass redirect_facility back to login page if present
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectFacility = urlParams.get('redirect_facility');
+                    if (redirectFacility) {
+                        const loginLink = document.getElementById('loginLink');
+                        loginLink.href = `../LogInPage/LogInPage.html?redirect_facility=${redirectFacility}`;
+                    }
+                </script>
             </div>
         </div>
 
