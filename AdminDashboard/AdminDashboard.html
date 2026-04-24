@@ -397,7 +397,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div id="dashboard-reports-pagination" class="flex items-center justify-center gap-2 mb-6 sm:mb-8 hidden"></div>
+                                <div id="dashboard-reports-pagination" class="flex items-center justify-end gap-2 mb-6 sm:mb-8 hidden"></div>
 
                                 <!-- Recent Bookings -->
                                 <h3 class="text-sm font-semibold text-primary-blue mb-4">Recent Bookings</h3>
@@ -422,7 +422,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div id="dashboard-bookings-pagination" class="flex items-center justify-center gap-2 mt-4 hidden"></div>
+                                <div id="dashboard-bookings-pagination" class="flex items-center justify-end gap-2 mt-4 hidden"></div>
                             </div>
                         </div>
                     </div>
@@ -588,19 +588,29 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-gray-500">Month</label>
-                                            <select id="report-month" class="h-[38px] bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2 outline-none focus:border-primary-teal transition-all">
-                                                <option value="">(All Months)</option>
-                                                <option value="1">January</option><option value="2">February</option><option value="3">March</option>
-                                                <option value="4">April</option><option value="5">May</option><option value="6">June</option>
-                                                <option value="7">July</option><option value="8">August</option><option value="9">September</option>
-                                                <option value="10">October</option><option value="11">November</option><option value="12">December</option>
-                                            </select>
+                                            <div class="relative">
+                                                <select id="report-month" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                    <option value="">(All Months)</option>
+                                                    <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                                                    <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+                                                    <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                                                    <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                                                </select>
+                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-gray-500">Year</label>
-                                            <select id="report-year" class="h-[38px] bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2 outline-none focus:border-primary-teal transition-all">
-                                                <option value="">(All Years)</option>
-                                            </select>
+                                            <div class="relative">
+                                                <select id="report-year" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                    <option value="">(All Years)</option>
+                                                </select>
+                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-gray-500">Specific Date</label>
@@ -620,41 +630,61 @@
                                         </div>
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-gray-500">Facility Type</label>
-                                            <select id="report-facility-type" class="h-[38px] bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 outline-none focus:border-primary-teal transition-all">
-                                                <option value="">(All Types)</option>
-                                                <option value="Indoor">Indoor</option>
-                                                <option value="Outdoor">Outdoor</option>
-                                            </select>
+                                            <div class="relative">
+                                                <select id="report-facility-type" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                    <option value="">(All Types)</option>
+                                                    <option value="Indoor">Indoor</option>
+                                                    <option value="Outdoor">Outdoor</option>
+                                                </select>
+                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-gray-500">Facility Name</label>
-                                            <select id="report-facility-name" class="h-[38px] bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 outline-none focus:border-primary-teal transition-all">
-                                                <option value="">(All Facilities)</option>
-                                            </select>
+                                            <div class="relative">
+                                                <select id="report-facility-name" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                    <option value="">(All Facilities)</option>
+                                                </select>
+                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-gray-500">Time Slot</label>
-                                            <select id="report-time-slot" class="h-[38px] bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 outline-none focus:border-primary-teal transition-all">
-                                                <option value="">(All Slots)</option>
-                                                <option value="07:00 am - 08:30 am">07:00 am - 08:30 am</option>
-                                                <option value="08:30 am - 10:00 am">08:30 am - 10:00 am</option>
-                                                <option value="10:00 am - 11:30 am">10:00 am - 11:30 am</option>
-                                                <option value="11:30 am - 01:00 pm">11:30 am - 01:00 pm</option>
-                                                <option value="01:00 pm - 02:30 pm">01:00 pm - 02:30 pm</option>
-                                                <option value="02:30 pm - 04:00 pm">02:30 pm - 04:00 pm</option>
-                                                <option value="04:00 pm - 05:30 pm">04:00 pm - 05:30 pm</option>
-                                                <option value="05:30 pm - 07:00 pm">05:30 pm - 07:00 pm</option>
-                                            </select>
+                                            <div class="relative">
+                                                <select id="report-time-slot" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                    <option value="">(All Slots)</option>
+                                                    <option value="07:00 am - 08:30 am">07:00 am - 08:30 am</option>
+                                                    <option value="08:30 am - 10:00 am">08:30 am - 10:00 am</option>
+                                                    <option value="10:00 am - 11:30 am">10:00 am - 11:30 am</option>
+                                                    <option value="11:30 am - 01:00 pm">11:30 am - 01:00 pm</option>
+                                                    <option value="01:00 pm - 02:30 pm">01:00 pm - 02:30 pm</option>
+                                                    <option value="02:30 pm - 04:00 pm">02:30 pm - 04:00 pm</option>
+                                                    <option value="04:00 pm - 05:30 pm">04:00 pm - 05:30 pm</option>
+                                                    <option value="05:30 pm - 07:00 pm">05:30 pm - 07:00 pm</option>
+                                                </select>
+                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="flex flex-col sm:flex-row items-center justify-between border-t border-gray-100 pt-6 gap-4">
                                         <div class="flex items-center gap-4 w-full sm:w-auto">
                                             <div class="flex flex-col gap-1.5">
                                                 <label class="text-[10px] font-bold text-gray-500">Chart Type</label>
-                                                <select id="report-chart-type" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 outline-none focus:border-primary-teal transition-all">
-                                                    <option value="bar">Bar Chart</option>
-                                                    <option value="pie">Pie Chart</option>
-                                                </select>
+                                                <div class="relative">
+                                                    <select id="report-chart-type" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                        <option value="bar">Bar Chart</option>
+                                                        <option value="pie">Pie Chart</option>
+                                                    </select>
+                                                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="flex items-center gap-2 mt-5">
                                                 <input type="checkbox" id="report-include-chart" checked class="w-4 h-4 text-primary-teal rounded border-gray-300 focus:ring-primary-teal">
