@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.local
+.DS_Store
+Thumbs.db
+RULES.md
+.gemini/
+.agent/
+.agents/
+_agent/
+_agents/
+tmp/
+*.log

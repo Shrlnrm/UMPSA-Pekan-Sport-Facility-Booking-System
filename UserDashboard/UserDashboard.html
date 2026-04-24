@@ -1,0 +1,2538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - UMPSA Sport Facility Booking System</title>
+    <!-- Auth Guard -->
+    <script>
+        const userId = localStorage.getItem('user_id') || sessionStorage.getItem('user_id');
+        if (!userId) {
+            window.location.href = '../LogInPage/LogInPage.html';
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { blue: '#183e87', teal: '#009ca6' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* Sidebar nav states */
+        .nav-link { transition: color 0.15s, background 0.15s; color: #6b7280; }
+        .nav-link:hover  { color: #009ca6; background: #f0fdfe; }
+        .nav-link.active { color: #009ca6; background: #f0fdfe; }
+        .nav-link .nav-bar { opacity: 0; transition: opacity 0.15s; background: #009ca6; }
+        .nav-link:hover  .nav-bar, .nav-link.active .nav-bar { opacity: 1; }
+        .nav-link:hover  i, .nav-link.active i { color: #009ca6; }
+
+        /* Main tabs (dark blue for bookings and search) */
+        .main-tab { transition: background 0.15s, color 0.15s; }
+        .main-tab:hover  { background: #183e87; color: #fff; }
+        .main-tab.active { background: #183e87; color: #fff; }
+
+        /* Sub tabs */
+        .sub-tab { border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; }
+        .sub-tab:hover  { color: #009ca6; border-bottom-color: #009ca6; }
+        .sub-tab.active { color: #009ca6; border-bottom-color: #009ca6; }
+
+        /* Custom date input styling (matches landing page) */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
+            opacity: 0.6;
+        }
+
+        /* Mobile Sidebar */
+        #sidebar {
+            transition: transform 0.3s ease;
+            position: fixed;
+            top: 64px; /* header height */
+            left: 0;
+            bottom: 0;
+            z-index: 40;
+            width: 260px;
+            transform: translateX(-100%);
+        }
+        #sidebar.open { transform: translateX(0); }
+        #sidebar-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 39;
+            top: 64px;
+        }
+        #sidebar-overlay.open { display: block; }
+
+        /* On large screens, sidebar is always visible as part of flex layout */
+        @media (min-width: 1024px) {
+            #sidebar {
+                position: relative;
+                top: auto; left: auto; bottom: auto;
+                transform: translateX(0) !important;
+                z-index: auto;
+                flex-shrink: 0;
+            }
+            #sidebar-overlay { display: none !important; }
+            #hamburger-btn { display: none !important; }
+        }
+    </style>
+    <!-- PWA -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../icons/icon-180x180.png">
+    <meta name="theme-color" content="#183e87">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="UMPSA Sport"></head>
+
+<body class="font-sans antialiased text-gray-900 bg-white">
+    <div class="fixed inset-0 flex flex-col overflow-hidden">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2" style="pointer-events:none;"></div>
+    <style>
+        .toast-msg { pointer-events:auto; display:flex; align-items:center; gap:8px; padding:12px 20px; border-radius:8px; font-size:13px; font-weight:500; color:#fff; box-shadow:0 4px 12px rgba(0,0,0,.15); animation:toastIn .3s ease; min-width:280px; max-width:420px; }
+        .toast-msg.success { background:#059669; }
+        .toast-msg.error   { background:#dc2626; }
+        .toast-msg.info    { background:#183e87; }
+        .toast-msg.warning { background:#d97706; }
+        @keyframes toastIn  { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes toastOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(40px)} }
+    </style>
+
+    <!-- ===== ROW 1: UMPSA Header (matches landing page) ===== -->
+    <header class="bg-white shadow-sm flex-shrink-0 h-16 px-4 sm:px-6 flex items-center gap-3 z-50 relative text-nowrap overflow-hidden">
+        <a href="UserDashboard.html" class="flex items-center gap-3 flex-1 min-w-0">
+            <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo" class="h-9 w-auto object-contain flex-shrink-0">
+            <div class="h-8 w-px bg-gray-200 flex-shrink-0"></div>
+            <div class="flex flex-col justify-center min-w-0">
+                <span class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide truncate">UNIVERSITI MALAYSIA PAHANG</span>
+                <span class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide truncate">AL-SULTAN ABDULLAH</span>
+            </div>
+        </a>
+    </header>
+    <!-- Sidebar overlay (mobile) -->
+    <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- ===== ROW 2: Sidebar + Right Column ===== -->
+    <div class="flex flex-1 overflow-hidden">
+
+        <!-- ===== LEFT SIDEBAR ===== -->
+        <aside id="sidebar" class="flex flex-col bg-white border-r border-gray-100 overflow-hidden" style="width:260px;">
+
+            <!-- Quick Search -->
+            <div class="px-4 flex items-center border-b border-gray-100 flex-shrink-0" style="height:56px; background:#f9fafb;">
+                <div class="relative w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </div>
+                    <input type="text" id="sidebar-search" placeholder="Quick Search" oninput="filterSidebar()"
+                        class="w-full bg-white border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="py-4 px-3 flex flex-col gap-1 flex-shrink-0">
+                <a href="#" data-nav="dashboard" class="nav-link active relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden" onclick="showPage('dashboard', this)">
+                    <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
+                    <i data-lucide="home" class="w-4 h-4 flex-shrink-0"></i>
+                    <span class="text-sm font-medium">My Dashboard</span>
+                    <span id="badge-user-cancelled" class="hidden ml-auto min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none"></span>
+                </a>
+                <a href="#" data-nav="search" class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden" onclick="showPage('search', this)">
+                    <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
+                    <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0"></i>
+                    <span class="text-sm font-medium">Book a Facility</span>
+                </a>
+                <a href="#" data-nav="report" class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden" onclick="showPage('report', this)">
+                    <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
+                    <i data-lucide="file-text" class="w-4 h-4 flex-shrink-0"></i>
+                    <span class="text-sm font-medium">Report</span>
+                </a>
+                <a href="#" data-nav="announcement" class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden" onclick="showPage('announcement', this)">
+                    <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
+                    <i data-lucide="megaphone" class="w-4 h-4 flex-shrink-0"></i>
+                    <span class="text-sm font-medium">Announcement</span>
+                </a>
+            </nav>
+
+            <div class="flex-1"></div>
+
+            <!-- Filter Box -->
+            <div class="p-4 border-t border-gray-100 flex flex-col gap-4 pb-16">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">MAX CAPACITY</label>
+                    <input id="filter-max-capacity" type="number" placeholder="Enter capacity"
+                        class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">STATUS</label>
+                    <div class="relative">
+                        <select id="filter-status" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 pr-8 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all appearance-none cursor-pointer">
+                            <option value="" selected hidden></option>
+                            <option value="">All Status</option>
+                            <option value="Available">Available</option>
+                            <option value="In Maintenance">In Maintenance</option>
+                        </select>
+                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">FACILITY CATEGORY</label>
+                    <div class="relative">
+                        <select id="filter-category" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 pr-8 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all appearance-none cursor-pointer">
+                            <option value="" selected hidden></option>
+                            <option value="">All Facilities</option>
+                            <option value="Indoor">Indoor</option>
+                            <option value="Outdoor">Outdoor</option>
+                        </select>
+                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" onclick="showPage('search', document.querySelector('[data-nav=search]')); applyFilters();"
+                    class="w-full bg-primary-blue hover:bg-blue-900 text-white font-semibold text-sm py-2 rounded-md transition-colors">
+                    Search
+                </button>
+            </div>
+        </aside>
+
+        <!-- ===== RIGHT COLUMN ===== -->
+        <div class="flex flex-col flex-1 overflow-hidden">
+
+            <!-- Gradient Topbar -->
+            <div class="flex items-center px-3 sm:px-8 flex-shrink-0 gap-3" style="height:56px; background: linear-gradient(90deg, #183e87 0%, #009ca6 100%);">
+                <!-- Hamburger (mobile only) -->
+                <button id="hamburger-btn" onclick="toggleSidebar()" class="lg:hidden flex items-center justify-center w-9 h-9 rounded-md text-white hover:bg-white/10 transition-colors flex-shrink-0" aria-label="Toggle navigation">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <span class="text-white font-semibold text-[12px] sm:text-[15px] truncate mr-auto">UMPSA Pekan - SFBS </span>
+                <div class="relative group flex items-center gap-3 cursor-pointer">
+                    <span class="text-white/90 text-sm font-medium hidden sm:block">studentuser@adab.umpsa.edu.my</span>
+                    <div class="w-8 h-8 rounded-full bg-green-500 border-2 border-white/30 flex items-center justify-center text-white text-sm font-bold shadow">S</div>
+                    <div class="absolute right-0 top-full h-3 w-48"></div>
+                    <div class="absolute right-0 top-[calc(100%+8px)] w-40 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 origin-top scale-95 group-hover:scale-100 z-50">
+                        <button onclick="handleLogout()" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 flex items-center gap-2 transition-colors">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Scrollable Area -->
+            <main class="flex-1 overflow-y-auto bg-gray-50 pb-16">
+
+                <div id="page-dashboard" class="p-3 sm:p-6">
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                        <span class="cursor-default">Home</span>
+                        <span>/</span>
+                        <span class="text-primary-blue font-medium">Dashboard</span>
+                    </div>
+
+                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
+                        <!-- Bookings Tab -->
+                        <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden">
+                            <button id="tab-bookings" class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl" onclick="setMainTab('bookings')">
+                                Bookings
+                            </button>
+                        </div>
+                        <!-- Sub Tabs -->
+                        <div class="flex px-3 sm:px-6 gap-4 sm:gap-8 border-b border-gray-100 overflow-x-auto">
+                            <button id="subtab-all" class="sub-tab active py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap" onclick="setSubTab('all')">
+                                All
+                            </button>
+                            <button id="subtab-confirmed" class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap" onclick="setSubTab('confirmed')">
+                                Confirmed
+                            </button>
+                            <button id="subtab-cancelled" class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap flex items-center gap-1.5" onclick="setSubTab('cancelled')">
+                                Cancelled
+                                <span id="badge-tab-cancelled" class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
+                            </button>
+                            <button id="subtab-passed" class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap" onclick="setSubTab('passed')">
+                                Passed
+                            </button>
+                        </div>
+                        <!-- Search Bar -->
+                        <div class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0 relative bg-white z-0">
+                            <div class="relative w-full">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i data-lucide="search" class="w-4 h-4"></i>
+                                </div>
+                                <input id="user-booking-search" type="text"
+                                    placeholder="Search invoices or facility..." oninput="renderBookings()"
+                                    class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                            </div>
+                        </div>
+                        <!-- Table -->
+                        <div class="p-3 sm:p-6 flex-1 flex flex-col">
+                            <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white">
+                                <table class="w-full text-xs sm:text-sm text-left">
+                                    <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-white">
+                                        <tr id="booking-list-header">
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Invoice No</th>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Participant</th>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Facility/Event</th>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Booking Date</th>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Event Date</th>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Status</th>
+                                            <th id="booking-action-col" class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="booking-list-rows" class="divide-y divide-gray-50">
+                                        <!-- Empty State -->
+                                        <tr id="booking-empty">
+                                            <td colspan="7" class="py-10 text-center text-sm text-gray-400 border-none">No record.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination Controls -->
+                            <div id="booking-pagination" class="flex items-center justify-center gap-2 mt-4 hidden"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===================== PAGE: SEARCH (Book a Facility) ===================== -->
+                <div id="page-search" class="p-3 sm:p-6 hidden">
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                        <span class="cursor-default">Home</span>
+                        <span>/</span>
+                        <span class="text-primary-blue font-medium">Search</span>
+                    </div>
+
+                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
+                        <!-- Facilities Tab (Matches Bookings Tab Color) -->
+                        <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden">
+                            <button class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl">
+                                Facilities
+                            </button>
+                        </div>
+
+                        <!-- Search Bar inside card -->
+                        <div class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
+                            <div class="relative w-full">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i data-lucide="search" class="w-4 h-4"></i>
+                                </div>
+                                <input id="facility-search-input" type="text" placeholder="Search facilities..."
+                                    oninput="renderFacilities()"
+                                    class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
+                            </div>
+                        </div>
+
+                        <!-- Results info row -->
+                        <div class="px-6 py-3 flex items-center justify-between border-b border-gray-50">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-primary-blue"></i>
+                                <span id="facility-count" class="text-sm text-primary-blue font-medium">Found 0 facilities in UMPSA Pekan</span>
+                            </div>
+                        </div>
+
+                        <!-- Facility Cards Area -->
+                        <div id="facility-cards" class="p-3 sm:p-6 flex flex-col gap-3 sm:gap-4 flex-1">
+                            <!-- Empty State (shown when no facilities) -->
+                            <div id="facility-empty" class="flex-1 flex items-center justify-center py-12">
+                                <div class="text-center">
+                                    <i data-lucide="building-2" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
+                                    <p class="text-sm text-gray-400">No facilities available.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div id="fac-pagination-container" class="px-6 pb-5 flex items-center justify-end gap-2 border-t border-gray-100 pt-4 hidden">
+                            <!-- Dynamic UI from JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===================== PAGE: BOOKING FORM ===================== -->
+                <div id="page-booking-form" class="p-3 sm:p-6 hidden">
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                        <span class="cursor-default">Home</span>
+                        <span>/</span>
+                        <span class="text-primary-blue font-medium">Booking</span>
+                    </div>
+
+                    <!-- Main Booking Form Card -->
+                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-4 sm:p-8 mb-4 sm:mb-6">
+                        <h2 id="booking-title" class="text-primary-blue font-bold text-base sm:text-lg mb-4 sm:mb-8">Reserve Facility</h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                            <!-- Left Column -->
+                            <div class="flex flex-col gap-6">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Start Date*</label>
+                                    <input id="booking-start-date" type="date" required class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Start Time*</label>
+                                    <select id="booking-start-time" required class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
+                                        <option value="" disabled selected>Select start time</option>
+                                        <option value="07:00 am">07:00 am</option>
+                                        <option value="08:30 am">08:30 am</option>
+                                        <option value="10:00 am">10:00 am</option>
+                                        <option value="11:30 am">11:30 am</option>
+                                        <option value="01:00 pm">01:00 pm</option>
+                                        <option value="02:30 pm">02:30 pm</option>
+                                        <option value="04:00 pm">04:00 pm</option>
+                                        <option value="05:30 pm">05:30 pm</option>
+                                        <option value="07:00 pm">07:00 pm</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Event*</label>
+                                    <textarea id="booking-event" rows="4" required class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all resize-none"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div class="flex flex-col gap-6">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">End Date*</label>
+                                    <input id="booking-end-date" type="date" required class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">End Time*</label>
+                                    <select id="booking-end-time" required class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
+                                        <option value="" disabled selected>Select end time</option>
+                                        <option value="07:00 am">07:00 am</option>
+                                        <option value="08:30 am">08:30 am</option>
+                                        <option value="10:00 am">10:00 am</option>
+                                        <option value="11:30 am">11:30 am</option>
+                                        <option value="01:00 pm">01:00 pm</option>
+                                        <option value="02:30 pm">02:30 pm</option>
+                                        <option value="04:00 pm">04:00 pm</option>
+                                        <option value="05:30 pm">05:30 pm</option>
+                                        <option value="07:00 pm">07:00 pm</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Num. of Participant*</label>
+                                    <input id="booking-participants" type="number" required placeholder="Max 60" class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Warning Banner -->
+                        <div class="mt-4 sm:mt-8 bg-orange-500 text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded text-[10px] sm:text-[11px] font-bold leading-relaxed tracking-wide">
+                            ADMINS MAY CANCEL CONFIRMED BOOKINGS. ANY CANCELLED BOOKING WILL INCLUDE AN EXPLANATORY REASON.
+                        </div>
+
+                        <div class="mt-6 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
+                            <button onclick="showPage('search')" class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
+                                Cancel
+                            </button>
+                            <button onclick="proceedToSummary()" class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-md">
+                                Continue
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Availability Grid Card -->
+                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-3 sm:p-8">
+                        <div class="flex items-center justify-between mb-3 sm:mb-6 flex-wrap gap-2">
+                            <h3 class="text-primary-blue font-bold text-sm">Weekly Availability</h3>
+                            <div class="flex items-end gap-3">
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">Month</label>
+                                    <select id="month-selector" onchange="onMonthSelectorChange(this.value)" class="bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-xs font-medium text-primary-blue outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all cursor-pointer">
+                                    </select>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">Year</label>
+                                    <select id="year-selector" onchange="onYearSelectorChange(this.value)" class="bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-xs font-medium text-primary-blue outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all cursor-pointer">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-100 rounded-lg overflow-x-auto">
+                            <div style="min-width:380px">
+                            <div id="grid-header" class="grid grid-cols-8 divide-x divide-gray-100 text-center text-[7px] sm:text-[10px] font-bold uppercase text-white">
+                                <div class="bg-primary-blue py-1.5 sm:py-3">Time</div>
+                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Mon<br><span class="opacity-70 font-normal date-label"></span></div>
+                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Tue<br><span class="opacity-70 font-normal date-label"></span></div>
+                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Wed<br><span class="opacity-70 font-normal date-label"></span></div>
+                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Thu<br><span class="opacity-70 font-normal date-label"></span></div>
+                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Fri<br><span class="opacity-70 font-normal date-label"></span></div>
+                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Sat<br><span class="opacity-70 font-normal date-label"></span></div>
+                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Sun<br><span class="opacity-70 font-normal date-label"></span></div>
+                            </div>
+                            
+                            <!-- Sample Rows -->
+                            <div id="availability-grid" class="flex flex-col divide-y divide-gray-100">
+                                <!-- Row template -->
+                                <div class="grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 sm:h-12 items-center">
+                                    <div class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">07:00am-08:30am</div>
+                                    <div class="text-blue-400">Free</div>
+                                    <div class="text-blue-400">Free</div>
+                                    <div class="text-blue-400">Free</div>
+                                    <div class="text-blue-400">Free</div>
+                                    <div class="text-blue-400">Free</div>
+                                    <div class="bg-red-900 text-white h-full flex items-center justify-center">Close</div>
+                                    <div class="bg-red-900 text-white h-full flex items-center justify-center">Close</div>
+                                </div>
+                                <!-- More sample rows to match PNG layout -->
+                                <div class="grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 sm:h-12 items-center">
+                                    <div class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">08:30am-10:00am</div>
+                                    <div class="text-blue-400">Free</div>
+                                    <div class="text-blue-400">Free</div>
+                                    <div class="bg-primary-teal text-white h-full flex items-center justify-center">Booked</div>
+                                    <div class="text-blue-400">Free</div>
+                                    <div class="text-blue-400">Free</div>
+                                    <div class="bg-red-900 text-white h-full flex items-center justify-center">Close</div>
+                                    <div class="bg-red-900 text-white h-full flex items-center justify-center">Close</div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="mt-3 sm:mt-6 flex flex-wrap items-center justify-between gap-3 text-[9px] sm:text-[10px] text-gray-400 font-medium">
+                            <div class="flex items-center gap-3 sm:gap-6 flex-wrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-gray-50 border border-gray-100 rounded-sm"></div>
+                                    <span>Available</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-gray-200 rounded-sm"></div>
+                                    <span>Passed</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-primary-teal rounded-sm"></div>
+                                    <span>Booked</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-red-900 rounded-sm"></div>
+                                    <span>Closed</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1 sm:gap-1.5" id="weekly-nav-controls">
+                                <!-- Navigation buttons rendered by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===================== PAGE: BOOK NOW SUMMARY ===================== -->
+                <div id="page-book-now-summary" class="p-3 sm:p-6 hidden">
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                        <span class="cursor-default">Home</span>
+                        <span>/</span>
+                        <span class="text-primary-blue font-medium">Booking</span>
+                    </div>
+
+                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-4 sm:p-8">
+                            <h2 id="summary-facility-name" class="text-primary-blue font-bold text-base sm:text-lg mb-4 sm:mb-8">Reserve Facility</h2>
+                            
+                            <div class="space-y-8">
+                                <!-- Booking Details -->
+                                <div>
+                                    <h3 class="text-primary-blue font-bold text-sm mb-3">Booking Details</h3>
+                                    <div class="space-y-2">
+                                        <p class="text-sm text-gray-600"><span class="font-semibold text-primary-blue">Event Name:</span> <span id="summary-event" class="text-gray-500"></span></p>
+                                        <p class="text-sm text-gray-600"><span class="font-semibold text-primary-blue">Booking Date & Time:</span> <span id="summary-datetime" class="text-gray-500"></span></p>
+                                    </div>
+                                </div>
+
+
+                                <!-- Remark -->
+                                <div>
+                                    <h3 class="text-primary-blue font-bold text-sm mb-3">Remark</h3>
+                                    <p class="text-xs text-gray-500 leading-relaxed">
+                                        <span class="font-bold text-primary-blue">UMPSA Student & Staff :</span> Since this is booked by a university email user, only students & staff of UMPSA are allowed to use the facilities. Strict action/fines will be imposed if outsiders are involved.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 sm:mt-12 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
+                                <button onclick="showPage('booking-form')" class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
+                                    Back
+                                </button>
+                                <button onclick="proceedToConfirmation()" class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
+                                    BOOK NOW
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===================== PAGE: CONFIRM BOOKING ===================== -->
+                <div id="page-confirm-booking" class="p-3 sm:p-6 hidden">
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                        <span class="cursor-default">Home</span>
+                        <span>/</span>
+                        <span class="text-primary-blue font-medium">Confirmation</span>
+                    </div>
+
+                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-4 sm:p-8">
+                        <div class="flex items-center justify-between mb-4 sm:mb-8 gap-2">
+                            <h2 class="text-primary-blue font-bold text-lg">Order</h2>
+                            <span class="text-sm text-gray-400" id="confirm-order-date">Date: </span>
+                        </div>
+
+                        <div class="border border-gray-100 rounded-lg overflow-x-auto">
+                            <table class="w-full text-xs sm:text-sm text-left">
+                                <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100">
+                                    <tr>
+                                        <th class="px-3 sm:px-6 pb-2 pt-3 sm:pt-4 font-medium text-left">Date</th>
+                                        <th class="px-3 sm:px-6 pb-2 pt-3 sm:pt-4 font-medium text-left">Item</th>
+                                        <th class="px-3 sm:px-6 pb-2 pt-3 sm:pt-4 font-medium text-left">Qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="confirm-table-body" class="divide-y divide-gray-50">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-6 sm:mt-12 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
+                            <button onclick="showPage('book-now-summary')" class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
+                                CANCEL
+                            </button>
+                            <button id="btn-submit-booking" onclick="submitBooking()" class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm flex items-center justify-center gap-2">
+                                CONFIRM BOOKING
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===================== PAGE: REPORT ===================== -->
+                <div id="page-report" class="p-3 sm:p-6 hidden">
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                        <span class="cursor-default">Home</span>
+                        <span>/</span>
+                        <span class="text-primary-blue font-medium">Report</span>
+                    </div>
+
+                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
+                        
+                        <!-- Report Main Tab -->
+                        <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden">
+                            <button class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl cursor-default">
+                                Report
+                            </button>
+                        </div>
+                        
+                        <!-- Sub Tabs -->
+                        <div class="flex px-6 gap-8 border-b border-gray-100">
+                            <button class="sub-tab active py-3 text-sm font-medium text-gray-500 cursor-default">
+                                Report Facility Issue
+                            </button>
+                        </div>
+
+                        <div class="p-3 sm:p-6 flex-1 flex flex-col">
+                            <!-- Form -->
+                            <form class="flex flex-col gap-6 w-full">
+                            <!-- Facility -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">FACILITY*</label>
+                                <div class="relative">
+                                    <select id="report-facility" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2.5 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all appearance-none cursor-pointer">
+                                        <option value="" disabled selected hidden>Select Facility to Report</option>
+                                    </select>
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Issue Description -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">ISSUE DESCRIPTION*</label>
+                                <textarea id="report-desc" placeholder="Describe the issue or broken equipment..." class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-3 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all h-28 resize-none placeholder:text-gray-400"></textarea>
+                            </div>
+
+                            <!-- Upload Photo -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">UPLOAD PHOTO PROOF*</label>
+                                <input type="file" id="report-image" accept="image/*" class="hidden" onchange="handleReportImagePreview(this)">
+                                <label for="report-image" id="report-image-dropzone" class="w-full border-2 border-dashed border-gray-200 rounded-md bg-gray-50 flex flex-col items-center justify-center py-4 cursor-pointer hover:bg-gray-100 hover:border-primary-teal transition-colors">
+                                    <i data-lucide="upload-cloud" class="w-5 h-5 text-gray-400 mb-1"></i>
+                                    <span id="report-image-name" class="text-primary-teal text-xs font-medium">Click to upload image or drag and drop</span>
+                                </label>
+                            </div>
+
+                             <div class="mt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
+                                <button type="button" onclick="clearReportForm()" class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
+                                    CANCEL
+                                </button>
+                                <button type="button" onclick="submitReport(this)" class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm flex items-center justify-center gap-2">
+                                    SUBMIT REPORT
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Divider -->
+                        <div class="w-full h-px bg-gray-100 my-10"></div>
+
+                        <!-- My Submitted Reports -->
+                        <div>
+                            <h3 class="text-sm font-semibold text-primary-blue mb-4">My Submitted Reports</h3>
+                            
+                            <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white">
+                                <table class="w-full text-xs sm:text-sm text-left">
+                                    <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100">
+                                        <tr>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Report ID</th>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Facility</th>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Date</th>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Issue</th>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Proof</th>
+                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="report-list-rows" class="divide-y divide-gray-50">
+                                        <!-- Empty State Table Body -->
+                                        <tr>
+                                            <td colspan="6" class="py-10 text-center text-sm text-gray-400 border-none">No record.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Report Pagination -->
+                            <div id="user-report-pagination" class="flex items-center justify-center gap-2 mt-4 hidden"></div>
+                        </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ===================== PAGE: ANNOUNCEMENT ===================== -->
+                <div id="page-announcement" class="p-3 sm:p-6 hidden">
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                        <span class="cursor-default">Home</span>
+                        <span>/</span>
+                        <span class="text-primary-blue font-medium">Announcement</span>
+                    </div>
+                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
+                        
+                        <!-- Announcement Main Tab -->
+                        <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden shadow-sm z-10">
+                            <button class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl cursor-default">
+                                Announcements
+                            </button>
+                        </div>
+                        
+                        <!-- Sub-tab Row (Teal Underline style) -->
+                        <div class="flex px-6 gap-8 border-b border-gray-100 z-10 bg-white shadow-sm relative">
+                            <button class="sub-tab active py-3 text-sm font-medium text-gray-500 cursor-default border-b-2 border-primary-teal">
+                                All Announcements
+                            </button>
+                        </div>
+
+                        <!-- Search Bar Row (Full Width) -->
+                        <div class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0 relative bg-white z-0">
+                            <div class="relative w-full">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i data-lucide="search" class="w-4 h-4"></i>
+                                </div>
+                                <input id="announcement-search-input" type="text" placeholder="Search announcements..."
+                                    oninput="fetchAnnouncements()"
+                                    class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                            </div>
+                        </div>
+
+                        <!-- Card List -->
+                        <div id="announcement-list" class="p-6 flex-1 flex flex-col gap-4 bg-gray-50/30">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Fixed Global Footer -->
+    <footer class="w-full bg-[#183e87] text-left text-white/70 text-[10px] sm:text-xs px-6 py-3 mt-auto flex-shrink-0 border-t border-teal-900/50 z-50 relative">
+        <div class="text-left w-full">UMPSA Pekan - Sport Facility Booking System © 2026</div>
+    </footer>
+    </div>
+
+    <!-- View Reason Modal -->
+    <div id="view-reason-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-lg w-[400px] overflow-hidden flex flex-col">
+            <div class="p-6">
+                <div class="flex items-center gap-3 text-yellow-500 mb-4">
+                    <i data-lucide="info" class="w-6 h-6"></i>
+                    <h3 class="font-bold text-[15px] text-gray-800">Cancellation Reason</h3>
+                </div>
+                <p class="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-md border border-gray-100" id="view-reason-text">
+                    <!-- Reason text will go here -->
+                </p>
+                <div class="mt-6 flex justify-end">
+                    <button onclick="document.getElementById('view-reason-modal').classList.add('hidden')" class="px-5 py-2 text-sm font-medium text-white bg-primary-blue hover:bg-blue-900 rounded-md transition-colors shadow-sm">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Reusable Confirm Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[99] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+                </div>
+                <h3 id="confirm-modal-title" class="text-xl font-bold text-gray-900 mb-2">Are you sure?</h3>
+                <p id="confirm-modal-text" class="text-sm text-gray-500 mb-6">This action cannot be undone.</p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="closeConfirmModal()" class="flex-1 px-4 py-2 bg-primary-blue hover:bg-blue-900 text-white rounded-lg font-medium transition-colors">Back</button>
+                    <button onclick="executeConfirmAction()" id="confirm-modal-btn" class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // ---- Mobile Sidebar ----
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebar-overlay').classList.remove('open');
+        }
+
+        function filterSidebar() {
+            const query = document.getElementById('sidebar-search').value.toLowerCase();
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => {
+                const text = link.querySelector('span').textContent.toLowerCase();
+                if (text.includes(query)) {
+                    link.classList.remove('hidden');
+                } else {
+                    link.classList.add('hidden');
+                }
+            });
+        }
+
+        // ---- Toast Notification ----
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast-msg ${type}`;
+            const icons = { success: 'check-circle', error: 'alert-circle', info: 'info', warning: 'alert-triangle' };
+            toast.innerHTML = `<i data-lucide="${icons[type] || 'info'}" style="width:16px;height:16px;flex-shrink:0"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            lucide.createIcons({ nodes: [toast] });
+            setTimeout(() => { toast.style.animation = 'toastOut .3s ease forwards'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        // ---- Auth Check ----
+        const currentUser = {
+            id: sessionStorage.getItem('user_id') || localStorage.getItem('user_id'),
+            email: sessionStorage.getItem('user_email') || localStorage.getItem('user_email'),
+            role: sessionStorage.getItem('user_role') || localStorage.getItem('user_role')
+        };
+
+        if (!currentUser.id) {
+            window.location.href = '../LogInPage/LogInPage.html';
+        } else {
+            document.querySelector('.text-white\\/90').textContent = currentUser.email;
+            document.querySelector('.w-8.h-8.rounded-full').textContent = currentUser.email.charAt(0).toUpperCase();
+        }
+
+
+        // ---- App Shell: show/hide pages ----
+        const pages = ['dashboard', 'search', 'report', 'announcement', 'booking-form', 'book-now-summary', 'confirm-booking'];
+
+        function showPage(pageId, extra) {
+            pages.forEach(p => {
+                const el = document.getElementById('page-' + p);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById('page-' + pageId);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            
+            // Highlight sidebar if matching pageId
+            const sidebarBtn = document.querySelector(`.nav-link[onclick*="showPage('${pageId}')"]`);
+            if (sidebarBtn) sidebarBtn.classList.add('active');
+
+            // Close sidebar on mobile nav
+            if (window.innerWidth < 1024) closeSidebar();
+
+            if (pageId === 'dashboard') {
+                fetchBookings().then(() => {
+                    // If cancelled tab is active, mark admin-cancelled bookings as seen
+                    if (currentSubTab === 'cancelled') {
+                        const adminCancelledIds = allUserBookings.filter(b =>
+                            b.status === 'Cancelled' &&
+                            b.cancel_reason && b.cancel_reason !== 'null' &&
+                            b.cancel_reason !== 'undefined' && b.cancel_reason.trim() !== ''
+                        ).map(b => b.booking_id);
+                        localStorage.setItem('user_seen_cancelled_' + currentUser.id, JSON.stringify(adminCancelledIds));
+                        updateUserBadges();
+                    }
+                });
+            }
+            if (pageId === 'search') fetchFacilities();
+            
+            if (pageId === 'booking-form' && extra) {
+                const facility = allFacilities.find(f => f.facility_id == extra);
+                if (facility) {
+                    selectedFacility = facility;
+                    document.getElementById('booking-title').textContent = `Reserve ${facility.name}`;
+                    
+                    // --- Full form reset ---
+                    selectionStart = null;
+                    selectionEnd = null;
+                    currentWeekMonday = getMondayOfWeek(new Date());
+                    selectedMonth = null;
+                    bookingData = {}; // Clear stale booking data
+
+                    // Clear text/number inputs
+                    const eventInput = document.getElementById('booking-event');
+                    if (eventInput) eventInput.value = '';
+                    const participantsInput = document.getElementById('booking-participants');
+                    if (participantsInput) participantsInput.value = '';
+
+                    // Reset time selects to first option
+                    const startTimeEl = document.getElementById('booking-start-time');
+                    if (startTimeEl) startTimeEl.selectedIndex = 0;
+                    const endTimeEl = document.getElementById('booking-end-time');
+                    if (endTimeEl) endTimeEl.selectedIndex = 0;
+                    
+                    // Set default dates to today
+                    const today = new Date().toLocaleDateString('en-CA');
+                    document.querySelectorAll('#page-booking-form input[type="date"]').forEach(input => {
+                        input.value = today;
+                        input.min = today;
+                    });
+                    
+                    // Set max participants placeholder
+                    if (participantsInput) {
+                        participantsInput.placeholder = facility.max_capacity != null ? `Max ${facility.max_capacity}` : 'No limit';
+                    }
+
+                    renderAvailability(extra);
+                }
+            }
+
+            lucide.createIcons();
+        }
+
+        // ---- Time Parsing Helpers for Multi-slot Check ----
+        function parseTimeMins(timeStr) {
+            const parts = timeStr.trim().split(' ');
+            let [hours, minutes] = parts[0].split(':');
+            hours = parseInt(hours, 10);
+            if (hours === 12) hours = 0;
+            if (parts[1] && parts[1].toLowerCase() === 'pm') hours += 12;
+            return hours * 60 + parseInt(minutes, 10);
+        }
+
+        function isSlotBooked(cellDateStr, cellSlot, b) {
+            const [cStart] = cellSlot.split(' - ');
+            const cellStartTime = parseTimeMins(cStart);
+            
+            const bEndDateStr = b.end_date || b.date;
+            const [bStart, bEnd] = b.time_slot.split(' - ');
+            const bookingStartTime = parseTimeMins(bStart);
+            const bookingEndTime = parseTimeMins(bEnd);
+
+            if (cellDateStr < b.date || cellDateStr > bEndDateStr) return false;
+            if (cellDateStr > b.date && cellDateStr < bEndDateStr) return true;
+
+            if (b.date === bEndDateStr) {
+                if (cellDateStr !== b.date) return false;
+                return cellStartTime >= bookingStartTime && cellStartTime < bookingEndTime;
+            }
+
+            if (cellDateStr === b.date) return cellStartTime >= bookingStartTime;
+            if (cellDateStr === bEndDateStr) return cellStartTime < bookingEndTime;
+            
+            return false;
+        }
+
+        // ---- Date helper: avoids UTC timezone rollback from toISOString() ----
+        function toLocalDateStr(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        // ---- Booking Page: Availability Grid ----
+        async function renderAvailability(facilityId) {
+            const grid = document.getElementById('availability-grid');
+            grid.innerHTML = '<div class="p-8 text-center text-xs text-gray-400">Loading availability...</div>';
+
+            // Initialize week if not set
+            if (!currentWeekMonday) {
+                currentWeekMonday = getMondayOfWeek(new Date());
+            }
+            if (!selectedMonth) {
+                const now = new Date();
+                selectedMonth = { year: now.getFullYear(), month: now.getMonth() };
+            }
+            populateYearSelector();
+            populateMonthSelector(selectedMonth.year);
+
+            const monday = new Date(currentWeekMonday);
+            monday.setHours(0, 0, 0, 0);
+
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            sunday.setHours(23, 59, 59, 999);
+
+            const dateLabels = document.querySelectorAll('.date-label');
+            const weekDates = [];
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(monday);
+                date.setDate(monday.getDate() + i);
+                weekDates.push(date);
+                
+                const dayStr = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                if (dateLabels[i]) dateLabels[i].textContent = dayStr;
+            }
+
+            // Fetch Real Data from Supabase
+            const { data: bookings, error: bError } = await db
+                .from('Booking')
+                .select('date, end_date, time_slot')
+                .eq('facility_id', facilityId)
+                .eq('status', 'Confirmed');
+
+            const { data: closures, error: cError } = await db
+                .from('Facility_Closure')
+                .select('date, time_slot')
+                .eq('facility_id', facilityId)
+                .gte('date', toLocalDateStr(monday))
+                .lte('date', toLocalDateStr(sunday));
+
+            if (bError || cError) {
+                console.error('Error fetching availability:', bError || cError);
+                grid.innerHTML = '<div class="p-8 text-center text-xs text-red-500">Failed to load availability.</div>';
+                return;
+            }
+
+            grid.innerHTML = ''; // Clear loading message
+
+            const timeSlots = [
+                '07:00 am - 08:30 am', '08:30 am - 10:00 am', '10:00 am - 11:30 am', 
+                '11:30 am - 01:00 pm', '01:00 pm - 02:30 pm', '02:30 pm - 04:00 pm', 
+                '04:00 pm - 05:30 pm', '05:30 pm - 07:00 pm'
+            ];
+
+            // Update Navigation Controls
+            const navContainer = document.getElementById('weekly-nav-controls');
+            if (navContainer) {
+                // Determine if we can go back/forward within the selected month
+                const prevMonday = new Date(monday);
+                prevMonday.setDate(prevMonday.getDate() - 7);
+                const prevSunday = new Date(prevMonday);
+                prevSunday.setDate(prevMonday.getDate() + 6);
+                const nextMonday = new Date(monday);
+                nextMonday.setDate(nextMonday.getDate() + 7);
+
+                const firstOfMonth = selectedMonth ? new Date(selectedMonth.year, selectedMonth.month, 1) : new Date(0);
+                const lastOfMonth = selectedMonth ? new Date(selectedMonth.year, selectedMonth.month + 1, 0) : new Date(9999, 11, 31);
+
+                const canGoBack = prevSunday >= firstOfMonth;
+                const canGoForward = nextMonday <= lastOfMonth;
+
+                // Calculate week number within the month
+                const firstMondayOfMonth = getMondayOfWeek(firstOfMonth);
+                const weekNum = Math.floor((monday - firstMondayOfMonth) / (7 * 24 * 60 * 60 * 1000)) + 1;
+
+                let navHtml = '';
+                if (canGoBack) {
+                    navHtml += `<button onclick="changeWeek(-1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&lt;</button>`;
+                }
+                
+                navHtml += `<button class="w-7 h-7 flex items-center justify-center bg-[#183e87] hover:bg-blue-900 transition-colors rounded text-xs text-white font-semibold shadow-sm">${weekNum}</button>`;
+                
+                if (canGoForward) {
+                    navHtml += `<button onclick="changeWeek(1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&gt;</button>`;
+                }
+                navContainer.innerHTML = navHtml;
+            }
+
+            const nowMidnight = new Date();
+            nowMidnight.setHours(0, 0, 0, 0);
+            const todayStr = toLocalDateStr(nowMidnight);
+
+            // Current time in minutes (Malaysia Time UTC+8)
+            const nowMalaysia = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kuala_Lumpur' }));
+            const currentTimeMins = nowMalaysia.getHours() * 60 + nowMalaysia.getMinutes();
+
+            timeSlots.forEach((slot, index) => {
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 sm:h-12 items-center';
+                const slotShort = slot.replace(' am', 'am').replace(' pm', 'pm').replace(' - ', '-');
+                let cellsHtml = `<div class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">${slotShort}</div>`;
+                
+                // Parse slot start time for today's past-slot check
+                const [slotStartStr] = slot.split(' - ');
+                const slotStartMins = parseTimeMins(slotStartStr);
+
+                for (let day = 0; day < 7; day++) {
+                    const cellDate = weekDates[day];
+                    const dateStr = toLocalDateStr(cellDate);
+                    
+                    let status = 'Available';
+                    let statusClass = 'text-blue-400';
+
+                    if (cellDate < nowMidnight || (dateStr === todayStr && slotStartMins <= currentTimeMins)) {
+                        status = 'Passed';
+                        statusClass = 'bg-gray-100 text-gray-400 h-full flex items-center justify-center font-medium';
+                    } else {
+                        // Check Closures
+                        const isClosed = closures.some(c => {
+                            if (c.date !== dateStr) return false;
+                            if (c.time_slot === '07:00 am - 07:00 pm' || c.time_slot === slot) return true;
+                            
+                            // Check overlap for different hour configurations
+                            if (c.time_slot && c.time_slot.includes(' - ')) {
+                                const [cStart, cEnd] = c.time_slot.split(' - ');
+                                const closureStart = parseTimeMins(cStart);
+                                const closureEnd = parseTimeMins(cEnd);
+
+                                const [sStart, sEnd] = slot.split(' - ');
+                                const slotStart = parseTimeMins(sStart);
+                                const slotEnd = parseTimeMins(sEnd);
+
+                                return (slotStart < closureEnd && slotEnd > closureStart);
+                            }
+                            return false;
+                        }) || selectedFacility.status === 'In Maintenance';
+
+                        if (isClosed) {
+                            status = 'Close';
+                            statusClass = 'bg-red-900 text-white h-full flex items-center justify-center';
+                        } else {
+                            // Check Bookings
+                            const isBooked = (selectedFacility.max_capacity != null) && bookings && bookings.some(b => {
+                                return isSlotBooked(dateStr, slot, b);
+                            });
+
+                            if (isBooked) {
+                                status = 'Booked';
+                                statusClass = 'bg-primary-teal text-white h-full flex items-center justify-center';
+                            } else {
+                                // Available - make it interactive
+                                statusClass = 'text-blue-400 cursor-pointer hover:bg-blue-50 transition-colors h-full flex items-center justify-center slot-cell';
+                                status = `<div class="w-full h-full flex items-center justify-center" 
+                                               data-date="${dateStr}" 
+                                               data-index="${index}" 
+                                               data-day="${day}"
+                                               onclick="selectSlot('${dateStr}', ${index}, ${day}, this)">Available</div>`;
+                            }
+                        }
+                    }
+
+                    cellsHtml += `<div class="${statusClass}">${status}</div>`;
+                }
+                
+                row.innerHTML = cellsHtml;
+                grid.appendChild(row);
+            });
+        }
+
+        // ---- Booking Tab Logic ----
+        let currentSubTab = 'all';
+        let allUserBookings = [];
+        let currentBookingPage = 1;
+        const BOOKINGS_PER_PAGE = 5;
+
+        function setMainTab(tab) {
+            document.querySelectorAll('.main-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        function setSubTab(tab) {
+            currentSubTab = tab;
+            currentBookingPage = 1;
+            document.querySelectorAll('#page-dashboard .sub-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('subtab-' + tab).classList.add('active');
+
+            const actionCol = document.getElementById('booking-action-col');
+            const emptyStateColspan = document.querySelector('#booking-empty td');
+            if (tab === 'cancelled') {
+                actionCol.textContent = 'Reason';
+                actionCol.style.display = '';
+                if (emptyStateColspan) emptyStateColspan.setAttribute('colspan', '7');
+
+                // Mark admin-cancelled bookings as seen
+                const adminCancelledIds = allUserBookings.filter(b =>
+                    b.status === 'Cancelled' &&
+                    b.cancel_reason &&
+                    b.cancel_reason !== 'null' &&
+                    b.cancel_reason !== 'undefined' && b.cancel_reason.trim() !== ''
+                ).map(b => b.booking_id);
+                localStorage.setItem('user_seen_cancelled_' + currentUser.id, JSON.stringify(adminCancelledIds));
+                updateUserBadges();
+            } else if (tab === 'passed') {
+                actionCol.style.display = 'none';
+                if (emptyStateColspan) emptyStateColspan.setAttribute('colspan', '6');
+            } else {
+                actionCol.style.display = '';
+                actionCol.textContent = 'Action';
+                if (emptyStateColspan) emptyStateColspan.setAttribute('colspan', '7');
+            }
+
+            renderBookings();
+        }
+
+        // ---- Supabase: Fetch Bookings ----
+        async function fetchBookings() {
+            if (!currentUser.id) return;
+
+            const { data, error } = await db
+                .from('Booking')
+                .select(`
+                    booking_id,
+                    num_of_participant,
+                    date,
+                    end_date,
+                    invoice_number,
+                    created_at,
+                    status,
+                    cancel_reason,
+                    Facility ( name )
+                `)
+                .eq('user_id', currentUser.id);
+
+            if (error) {
+                console.error('Error fetching bookings:', error);
+                return;
+            }
+
+            allUserBookings = data;
+            updateUserBadges();
+            renderBookings();
+        }
+
+        // ---- User Notification Badges ----
+        function updateUserBadges() {
+            // Get seen IDs from localStorage (per user)
+            const seenCancelled = JSON.parse(localStorage.getItem('user_seen_cancelled_' + currentUser.id) || '[]');
+
+            // Count UNSEEN admin-cancelled bookings (those with cancel_reason)
+            const unseenCancelled = allUserBookings.filter(b =>
+                b.status === 'Cancelled' &&
+                b.cancel_reason && b.cancel_reason !== 'null' &&
+                b.cancel_reason !== 'undefined' && b.cancel_reason.trim() !== '' &&
+                !seenCancelled.includes(b.booking_id)
+            ).length;
+
+            // Sidebar badge
+            const badgeNav = document.getElementById('badge-user-cancelled');
+            if (badgeNav) {
+                if (unseenCancelled > 0) {
+                    badgeNav.textContent = unseenCancelled > 99 ? '99+' : unseenCancelled;
+                    badgeNav.classList.remove('hidden');
+                } else {
+                    badgeNav.classList.add('hidden');
+                }
+            }
+
+            // Cancelled sub-tab badge
+            const badgeTab = document.getElementById('badge-tab-cancelled');
+            if (badgeTab) {
+                if (unseenCancelled > 0) {
+                    badgeTab.textContent = unseenCancelled > 99 ? '99+' : unseenCancelled;
+                    badgeTab.classList.remove('hidden');
+                } else {
+                    badgeTab.classList.add('hidden');
+                }
+            }
+        }
+
+        function renderBookings() {
+            const container = document.getElementById('booking-list-rows');
+            const emptyEl = document.getElementById('booking-empty');
+            
+            // Filter by subtab (Confirmed/Cancelled)
+            const statusMap = {
+                'confirmed': 'Confirmed',
+                'cancelled': 'Cancelled'
+            };
+            const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+
+            let filtered;
+            if (currentSubTab === 'all') {
+                filtered = allUserBookings;
+            } else if (currentSubTab === 'confirmed') {
+                // Only confirmed where event date hasn't passed (by day)
+                filtered = allUserBookings.filter(b => {
+                    if (b.status !== 'Confirmed') return false;
+                    const checkDate = b.end_date || b.date;
+                    return checkDate >= todayStr;
+                });
+            } else if (currentSubTab === 'passed') {
+                // Confirmed bookings where the event date has passed
+                filtered = allUserBookings.filter(b => {
+                    if (b.status !== 'Confirmed') return false;
+                    const checkDate = b.end_date || b.date;
+                    return checkDate < todayStr;
+                });
+            } else {
+                // cancelled
+                filtered = allUserBookings.filter(b => b.status === 'Cancelled');
+            }
+
+            // Search filtering
+            const searchVal = document.getElementById('user-booking-search')?.value.toLowerCase() || '';
+            if (searchVal) {
+                filtered = filtered.filter(b =>
+                    (b.invoice_number && b.invoice_number.toLowerCase().includes(searchVal)) ||
+                    (b.Facility && b.Facility.name && b.Facility.name.toLowerCase().includes(searchVal))
+                );
+            }
+
+            // Clear existing data rows (keep the emptyEl in DOM!)
+            container.querySelectorAll('.booking-row').forEach(row => row.remove());
+
+            const paginationContainer = document.getElementById('booking-pagination');
+
+            if (filtered.length === 0) {
+                emptyEl.classList.remove('hidden');
+                paginationContainer.classList.add('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+
+            // Group by invoice_number
+            const grouped = {};
+            filtered.forEach(b => {
+                const inv = b.invoice_number || `INV-${b.booking_id.toString().padStart(5, '0')}`;
+                if (!grouped[inv]) {
+                    grouped[inv] = {
+                        invoice: inv,
+                        facility: b.Facility ? b.Facility.name : 'Unknown',
+                        participants: b.num_of_participant,
+                        created_at: b.created_at,
+                        dateRange: [b.date],
+                        status: b.status,
+                        cancel_reason: b.cancel_reason
+                    };
+                    if (b.end_date && b.end_date !== b.date) {
+                        grouped[inv].dateRange.push(b.end_date);
+                    }
+                } else {
+                    if (!grouped[inv].dateRange.includes(b.date)) {
+                        grouped[inv].dateRange.push(b.date);
+                    }
+                    if (b.end_date && !grouped[inv].dateRange.includes(b.end_date)) {
+                        grouped[inv].dateRange.push(b.end_date);
+                    }
+                }
+            });
+
+            const groupedList = Object.values(grouped).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const totalPages = Math.ceil(groupedList.length / BOOKINGS_PER_PAGE) || 1;
+            
+            if (currentBookingPage < 1) currentBookingPage = 1;
+            if (currentBookingPage > totalPages) currentBookingPage = totalPages;
+
+            renderUserPaginationControls('booking-pagination', currentBookingPage, totalPages, 'changeBookingPage');
+
+            const startIndex = (currentBookingPage - 1) * BOOKINGS_PER_PAGE;
+            const paginatedList = groupedList.slice(startIndex, startIndex + BOOKINGS_PER_PAGE);
+
+            paginatedList.forEach((g, index) => {
+                const bookingDate = new Date(g.created_at).toLocaleDateString();
+                // Format event date
+                g.dateRange.sort();
+                const eventDateDisplay = g.dateRange.length > 1 
+                    ? `${g.dateRange[0]} - ${g.dateRange[g.dateRange.length-1]}`
+                    : g.dateRange[0];
+
+                let actionHtml = '';
+                let statusHtml = '';
+                const baseStyle = "font-bold uppercase inline-block text-[10px]";
+
+                // Determine if this booking has passed (by day)
+                const isPassed = g.status === 'Confirmed' && (() => {
+                    const todayCheck = new Date().toLocaleDateString('en-CA');
+                    const lastDate = g.dateRange[g.dateRange.length - 1];
+                    return lastDate < todayCheck;
+                })();
+
+                if (isPassed || currentSubTab === 'passed') {
+                    statusHtml = `<span class="${baseStyle} text-gray-400">PASSED</span>`;
+                    actionHtml = ''; // No action column for passed
+                } else if (g.status === 'Confirmed') {
+                    statusHtml = `<span class="${baseStyle} text-primary-teal">CONFIRMED</span>`;
+                    actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"><button onclick="cancelBooking('${g.invoice}')" class="border border-red-200 hover:bg-[#e53e3e] hover:text-white hover:border-[#e53e3e] text-red-500 px-3 py-1 rounded text-[10px] font-bold transition-all uppercase">CANCEL</button></td>`;
+                } else if (g.status === 'Cancelled') {
+                    statusHtml = `<div class="flex flex-col gap-1 items-start"><span class="${baseStyle} text-red-500">CANCELLED</span></div>`;
+                    
+                    if (g.cancel_reason && g.cancel_reason !== 'null' && g.cancel_reason !== 'undefined' && g.cancel_reason.trim() !== '') {
+                        const safeReason = g.cancel_reason.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                        actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"><button onclick="viewCancelReason('${safeReason}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-[10px] font-bold transition-all uppercase shadow-sm">REASON</button></td>`;
+                    } else {
+                        actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"></td>`;
+                    }
+                } else {
+                    statusHtml = `<span class="${baseStyle} text-gray-600">${g.status?.toUpperCase() || '-'}</span>`;
+                    actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"></td>`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'booking-row hover:bg-gray-50 transition-colors';
+                row.innerHTML = `
+                    <td class="px-2 sm:px-6 py-2 sm:py-4 font-bold text-primary-blue text-[10px] sm:text-xs">${g.invoice}</td>
+                    <td class="px-2 sm:px-6 py-2 sm:py-4 text-[10px] sm:text-xs text-gray-600">${g.participants} person</td>
+                    <td class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-primary-teal text-[10px] sm:text-xs">${g.facility}</td>
+                    <td class="px-2 sm:px-6 py-2 sm:py-4 text-[10px] sm:text-xs text-gray-600">${bookingDate}</td>
+                    <td class="px-2 sm:px-6 py-2 sm:py-4 text-[10px] sm:text-xs text-gray-600">${eventDateDisplay}</td>
+                    <td class="px-2 sm:px-6 py-2 sm:py-4 flex items-center min-h-[56px]">${statusHtml}</td>
+                    ${actionHtml}
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        window.changeBookingPage = function(delta) {
+            currentBookingPage += delta;
+            renderBookings();
+        }
+
+        async function cancelBooking(invoice) {
+            showConfirmModal(
+                'Cancel Booking',
+                `Are you sure you want to cancel booking ${invoice}?`,
+                'Cancel Booking',
+                'bg-red-500 hover:bg-red-600',
+                async () => {
+                    const { error } = await db
+                        .from('Booking')
+                        .update({ status: 'Cancelled' })
+                        .eq('invoice_number', invoice);
+
+                    if (error) {
+                        showToast('Failed to cancel booking: ' + error.message, 'error');
+                    } else {
+                        showToast('Booking cancelled successfully.', 'success');
+                        fetchBookings(); // Refresh the list
+                    }
+                }
+            );
+        }
+
+        // ---- Confirm Modal Logic ----
+        let confirmActionCallback = null;
+
+        function showConfirmModal(title, text, confirmBtnText, confirmBtnColor, callback) {
+            document.getElementById('confirm-modal-title').textContent = title;
+            document.getElementById('confirm-modal-text').textContent = text;
+            
+            const btn = document.getElementById('confirm-modal-btn');
+            btn.textContent = confirmBtnText;
+            btn.className = `flex-1 px-4 py-2 text-white rounded-lg font-medium transition-colors ${confirmBtnColor}`;
+            
+            confirmActionCallback = callback;
+            
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.children[0].classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('opacity-0');
+            modal.children[0].classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                confirmActionCallback = null;
+            }, 300);
+        }
+
+        function executeConfirmAction() {
+            if (confirmActionCallback) confirmActionCallback();
+            closeConfirmModal();
+        }
+
+        // ---- Supabase: Fetch Facilities ----
+
+        let allFacilities = [];
+        let currentFacilityPage = 1;
+        const FACILITIES_PER_PAGE = 4;
+        let filteredFacilitiesCache = [];
+
+        function changeFacilityPage(offset) {
+            const maxPage = Math.ceil(filteredFacilitiesCache.length / FACILITIES_PER_PAGE) || 1;
+            currentFacilityPage += offset;
+            if (currentFacilityPage < 1) currentFacilityPage = 1;
+            if (currentFacilityPage > maxPage) currentFacilityPage = maxPage;
+            
+            renderFacilitiesPage();
+        }
+
+        function isCurrentTimeInSlot(slotStr) {
+            if (!slotStr) return false;
+            const now = new Date();
+            const currTotalMins = now.getHours() * 60 + now.getMinutes();
+        
+            const parts = slotStr.split('-');
+            if (parts.length !== 2) return false;
+            
+            function parseTime(tStr) {
+                tStr = tStr.trim().toLowerCase();
+                let [time, period] = tStr.split(' ');
+                if (!time || !period) return 0;
+                let [h, m] = time.split(':').map(Number);
+                if (period === 'pm' && h !== 12) h += 12;
+                if (period === 'am' && h === 12) h = 0;
+                return h * 60 + m;
+            }
+        
+            const startMins = parseTime(parts[0]);
+            const endMins = parseTime(parts[1]);
+        
+            return currTotalMins >= startMins && currTotalMins <= endMins;
+        }
+
+        async function fetchFacilities() {
+            const { data, error } = await db
+                .from('Facility')
+                .select('*');
+
+            if (error) {
+                console.error('Error fetching facilities:', error);
+                return;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            const { data: bookings } = await db
+                .from('Booking')
+                .select('facility_id, num_of_participant, time_slot')
+                .eq('status', 'Confirmed')
+                .gte('end_date', today)
+                .lte('date', today);
+
+            const activeCounts = {};
+            if (bookings) {
+                bookings.forEach(b => {
+                    if (isCurrentTimeInSlot(b.time_slot)) {
+                        activeCounts[b.facility_id] = (activeCounts[b.facility_id] || 0) + (b.num_of_participant || 0);
+                    }
+                });
+            }
+
+            allFacilities = data.map(f => ({
+                ...f,
+                current_capacity: activeCounts[f.facility_id] || 0
+            }));
+            renderFacilities();
+
+            // Auto-open booking form if redirected from landing page
+            const urlParams = new URLSearchParams(window.location.search);
+            const openBookingId = urlParams.get('open_booking');
+            if (openBookingId) {
+                const facility = allFacilities.find(f => f.facility_id == openBookingId);
+                if (facility && facility.status !== 'In Maintenance') {
+                    showPage('booking-form', facility.facility_id);
+                }
+                // Clean up URL to prevent re-triggering on refresh
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        function renderFacilities() {
+            populateReportFacilities();
+
+            // Internal search text
+            const query = (document.getElementById('facility-search-input')?.value || '').toLowerCase();
+            
+            // Sidebar filters
+            const filterCategory = document.getElementById('filter-category').value;
+            const filterMaxCapacity = document.getElementById('filter-max-capacity').value;
+            const filterStatus = document.getElementById('filter-status').value;
+
+            filteredFacilitiesCache = allFacilities.filter(f => {
+                const matchesSearch = f.name.toLowerCase().includes(query) || 
+                                    f.location.toLowerCase().includes(query);
+                const matchesCategory = !filterCategory || f.type === filterCategory;
+                const matchesCapacity = !filterMaxCapacity || f.max_capacity >= parseInt(filterMaxCapacity);
+                const matchesStatus = !filterStatus || f.status === filterStatus;
+                
+                return matchesSearch && matchesCategory && matchesCapacity && matchesStatus;
+            });
+            
+            // Reset to page 1 on search
+            currentFacilityPage = 1;
+            renderFacilitiesPage();
+        }
+
+        function renderFacilitiesPage() {
+            const container = document.getElementById('facility-cards');
+            const emptyEl = document.getElementById('facility-empty');
+            const countEl = document.getElementById('facility-count');
+            
+            countEl.textContent = `Found ${filteredFacilitiesCache.length} facilit${filteredFacilitiesCache.length !== 1 ? 'ies' : 'y'} in UMPSA Pekan`;
+
+            // Max page calc
+            const maxPage = Math.ceil(filteredFacilitiesCache.length / FACILITIES_PER_PAGE) || 1;
+            
+            const paginationContainer = document.getElementById('fac-pagination-container');
+            if (paginationContainer) {
+                if (filteredFacilitiesCache.length <= FACILITIES_PER_PAGE) {
+                    paginationContainer.classList.add('hidden');
+                } else {
+                    paginationContainer.classList.remove('hidden');
+                    paginationContainer.innerHTML = '';
+                    
+                    if (currentFacilityPage > 1) {
+                        const prevBtn = document.createElement('button');
+                        prevBtn.onclick = () => changeFacilityPage(-1);
+                        prevBtn.className = "w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg text-sm text-primary-blue bg-white hover:bg-gray-50 transition-colors shadow-sm font-semibold";
+                        prevBtn.innerHTML = '<';
+                        paginationContainer.appendChild(prevBtn);
+                    }
+                    
+                    const pageBtn = document.createElement('div');
+                    pageBtn.className = "w-8 h-8 flex items-center justify-center bg-primary-blue text-white rounded-lg font-bold text-sm shadow-sm cursor-default";
+                    pageBtn.textContent = currentFacilityPage;
+                    paginationContainer.appendChild(pageBtn);
+                    
+                    if (currentFacilityPage < maxPage) {
+                        const nextBtn = document.createElement('button');
+                        nextBtn.onclick = () => changeFacilityPage(1);
+                        nextBtn.className = "w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg text-sm text-primary-blue bg-white hover:bg-gray-50 transition-colors shadow-sm font-semibold";
+                        nextBtn.innerHTML = '>';
+                        paginationContainer.appendChild(nextBtn);
+                    }
+                }
+            }
+
+            // Remove existing cards
+            container.querySelectorAll('.facility-card').forEach(c => c.remove());
+
+            if (filteredFacilitiesCache.length === 0) {
+                emptyEl.classList.remove('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            
+            const startIdx = (currentFacilityPage - 1) * FACILITIES_PER_PAGE;
+            const paginated = filteredFacilitiesCache.slice(startIdx, startIdx + FACILITIES_PER_PAGE);
+
+            paginated.forEach(f => {
+                const card = document.createElement('div');
+                card.className = 'facility-card bg-white border border-gray-100 rounded-xl p-6 flex flex-col md:flex-row items-center gap-8 hover:shadow-md transition-all';
+                
+                const statusConfig = {
+                    'Available': { color: 'text-primary-teal', icon: 'check-circle' },
+                    'In Maintenance': { color: 'text-yellow-600', icon: 'alert-triangle' }
+                };
+                const status = statusConfig[f.status] || { color: 'text-gray-500', icon: 'help-circle' };
+                
+                card.innerHTML = `
+                    <!-- Left: Image -->
+                    <div class="w-full md:w-64 h-40 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden relative border border-gray-100">
+                        <img src="${f.image_url || 'https://placehold.co/600x400/eeeeee/999999?text=No+Image+Available'}"
+                             alt="${f.name}" 
+                             class="absolute inset-0 w-full h-full object-cover">
+                    </div>
+
+                    <!-- Middle: Info -->
+                    <div class="flex-1 flex flex-col gap-3">
+                        <h4 class="text-lg font-bold text-primary-blue">${f.name}</h4>
+                        
+                        <div class="flex flex-col gap-2">
+                            <!-- Location -->
+                            <div class="flex items-center gap-2.5 text-gray-500 text-[13px]">
+                                <i data-lucide="map-pin" class="w-4 h-4 opacity-70"></i>
+                                <span>${f.location}</span>
+                            </div>
+                            
+                            <!-- Category -->
+                            <div class="flex items-center gap-2.5 text-gray-500 text-[13px]">
+                                <i data-lucide="grid" class="w-4 h-4 opacity-70"></i>
+                                <span>Category: ${f.type}</span>
+                            </div>
+                            
+                            <!-- Max Capacity -->
+                            <div class="flex items-center gap-2.5 text-gray-500 text-[13px]">
+                                <i data-lucide="users" class="w-4 h-4 opacity-70"></i>
+                                <span>Max. Capacity: ${f.max_capacity != null ? f.max_capacity + ' person' : 'No Limit'}</span>
+                            </div>
+
+                            <!-- Currently Using -->
+                            <div class="flex items-center gap-2.5 text-gray-500 text-[13px]">
+                                <i data-lucide="activity" class="w-4 h-4 opacity-70"></i>
+                                <span>Currently Using: ${f.current_capacity} person</span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="flex items-center gap-2.5 text-[13px] ${status.color} font-medium">
+                                <i data-lucide="${status.icon}" class="w-4 h-4"></i>
+                                <span>Status: ${f.status}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Button -->
+                    <div class="w-full md:w-auto flex-shrink-0">
+                        ${f.status === 'In Maintenance' 
+                            ? `<button disabled class="w-full md:w-auto bg-gray-300 text-gray-500 cursor-not-allowed px-8 py-3 rounded-md font-medium text-sm transition-all shadow-sm">
+                                Under Maintenance
+                               </button>`
+                            : `<button onclick="showPage('booking-form', ${f.facility_id})" 
+                                class="w-full md:w-auto bg-[#183e87] hover:bg-blue-900 text-white px-8 py-3 rounded-md font-medium text-sm transition-all shadow-sm">
+                                Book Now
+                               </button>`
+                        }
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function applyFilters() {
+            renderFacilities();
+        }
+
+        function handleLogout() {
+            sessionStorage.clear();
+            localStorage.clear();
+            window.location.href = '../LogInPage/LogInPage.html';
+        }
+
+        // ---- Booking Process Logic ----
+        let selectedFacility = null;
+        let bookingData = {};
+        let selectionStart = null; // { date, index, day }
+        
+        // View Reason Modal Function
+        window.viewCancelReason = function(reason) {
+            document.getElementById('view-reason-text').textContent = reason;
+            document.getElementById('view-reason-modal').classList.remove('hidden');
+        };
+
+        let selectionEnd = null;   // { date, index, day }
+        let currentWeekMonday = null; // The Monday of the currently displayed week
+        let selectedMonth = null; // { year, month } for the month selector
+
+        // Get the Monday of the week containing a given date
+        function getMondayOfWeek(d) {
+            const date = new Date(d);
+            const day = date.getDay(); // 0=Sun, 1=Mon...
+            const diff = day === 0 ? -6 : 1 - day;
+            date.setDate(date.getDate() + diff);
+            date.setHours(0, 0, 0, 0);
+            return date;
+        }
+
+        // Populate year selector: current year + next 4 years (5 total)
+        function populateYearSelector() {
+            const sel = document.getElementById('year-selector');
+            if (!sel) return;
+            sel.innerHTML = '';
+            const currentYear = new Date().getFullYear();
+            for (let i = 0; i < 5; i++) {
+                const y = currentYear + i;
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                if (selectedMonth && y === selectedMonth.year) opt.selected = true;
+                sel.appendChild(opt);
+            }
+        }
+
+        // Populate month selector: month names only, based on given year
+        function populateMonthSelector(forYear) {
+            const sel = document.getElementById('month-selector');
+            if (!sel) return;
+            sel.innerHTML = '';
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            const startMonth = (forYear === currentYear) ? currentMonth : 0;
+
+            for (let m = startMonth; m <= 11; m++) {
+                const d = new Date(forYear, m, 1);
+                const opt = document.createElement('option');
+                opt.value = `${forYear}-${m}`;
+                opt.textContent = d.toLocaleDateString('en-GB', { month: 'long' });
+                if (selectedMonth && forYear === selectedMonth.year && m === selectedMonth.month) {
+                    opt.selected = true;
+                }
+                sel.appendChild(opt);
+            }
+        }
+
+        // When year selector changes — repopulate months and jump
+        function onYearSelectorChange(year) {
+            year = parseInt(year);
+            const now = new Date();
+            // If switching to current year, clamp month to at least current month
+            const newMonth = (year === now.getFullYear())
+                ? Math.max(selectedMonth ? selectedMonth.month : now.getMonth(), now.getMonth())
+                : (selectedMonth ? selectedMonth.month : 0);
+            selectedMonth = { year, month: newMonth };
+            populateMonthSelector(year);
+            // Sync month dropdown selection
+            const mSel = document.getElementById('month-selector');
+            if (mSel) mSel.value = `${year}-${newMonth}`;
+            const firstOfMonth = new Date(year, newMonth, 1);
+            currentWeekMonday = getMondayOfWeek(firstOfMonth);
+            selectionStart = null;
+            selectionEnd = null;
+            if (selectedFacility) renderAvailability(selectedFacility.facility_id);
+        }
+
+        // When the month selector changes
+        function onMonthSelectorChange(val) {
+            const [year, month] = val.split('-').map(Number);
+            selectedMonth = { year, month };
+            const firstOfMonth = new Date(year, month, 1);
+            currentWeekMonday = getMondayOfWeek(firstOfMonth);
+            selectionStart = null;
+            selectionEnd = null;
+            if (selectedFacility) renderAvailability(selectedFacility.facility_id);
+        }
+
+        function changeWeek(offset) {
+            const newMonday = new Date(currentWeekMonday);
+            newMonday.setDate(newMonday.getDate() + (offset * 7));
+            // Clamp: the week's Sunday must still be in the selected month, or the Monday must still be in it
+            const newSunday = new Date(newMonday);
+            newSunday.setDate(newMonday.getDate() + 6);
+            if (selectedMonth) {
+                if (offset > 0) {
+                    // Going forward: Monday of new week must start before the end of selected month
+                    const lastOfMonth = new Date(selectedMonth.year, selectedMonth.month + 1, 0);
+                    if (newMonday > lastOfMonth) return; // can't go further
+                } else {
+                    // Going backward: Sunday of new week must be on or after the 1st of selected month
+                    const firstOfMonth = new Date(selectedMonth.year, selectedMonth.month, 1);
+                    if (newSunday < firstOfMonth) return; // can't go earlier
+                }
+            }
+            currentWeekMonday = newMonday;
+            if (selectedFacility) {
+                renderAvailability(selectedFacility.facility_id);
+            }
+        }
+
+        // Sync: when user changes the Start Date input, jump the weekly view
+        document.addEventListener('DOMContentLoaded', () => {
+            const startDateInput = document.getElementById('booking-start-date');
+            if (startDateInput) {
+                startDateInput.addEventListener('change', function() {
+                    if (!this.value || !selectedFacility) return;
+                    const picked = new Date(this.value + 'T00:00:00');
+                    currentWeekMonday = getMondayOfWeek(picked);
+                    // Update the month selector to match
+                    selectedMonth = { year: picked.getFullYear(), month: picked.getMonth() };
+                    populateYearSelector();
+                    populateMonthSelector(picked.getFullYear());
+                    selectionStart = null;
+                    selectionEnd = null;
+                    renderAvailability(selectedFacility.facility_id);
+                });
+            }
+        });
+
+        function selectSlot(date, index, day, el) {
+            if (!selectionStart || (selectionStart && selectionEnd)) {
+                // First click or reset
+                selectionStart = { date, index, day };
+                selectionEnd = null;
+            } else {
+                // Second click
+                selectionEnd = { date, index, day };
+            }
+
+            // Update Form
+            updateSelectionForm();
+
+            // Visual feedback
+            highlightSelectionRange();
+            
+            // Scroll to form nicely if selection is complete
+            if (selectionEnd) {
+                document.getElementById('booking-title').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        const slotTimes = [
+            { start: '07:00 am', end: '08:30 am' },
+            { start: '08:30 am', end: '10:00 am' },
+            { start: '10:00 am', end: '11:30 am' },
+            { start: '11:30 am', end: '01:00 pm' },
+            { start: '01:00 pm', end: '02:30 pm' },
+            { start: '02:30 pm', end: '04:00 pm' },
+            { start: '04:00 pm', end: '05:30 pm' },
+            { start: '05:30 pm', end: '07:00 pm' }
+        ];
+
+        function updateSelectionForm() {
+            if (!selectionStart) return;
+
+            if (!selectionEnd) {
+                // Single slot selected (for now)
+                document.getElementById('booking-start-date').value = selectionStart.date;
+                document.getElementById('booking-end-date').value = selectionStart.date;
+                document.getElementById('booking-start-time').value = slotTimes[selectionStart.index].start;
+                document.getElementById('booking-end-time').value = slotTimes[selectionStart.index].end;
+            } else {
+                // Range selected
+                // Ensure chronological order
+                let start = selectionStart;
+                let end = selectionEnd;
+
+                // Sort by date then index
+                if (new Date(start.date) > new Date(end.date) || 
+                   (start.date === end.date && start.index > end.index)) {
+                     [start, end] = [end, start];
+                }
+
+                document.getElementById('booking-start-date').value = start.date;
+                document.getElementById('booking-end-date').value = end.date;
+                document.getElementById('booking-start-time').value = slotTimes[start.index].start;
+                document.getElementById('booking-end-time').value = slotTimes[end.index].end;
+            }
+        }
+
+        function highlightSelectionRange() {
+            // Remove all selection highlights
+            document.querySelectorAll('.slot-cell').forEach(cell => {
+                cell.classList.remove('ring-2', 'ring-primary-teal', 'bg-blue-100', 'bg-blue-200');
+            });
+
+            if (!selectionStart) return;
+
+            const cells = document.querySelectorAll('.slot-cell div[data-date]');
+            
+            let start = selectionStart;
+            let end = selectionEnd || selectionStart;
+
+            // Sort for comparison
+            if (new Date(start.date) > new Date(end.date) || 
+               (start.date === end.date && start.index > end.index)) {
+                 [start, end] = [end, start];
+            }
+
+            cells.forEach(el => {
+                const date = el.getAttribute('data-date');
+                const index = parseInt(el.getAttribute('data-index'));
+                
+                const currDate = new Date(date);
+                const sDate = new Date(start.date);
+                const eDate = new Date(end.date);
+
+                let isInRange = false;
+                if (currDate > sDate && currDate < eDate) {
+                    isInRange = true;
+                } else if (currDate.getTime() === sDate.getTime() && currDate.getTime() === eDate.getTime()) {
+                    isInRange = (index >= start.index && index <= end.index);
+                } else if (currDate.getTime() === sDate.getTime()) {
+                    isInRange = (index >= start.index);
+                } else if (currDate.getTime() === eDate.getTime()) {
+                    isInRange = (index <= end.index);
+                }
+
+                if (isInRange) {
+                    const parent = el.parentElement;
+                    parent.classList.add('bg-blue-100');
+                    if (el.getAttribute('data-date') === selectionStart.date && parseInt(el.getAttribute('data-index')) === selectionStart.index) {
+                         parent.classList.add('ring-2', 'ring-primary-teal');
+                    }
+                    if (selectionEnd && el.getAttribute('data-date') === selectionEnd.date && parseInt(el.getAttribute('data-index')) === selectionEnd.index) {
+                         parent.classList.add('ring-2', 'ring-primary-teal');
+                    }
+                }
+            });
+        }
+
+        function proceedToSummary() {
+            // Get form values
+            const startDate = document.getElementById('booking-start-date').value;
+            const endDate = document.getElementById('booking-end-date').value;
+            const startTime = document.getElementById('booking-start-time').value;
+            const endTime = document.getElementById('booking-end-time').value;
+            const event = document.getElementById('booking-event').value;
+            const participants = document.getElementById('booking-participants').value;
+
+            // Simple validation for empty fields First
+            if (!startDate || !startTime || !endDate || !endTime || !event || !participants) {
+                showToast('Please fill in all required fields marked with *', 'warning');
+                return;
+            }
+
+            // Capacity Validation (After ensuring it's filled) — skip for no-limit facilities
+            const parsedParticipants = parseInt(participants);
+            if (selectedFacility.max_capacity != null && parsedParticipants > selectedFacility.max_capacity) {
+                showToast(`Number of participants exceeds facility capacity (Max: ${selectedFacility.max_capacity}).`, 'warning');
+                return;
+            }
+            if (parsedParticipants < 1) {
+                showToast('Number of participants must be at least 1.', 'warning');
+                return;
+            }
+
+            // Past date validation
+            const todayStr = new Date().toLocaleDateString('en-CA'); // Gets YYYY-MM-DD in local time
+            
+            if (startDate < todayStr || endDate < todayStr) {
+                showToast('You cannot book past dates.', 'warning');
+                return;
+            }
+
+            if (startDate > endDate) {
+                showToast('End Date must be after or equal to Start Date.', 'warning');
+                return;
+            }
+            
+            if (startDate === endDate) {
+                // Check if end time is before start time
+                const sTimeIdx = slotTimes.findIndex(t => t.start === startTime);
+                const eTimeIdx = slotTimes.findIndex(t => t.end === endTime);
+                if (sTimeIdx > eTimeIdx) {
+                    showToast('End Time cannot be before Start Time.', 'warning');
+                    return;
+                }
+            }
+
+
+            // Save data
+            const slotsToBook = getSlotsInRange(startDate, endDate, startTime, endTime);
+            bookingData = { 
+                startDate, 
+                endDate, 
+                startTime, 
+                endTime, 
+                event, 
+                participants,
+                slots: slotsToBook
+            };
+            
+            // Update Summary UI
+            document.getElementById('summary-facility-name').textContent = `Reserve ${selectedFacility.name}`;
+            document.getElementById('summary-event').textContent = event;
+            document.getElementById('summary-datetime').textContent = 
+                startDate === endDate 
+                ? `${startDate} (${startTime} - ${endTime})`
+                : `${startDate} ${startTime} - ${endDate} ${endTime}`;
+            
+            showPage('book-now-summary');
+        }
+
+        function proceedToConfirmation() {
+            // Update Confirmation UI
+            const today = new Date().toLocaleDateString('en-GB');
+            document.getElementById('confirm-order-date').textContent = `Date: ${today}`;
+            
+            const tbody = document.getElementById('confirm-table-body');
+            tbody.innerHTML = '';
+            
+            // Revert to showing the entire range as ONE row per day or ONE row total
+            // User requested 1 booking = 1 invoice, so we show it as a high-level summary here
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50 transition-colors';
+            
+            const dateSummary = bookingData.startDate === bookingData.endDate
+                ? `${bookingData.startDate} (${bookingData.startTime} - ${bookingData.endTime})`
+                : `${bookingData.startDate} ${bookingData.startTime} - ${bookingData.endDate} ${bookingData.endTime}`;
+
+            row.innerHTML = `
+                <td class="px-6 py-4 text-gray-600 text-[13px] font-medium whitespace-nowrap">
+                    <div class="flex flex-col">
+                        <span class="font-bold text-primary-blue">${dateSummary}</span>
+                        <span class="text-xs text-gray-400">${bookingData.slots.length} slots selected</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-primary-blue font-semibold text-[13px]">${selectedFacility.name}</td>
+                <td class="px-6 py-4 text-gray-500 text-[13px]">1</td>
+            `;
+            tbody.appendChild(row);
+            
+            showPage('confirm-booking');
+        }
+
+        function getSlotsInRange(sDate, eDate, sTime, eTime) {
+            const slots = [];
+            const start = new Date(sDate);
+            const end = new Date(eDate);
+            
+            const timeSlotLabels = [
+                '07:00 am - 08:30 am', '08:30 am - 10:00 am', '10:00 am - 11:30 am', 
+                '11:30 am - 01:00 pm', '01:00 pm - 02:30 pm', '02:30 pm - 04:00 pm', 
+                '04:00 pm - 05:30 pm', '05:30 pm - 07:00 pm'
+            ];
+
+            const sTimeIdx = slotTimes.findIndex(t => t.start === sTime);
+            const eTimeIdx = slotTimes.findIndex(t => t.end === eTime);
+
+            if (sTimeIdx === -1 || eTimeIdx === -1) return [];
+
+            let curr = new Date(start);
+            while (curr <= end) {
+                const dateStr = toLocalDateStr(curr);
+                
+                let startIdx = 0;
+                let endIdx = timeSlotLabels.length - 1;
+
+                if (dateStr === sDate) startIdx = sTimeIdx;
+                if (dateStr === eDate) endIdx = eTimeIdx;
+
+                for (let i = startIdx; i <= endIdx; i++) {
+                    slots.push({ date: dateStr, time_slot: timeSlotLabels[i] });
+                }
+                
+                curr.setDate(curr.getDate() + 1);
+            }
+            return slots;
+        }
+
+        async function submitBooking() {
+            const btn = document.getElementById('btn-submit-booking');
+            btn.disabled = true;
+            btn.textContent = 'SUBMITTING...';
+
+            try {
+                const slotsToBook = getSlotsInRange(
+                    bookingData.startDate, 
+                    bookingData.endDate, 
+                    bookingData.startTime, 
+                    bookingData.endTime
+                );
+
+                if (slotsToBook.length === 0) {
+                    showToast('Invalid time range selected.', 'warning');
+                    btn.disabled = false;
+                    btn.textContent = 'CONFIRM BOOKING';
+                    return;
+                }
+
+                // Check for double booking for ALL slots
+                // We'll fetch all bookings for this facility to check overlaps
+                const { data: existing, error: checkError } = await db
+                    .from('Booking')
+                    .select('date, end_date, time_slot')
+                    .eq('facility_id', selectedFacility.facility_id)
+                    .eq('status', 'Confirmed');
+
+                if (checkError) throw checkError;
+
+                // Also check for closures
+                const { data: closures, error: closureError } = await db
+                    .from('Facility_Closure')
+                    .select('date, time_slot')
+                    .eq('facility_id', selectedFacility.facility_id)
+                    .gte('date', bookingData.startDate)
+                    .lte('date', bookingData.endDate);
+
+                if (closureError) throw closureError;
+                
+                const conflicts = slotsToBook.filter(slot => {
+                    const isBooked = existing.some(e => isSlotBooked(slot.date, slot.time_slot, e));
+                    const isClosed = closures.some(c => c.date === slot.date && c.time_slot === slot.time_slot);
+                    return isBooked || isClosed;
+                });
+
+                if (conflicts.length > 0) {
+                    const conflictList = conflicts.slice(0, 3).map(c => `${c.date} ${c.time_slot}`).join('\n');
+                    showToast(`Some slots in your range are unavailable: ${conflictList}${conflicts.length > 3 ? ' ...' : ''}`, 'warning');
+                    btn.disabled = false;
+                    btn.textContent = 'CONFIRM BOOKING';
+                    return;
+                }
+
+                // Single insert
+                const sessionSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+                const dateCode = new Date().toISOString().slice(2, 10).replace(/-/g, ''); // YYMMDD
+                const invoiceNumber = `INV-${dateCode}-${sessionSuffix}`;
+
+                const insertData = {
+                    user_id: currentUser.id,
+                    facility_id: selectedFacility.facility_id,
+                    date: bookingData.startDate,
+                    end_date: bookingData.endDate,
+                    time_slot: `${bookingData.startTime} - ${bookingData.endTime}`,
+                    num_of_participant: parseInt(bookingData.participants),
+                    purpose: bookingData.event,
+                    status: 'Confirmed',
+                    invoice_number: invoiceNumber
+                };
+
+                const { error } = await db.from('Booking').insert([insertData]);
+
+                if (error) throw error;
+
+                showToast('Booking successful!', 'success');
+
+                // Full state reset so next booking starts clean
+                selectedFacility = null;
+                bookingData = {};
+                selectionStart = null;
+                selectionEnd = null;
+
+                fetchBookings(); // Refresh booking list
+                showPage('dashboard');
+            } catch (err) {
+                console.error('Booking error:', err);
+                showToast('Failed to submit booking: ' + err.message, 'error');
+                btn.disabled = false;
+                btn.textContent = 'CONFIRM BOOKING';
+            }
+        }
+        // ---- Report Facility Logic ----
+
+        function populateReportFacilities() {
+            const select = document.getElementById('report-facility');
+            if(!select) return;
+            // Clear existing except first (placeholder)
+            while(select.options.length > 1) { select.remove(1); }
+            allFacilities.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.facility_id;
+                opt.textContent = f.name;
+                select.appendChild(opt);
+            });
+        }
+
+        async function submitReport(btn) {
+            if (!currentUser.id) { showToast('Please login first.', 'warning'); return; }
+            
+            const facilityId = document.getElementById('report-facility').value;
+            const desc = document.getElementById('report-desc').value.trim();
+            const fileInput = document.getElementById('report-image');
+            const file = fileInput.files[0];
+
+            if (!facilityId || !desc || !file) {
+                showToast('Please fill all fields and upload a photo proof.', 'warning'); return;
+            }
+
+            btn.disabled = true;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> SUBMITTING...';
+            lucide.createIcons();
+
+            try {
+                // 1. Upload Image to Supabase Storage
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+                const filePath = `${currentUser.id}/${fileName}`;
+
+                const { data: uploadData, error: uploadError } = await db.storage
+                    .from('reports')
+                    .upload(filePath, file);
+
+                if (uploadError) throw uploadError;
+
+                // 2. Get Public URL
+                const { data: { publicUrl } } = db.storage
+                    .from('reports')
+                    .getPublicUrl(filePath);
+
+                // 3. Insert into Report Table
+                const { error: insertError } = await db.from('Report').insert([{
+                    user_id: currentUser.id,
+                    facility_id: facilityId,
+                    issue_description: desc,
+                    image_proof: publicUrl,
+                    status: 'Pending'
+                }]);
+
+                if (insertError) throw insertError;
+
+                showToast('Report submitted successfully!', 'success');
+                
+                // Clear form
+                document.getElementById('report-facility').value = '';
+                document.getElementById('report-desc').value = '';
+                fileInput.value = '';
+                document.getElementById('report-image-name').textContent = 'Click to upload image or drag and drop';
+
+                // Refresh table
+                fetchMyReports();
+                
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to submit report: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                lucide.createIcons();
+            }
+        }
+
+        let allMyReports = [];
+        let currentReportPage = 1;
+        const REPORTS_PER_PAGE = 5;
+
+        async function fetchMyReports() {
+            if (!currentUser.id) return;
+
+            const { data, error } = await db
+                .from('Report')
+                .select(`
+                    *,
+                    Facility ( name )
+                `)
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching reports:', error);
+                return;
+            }
+
+            allMyReports = data || [];
+            currentReportPage = 1;
+            renderMyReports();
+        }
+
+        function renderMyReports() {
+            const container = document.getElementById('report-list-rows');
+            const paginationContainer = document.getElementById('user-report-pagination');
+            container.innerHTML = '';
+
+            if (!allMyReports || allMyReports.length === 0) {
+                container.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-sm text-gray-400 border-none">No record.</td></tr>`;
+                paginationContainer.classList.add('hidden');
+                return;
+            }
+
+            // Sort by date submitted, newest first
+            const sortedReports = [...allMyReports].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            const totalPages = Math.ceil(sortedReports.length / REPORTS_PER_PAGE) || 1;
+            if (currentReportPage < 1) currentReportPage = 1;
+            if (currentReportPage > totalPages) currentReportPage = totalPages;
+
+            const startIdx = (currentReportPage - 1) * REPORTS_PER_PAGE;
+            const paginated = sortedReports.slice(startIdx, startIdx + REPORTS_PER_PAGE);
+
+            renderUserPaginationControls('user-report-pagination', currentReportPage, totalPages, 'changeReportPage');
+
+            paginated.forEach(r => {
+                const reportDate = new Date(r.created_at).toLocaleDateString();
+                const facilityName = r.Facility ? r.Facility.name : 'Unknown';
+                const baseStyle = "font-bold uppercase inline-block text-[10px]";
+                
+                const statusHtml = r.status === 'Pending' 
+                    ? `<span class="${baseStyle} text-yellow-500">PENDING</span>` 
+                    : `<span class="${baseStyle} text-primary-teal">RESOLVED</span>`;
+                
+                const reportIdStr = r.report_id ? `REP-${r.report_id.toString().padStart(3, '0')}` : '-';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 transition-colors';
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-bold text-primary-blue text-xs">${reportIdStr}</td>
+                    <td class="px-6 py-4 font-medium text-primary-teal text-xs">${facilityName}</td>
+                    <td class="px-6 py-4 text-xs text-gray-600">${reportDate}</td>
+                    <td class="px-6 py-4 text-xs text-gray-600 max-w-xs truncate" title="${r.issue_description}">${r.issue_description}</td>
+                    <td class="px-6 py-4 text-xs">
+                        <a href="${r.image_proof}" target="_blank" class="flex items-center gap-1 text-primary-blue hover:underline font-medium">
+                            <i data-lucide="image" class="w-3.5 h-3.5"></i> View Proof
+                        </a>
+                    </td>
+                    <td class="px-6 py-4">${statusHtml}</td>
+                `;
+                container.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        window.changeReportPage = function(delta) {
+            currentReportPage += delta;
+            renderMyReports();
+        };
+
+        // ---- Report Image Preview Helper ----
+        window.handleReportImagePreview = function(input) {
+            const preview = document.getElementById('report-image-name');
+            const dropzone = document.getElementById('report-image-dropzone');
+
+            const existingThumb = dropzone.querySelector('.img-preview-thumb');
+            if (existingThumb) existingThumb.remove();
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                preview.textContent = file.name;
+
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.className = 'img-preview-thumb w-full h-32 object-cover rounded-md mt-3 border border-gray-200 shadow-sm';
+                    dropzone.appendChild(img);
+                }
+            } else {
+                preview.textContent = 'Click to upload image or drag and drop';
+            }
+        };
+
+        window.clearReportForm = function() {
+            document.getElementById('report-facility').value = '';
+            document.getElementById('report-desc').value = '';
+            document.getElementById('report-image').value = '';
+            document.getElementById('report-image-name').textContent = 'Click to upload image or drag and drop';
+            const thumb = document.getElementById('report-image-dropzone').querySelector('.img-preview-thumb');
+            if (thumb) thumb.remove();
+        };
+
+        // ---- User Pagination Controls Helper ----
+        function renderUserPaginationControls(containerId, currentPage, totalPages, changePageFunc) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (totalPages <= 1) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            container.innerHTML = '';
+
+            if (currentPage > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.onclick = () => window[changePageFunc](-1);
+                prevBtn.className = 'w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg text-sm text-primary-blue bg-white hover:bg-gray-50 transition-colors shadow-sm font-semibold';
+                prevBtn.innerHTML = '<';
+                container.appendChild(prevBtn);
+            }
+
+            const pageBtn = document.createElement('div');
+            pageBtn.className = 'w-8 h-8 flex items-center justify-center bg-primary-blue text-white rounded-lg font-bold text-sm shadow-sm cursor-default';
+            pageBtn.textContent = currentPage;
+            container.appendChild(pageBtn);
+
+            if (currentPage < totalPages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.onclick = () => window[changePageFunc](1);
+                nextBtn.className = 'w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg text-sm text-primary-blue bg-white hover:bg-gray-50 transition-colors shadow-sm font-semibold';
+                nextBtn.innerHTML = '>';
+                container.appendChild(nextBtn);
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+        async function fetchAnnouncements() {
+            const { data, error } = await db
+                .from('Announcement')
+                .select('*')
+                .order('date_posted', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching announcements:', error);
+                return;
+            }
+
+            renderAnnouncements(data);
+        }
+
+        function renderAnnouncements(announcements) {
+            const container = document.getElementById('announcement-list');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            const query = (document.getElementById('announcement-search-input')?.value || '').toLowerCase();
+            const filtered = announcements.filter(a => 
+                a.title.toLowerCase().includes(query) || 
+                a.content.toLowerCase().includes(query)
+            );
+
+            if (!filtered || filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-12">
+                            <i data-lucide="megaphone" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
+                            <p class="text-sm text-gray-400">No announcements yet.</p>
+                        </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(a => {
+                const datePosted = new Date(a.date_posted).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                
+                let imageHtml = '';
+                if (a.image_url) {
+                    imageHtml = `
+                        <div class="w-full mt-4 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+                            <img src="${a.image_url}" alt="Announcement Image" class="w-full h-auto block cursor-pointer hover:opacity-95 transition-opacity" onclick="window.open('${a.image_url}', '_blank')">
+                        </div>
+                    `;
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden";
+                card.innerHTML = `
+                    <div class="flex-1 flex flex-col gap-2 w-full min-w-0">
+                        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                            <h4 class="text-lg font-bold text-primary-blue leading-tight">${a.title}</h4>
+                            <span class="text-gray-400 text-[11px] font-medium flex items-center gap-1 whitespace-nowrap">
+                                <i data-lucide="calendar" class="w-3 h-3"></i> ${datePosted}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap break-words" style="overflow-wrap:anywhere">${a.content}</p>
+                        ${imageHtml}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // Init loads
+        fetchBookings();
+        fetchFacilities();
+        fetchMyReports(); // Load user reports
+        fetchAnnouncements(); // Load announcements
+    </script>
+
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('../service-worker.js')
+                    .then(reg => console.log('SW registered:', reg.scope))
+                    .catch(err => console.warn('SW registration failed:', err));
+            });
+        }
+    </script></body>
+</html>

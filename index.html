@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMPSA Pekan Sport Facility Booking System</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            blue: '#183e87',
+                            teal: '#009ca6',
+                            'teal-hover': '#00858d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                        'card-hover': '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        'widget': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom date input styling that Tailwind doesn't handle perfectly by default */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
+            opacity: 0.6;
+        }
+    </style>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-180x180.png">
+    <meta name="theme-color" content="#183e87">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="UMPSA Sport"></head>
+
+<body class="font-sans antialiased text-gray-900 bg-white leading-relaxed">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm flex-shrink-0 h-16 px-4 sm:px-12 flex items-center gap-4 z-50 relative text-nowrap overflow-hidden">
+        <a href="index.html" class="flex items-center gap-4 flex-1 min-w-0">
+            <img src="ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo"
+                class="h-10 w-auto object-contain flex-shrink-0">
+            <div class="h-8 w-px bg-gray-200 flex-shrink-0"></div>
+            <div class="flex flex-col justify-center min-w-0">
+                <h1 class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide">UNIVERSITI MALAYSIA PAHANG</h1>
+                <h1 class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide">AL-SULTAN ABDULLAH</h1>
+            </div>
+        </a>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[460px] flex items-center justify-center px-4 overflow-hidden bg-primary-blue">
+        <!-- Blurred Image Background -->
+        <div class="absolute inset-0 bg-[url('ImagesForHeaderandFooter/banner.jpg')] bg-cover bg-center transform scale-105 pointer-events-none"
+            style="filter: blur(4px);">
+        </div>
+        <!-- Dark Overlay for Readability -->
+        <div class="absolute inset-0 bg-black/40 pointer-events-none"></div>
+
+        <div class="relative z-10 flex flex-col items-center w-full max-w-3xl gap-5 py-10 px-2">
+            <div class="text-center">
+                <h1 class="text-[26px] sm:text-[34px] lg:text-[38px] leading-[32px] sm:leading-[40px] lg:leading-[44px] font-bold text-white tracking-tight mb-2 sm:mb-3 text-center">
+                    UMPSA Pekan Sport Facility Booking System
+                </h1>
+                <p class="text-white text-[14px] sm:text-[15px] max-w-xl text-center leading-[22px] sm:leading-[24px] mx-auto">
+                    Seamlessly book courts, fields for your recreational activities.
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 mt-6 sm:mt-8 w-full sm:w-auto justify-center px-4 sm:px-0">
+                <a href="LogInPage/LogInPage.html"
+                    class="font-bold text-[15px] py-3 px-10 rounded-full shadow-lg bg-white text-primary-blue hover:bg-gray-50 flex items-center justify-center min-w-[140px] transition-all duration-200 hover:-translate-y-0.5">
+                    Login
+                </a>
+                <a href="RegisterPage/RegisterPage.html"
+                    class="font-bold text-[15px] py-3 px-10 rounded-full border-2 border-primary-teal text-white hover:bg-primary-teal hover:border-primary-teal hover:text-white flex items-center justify-center min-w-[140px] transition-all duration-200 box-border hover:-translate-y-0.5">
+                    Register
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Sport Facilities -->
+    <section class="py-12 px-5 w-full max-w-7xl mx-auto">
+        <div class="flex justify-between items-end mb-6">
+            <div>
+                <h2 class="text-primary-blue text-[24px] font-bold mb-1.5 leading-8">Popular Sport Facilities</h2>
+                <p class="text-gray-500 text-[14px]">Top rated venues at UMPSA Pekan</p>
+            </div>
+        </div>
+
+        <div id="facility-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Dynamic facility cards loaded from database -->
+            <div class="col-span-full text-center py-8 text-gray-400 text-sm">Loading facilities...</div>
+        </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer class="bg-primary-blue text-white pt-12 pb-8 border-t border-teal-900 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- 1. Logo & Address -->
+            <div class="flex flex-col gap-4">
+                <!-- Logo -->
+                <div class="bg-white/10 p-3 rounded-lg w-fit backdrop-blur-sm">
+                    <img src="ImagesForHeaderandFooter/Logo UMPSA footer.png" alt="UMPSA Logo" class="h-10 w-auto">
+                </div>
+                <!-- Address -->
+                <div class="text-[13px] text-gray-300 leading-relaxed">
+                    <p>Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA)</p>
+                    <p>26600 Pekan, Pahang Darul Makmur.</p>
+                </div>
+            </div>
+
+            <!-- 2. Quick Links -->
+            <div>
+                <h3 class="font-bold text-base mb-4 text-white">Quick Links</h3>
+                <ul class="flex flex-col gap-2.5 text-[13px] text-gray-300 list-none pl-0">
+                    <li class="leading-5"><a href="https://sukan.umpsa.edu.my/" target="_blank"
+                            class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">UMPSA Sports Centre</a></li>
+                    <li class="leading-5"><a href="https://umpsa.edu.my/en" target="_blank"
+                            class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">Official UMPSA Site</a></li>
+                </ul>
+            </div>
+
+            <!-- 3. Contact -->
+            <div>
+                <h3 class="font-bold text-base mb-4 text-white">Contact</h3>
+                <ul class="flex flex-col gap-2.5 text-[13px] text-gray-300 list-none pl-0">
+                    <li class="flex items-center gap-2 leading-5">
+                        <i data-lucide="phone" class="w-[11.2px] h-[11.2px] opacity-70"></i>
+                        <a href="tel:+60176270664"
+                            class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">+60 176270664</a>
+                    </li>
+                    <li class="flex items-center gap-2 leading-5">
+                        <i data-lucide="mail" class="w-[11.2px] h-[11.2px] opacity-70"></i>
+                        <a href="mailto:umpsasportsbooking@gmail.com"
+                            class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">umpsasportsbooking@gmail.com</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Fetch and render facilities from database
+        async function loadFacilities() {
+            const grid = document.getElementById('facility-grid');
+            
+            const now = new Date();
+            const currYear = now.getFullYear();
+            const currMonth = now.getMonth() + 1;
+            
+            function getBounds(y, m) {
+                const s = `${y}-${String(m).padStart(2, '0')}-01`;
+                const em = m === 12 ? 1 : m + 1;
+                const ey = m === 12 ? y + 1 : y;
+                const e = `${ey}-${String(em).padStart(2, '0')}-01`;
+                return { s, e };
+            }
+            
+            let { s: start, e: end } = getBounds(currYear, currMonth);
+            
+            let { data: bookings } = await db
+                .from('Booking')
+                .select('facility_id')
+                .eq('status', 'Confirmed')
+                .gte('date', start)
+                .lt('date', end);
+                
+            if (!bookings || bookings.length === 0) {
+                let lastMonth = currMonth === 1 ? 12 : currMonth - 1;
+                let lastYear = currMonth === 1 ? currYear - 1 : currYear;
+                let bounds = getBounds(lastYear, lastMonth);
+                
+                const { data: lastBookings } = await db
+                    .from('Booking')
+                    .select('facility_id')
+                    .eq('status', 'Confirmed')
+                    .gte('date', bounds.s)
+                    .lt('date', bounds.e);
+                    
+                if (lastBookings && lastBookings.length > 0) {
+                    bookings = lastBookings;
+                }
+            }
+            
+            let topFacilityIds = [];
+            if (bookings && bookings.length > 0) {
+                const counts = {};
+                bookings.forEach(b => {
+                    counts[b.facility_id] = (counts[b.facility_id] || 0) + 1;
+                });
+                topFacilityIds = Object.keys(counts)
+                    .sort((a, b) => counts[b] - counts[a])
+                    .slice(0, 3);
+            }
+            
+            let facilities = [];
+            if (topFacilityIds.length > 0) {
+                const { data } = await db
+                    .from('Facility')
+                    .select('facility_id, name, image_url, status')
+                    .in('facility_id', topFacilityIds);
+                    
+                if (data) {
+                    facilities = topFacilityIds.map(id => data.find(f => f.facility_id == id)).filter(Boolean);
+                }
+            }
+            
+            if (facilities.length < 3) {
+                const existingIds = facilities.map(f => f.facility_id);
+                let query = db.from('Facility')
+                    .select('facility_id, name, image_url, status')
+                    .order('name', { ascending: true })
+                    .limit(3 - facilities.length);
+                    
+                if (existingIds.length > 0) {
+                    query = query.not('facility_id', 'in', `(${existingIds.join(',')})`);
+                }
+                
+                const { data: fallback } = await query;
+                if (fallback) {
+                    facilities = facilities.concat(fallback);
+                }
+            }
+
+            if (!facilities || facilities.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-400 text-sm">No facilities available at the moment.</div>';
+                return;
+            }
+
+            grid.innerHTML = facilities.map(f => {
+                const imgSrc = f.image_url || 'https://placehold.co/600x400/eeeeee/999999?text=No+Image';
+                return `
+                <div class="flex flex-col rounded-[14px] overflow-hidden bg-white shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group/card">
+                    <div class="h-52 overflow-hidden relative">
+                        <img src="${imgSrc}" alt="${f.name}"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105"
+                            onerror="this.src='https://placehold.co/600x400/eeeeee/999999?text=No+Image'">
+                    </div>
+                    <div class="p-5 flex items-center justify-between gap-4">
+                        <h3 class="font-bold text-primary-blue text-[17px] sm:text-[18px]">${f.name}</h3>
+                        <a href="LogInPage/LogInPage.html?redirect_facility=${f.facility_id}" class="bg-primary-blue hover:bg-blue-900 text-white px-4 py-2 rounded-md font-bold text-[10px] sm:text-xs transition-colors uppercase whitespace-nowrap shadow-sm">
+                            Book Now
+                        </a>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        loadFacilities();
+    </script>
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('SW registered:', reg.scope))
+                    .catch(err => console.warn('SW registration failed:', err));
+            });
+        }
+    </script></body>
+
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "umpsapekansportfacilitybookingsystem",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shrlnrm/UMPSA-Pekan-Sport-Facility-Booking-System.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Shrlnrm/UMPSA-Pekan-Sport-Facility-Booking-System/issues"
+  },
+  "homepage": "https://github.com/Shrlnrm/UMPSA-Pekan-Sport-Facility-Booking-System#readme",
+  "devDependencies": {
+    "supabase": "^2.78.1"
+  }
+}

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - UMPSA Sport Facility Booking System</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            blue: '#183e87',
+                            teal: '#009ca6',
+                            'teal-hover': '#00858d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                        'card-hover': '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        'widget': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+    <script src="../js/auth.js"></script>
+    <!-- PWA -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../icons/icon-180x180.png">
+    <meta name="theme-color" content="#183e87">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="UMPSA Sport"></head>
+
+<body class="font-sans antialiased text-gray-900 bg-gray-50 flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white shadow-sm h-16 px-6 sm:px-12 flex items-center gap-4 flex-shrink-0 text-nowrap overflow-hidden">
+        <a href="../index.html" class="flex items-center gap-4 flex-1 min-w-0">
+            <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo"
+                class="h-10 w-auto object-contain flex-shrink-0">
+            <div class="h-8 w-px bg-gray-200 flex-shrink-0"></div>
+            <div class="flex flex-col justify-center min-w-0">
+                <h1 class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide">UNIVERSITI MALAYSIA PAHANG</h1>
+                <h1 class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide">AL-SULTAN ABDULLAH</h1>
+            </div>
+        </a>
+    </header>
+
+    <!-- Main Content: Login Form -->
+    <main class="flex flex-col items-center justify-center px-4 min-h-[calc(100vh-64px)] py-6">
+        
+        <!-- Login Card -->
+        <div class="w-full max-w-[380px] bg-white rounded-[12px] shadow-widget overflow-hidden flex flex-col">
+            <!-- Top Gradient Section -->
+            <div class="pt-6 pb-8 px-6 text-center" style="background: linear-gradient(168deg, rgb(24, 62, 135) 8%, rgb(0, 156, 166) 130%);">
+                <h2 class="text-white text-xl font-semibold mb-1">Welcome Back</h2>
+                <p class="text-white/90 text-[13px]">Login to access your account</p>
+            </div>
+
+            <!-- Form Section -->
+            <div class="px-6 py-8">
+                <form class="flex flex-col gap-4" onsubmit="event.preventDefault(); handleLogin();">
+                    
+                    <!-- Email Input -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide">
+                            EMAIL ADDRESS
+                        </label>
+                        <input id="loginEmail" type="email" placeholder="Enter your UMPSA email address"
+                            class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-[13px] rounded-[6px] px-3.5 py-2.5 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide">
+                            PASSWORD
+                        </label>
+                        <div class="relative">
+                            <input id="loginPassword" type="password" placeholder="Enter your password"
+                                class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-[13px] rounded-[6px] px-3.5 py-2.5 pr-10 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                            <button type="button" onclick="togglePasswordVisibility('loginPassword', 'loginEyeIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                                <i id="loginEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Role Select -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="block text-[10px] font-bold text-primary-teal uppercase tracking-wide">
+                            SELECT ROLE
+                        </label>
+                        <div class="relative">
+                            <select
+                                id="roleSelect"
+                                class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-[13px] rounded-[6px] px-3.5 py-2.5 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all appearance-none cursor-pointer">
+                                <option value="" disabled selected hidden>Select Role</option>
+                                <option value="student">Student</option>
+                                <option value="staff">Staff</option>
+                                <option value="superadmin">Admin</option>
+                            </select>
+                            <div class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between mt-0.5">
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <div class="relative flex items-center justify-center">
+                                <input id="rememberMe" type="checkbox" class="peer appearance-none w-3.5 h-3.5 border border-gray-300 rounded-sm bg-white checked:bg-primary-blue checked:border-primary-blue transition-colors cursor-pointer">
+                                <i data-lucide="check" class="absolute w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                            </div>
+                            <span class="text-[13px] text-gray-600 group-hover:text-gray-900 transition-colors">Remember me</span>
+                        </label>
+                        <a href="../NewPasswordPage/NewPasswordPage.html" class="text-[13px] text-primary-teal hover:text-primary-teal-hover transition-colors">Forgot password?</a>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="loginError" class="hidden text-[12.5px] font-medium text-red-500 text-center tracking-wide"></div>
+
+                    <!-- Login Button -->
+                    <button id="loginBtn" type="submit"
+                        class="w-full bg-primary-blue hover:bg-blue-900 text-white font-medium text-[14px] py-2.5 rounded-full mt-1.5 transition-colors shadow-sm">
+                        Login
+                    </button>
+
+                    <!-- Register Link -->
+                    <div class="text-center mt-2">
+                        <span class="text-[13px] text-gray-600">Don't have an account? </span>
+                        <a id="registerLink" href="../RegisterPage/RegisterPage.html" class="text-[13px] text-primary-teal hover:text-primary-teal-hover transition-colors">Register here</a>
+                    </div>
+                </form>
+                
+                <script>
+                    // Pass redirect_facility to register page if present
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectFacility = urlParams.get('redirect_facility');
+                    if (redirectFacility) {
+                        const registerLink = document.getElementById('registerLink');
+                        registerLink.href = `../RegisterPage/RegisterPage.html?redirect_facility=${redirectFacility}`;
+                    }
+                </script>
+            </div>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="mt-6 mb-2">
+            <a href="../index.html" class="text-primary-teal hover:text-primary-teal-hover text-[13px] transition-colors">
+                Back to Home
+            </a>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-primary-blue text-white pt-12 pb-8 border-t border-teal-900 px-6 md:px-12 flex-shrink-0">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- 1. Logo & Address -->
+            <div class="flex flex-col gap-4">
+                <!-- Logo -->
+                <div class="bg-white/10 p-3 rounded-lg w-fit backdrop-blur-sm">
+                    <img src="../ImagesForHeaderandFooter/Logo UMPSA footer.png" alt="UMPSA Logo" class="h-10 w-auto">
+                </div>
+                <!-- Address -->
+                <div class="text-[13px] text-gray-300 leading-relaxed">
+                    <p>Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA)</p>
+                    <p>26600 Pekan, Pahang Darul Makmur.</p>
+                </div>
+            </div>
+
+            <!-- 2. Quick Links -->
+            <div>
+                <h3 class="font-bold text-base mb-4 text-white">Quick Links</h3>
+                <ul class="flex flex-col gap-2.5 text-[13px] text-gray-300 list-none pl-0">
+                    <li class="leading-5"><a href="https://sukan.umpsa.edu.my/" target="_blank"
+                            class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">UMPSA Sports Centre</a></li>
+                    <li class="leading-5"><a href="https://umpsa.edu.my/en" target="_blank"
+                            class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">Official UMPSA Site</a></li>
+                </ul>
+            </div>
+
+            <!-- 3. Contact -->
+            <div>
+                <h3 class="font-bold text-base mb-4 text-white">Contact</h3>
+                <ul class="flex flex-col gap-2.5 text-[13px] text-gray-300 list-none pl-0">
+                    <li class="flex items-center gap-2 leading-5">
+                        <i data-lucide="phone" class="w-[11.2px] h-[11.2px] opacity-70"></i>
+                        <a href="tel:+60176270664"
+                            class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">+60 176270664</a>
+                    </li>
+                    <li class="flex items-center gap-2 leading-5">
+                        <i data-lucide="mail" class="w-[11.2px] h-[11.2px] opacity-70"></i>
+                        <a href="mailto:umpsasportsbooking@gmail.com"
+                            class="hover:text-white hover:translate-x-1 inline-block transition-all duration-200">umpsasportsbooking@gmail.com</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('../service-worker.js')
+                    .then(reg => console.log('SW registered:', reg.scope))
+                    .catch(err => console.warn('SW registration failed:', err));
+            });
+        }
+    </script></body>
+
+</html>
