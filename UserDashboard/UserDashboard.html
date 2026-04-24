@@ -95,7 +95,14 @@
             #hamburger-btn { display: none !important; }
         }
     </style>
-</head>
+    <!-- PWA -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../icons/icon-180x180.png">
+    <meta name="theme-color" content="#183e87">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="UMPSA Sport"></head>
 
 <body class="font-sans antialiased text-gray-900 bg-white">
     <div class="fixed inset-0 flex flex-col overflow-hidden">
@@ -2518,5 +2525,14 @@
         fetchAnnouncements(); // Load announcements
     </script>
 
-</body>
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('../service-worker.js')
+                    .then(reg => console.log('SW registered:', reg.scope))
+                    .catch(err => console.warn('SW registration failed:', err));
+            });
+        }
+    </script></body>
 </html>
