@@ -157,6 +157,14 @@
                 display: none !important;
             }
         }
+        /* Hide datalist dropdown arrow on report user email input */
+        #report-user-email::-webkit-calendar-picker-indicator {
+            display: none !important;
+            opacity: 0;
+        }
+        #report-user-email::-webkit-list-button {
+            display: none !important;
+        }
     </style>
     <!-- PWA -->
     <link rel="manifest" href="../manifest.json">
@@ -710,16 +718,20 @@
                                     <div id="report-chart-container" class="hidden">
                                         <h3 id="report-chart-title" class="text-lg font-bold text-primary-blue mb-4 text-center"></h3>
                                         <div class="relative w-full mb-8" style="height: 400px;"><canvas id="facilityUsageChart"></canvas></div>
-                                        <div class="overflow-x-auto border border-gray-100 rounded-lg mb-4">
-                                            <table class="w-full text-left text-sm text-gray-600">
-                                                <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
+                                        <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white mb-4">
+                                            <table class="w-full text-xs sm:text-sm text-left">
+                                                <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-gray-50/50">
                                                     <tr>
-                                                        <th class="px-4 py-3">Facility</th><th class="px-4 py-3">Type</th>
-                                                        <th class="px-4 py-3 text-center">Bookings</th><th class="px-4 py-3 text-center">Participants</th>
-                                                        <th class="px-4 py-3 text-center">Unique Users</th><th class="px-4 py-3">Top Slot</th><th class="px-4 py-3">Peak Day</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Facility</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Type</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Bookings</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Participants</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Unique Users</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Top Slot</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Peak Day</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="report-summary-table-body" class="divide-y divide-gray-100"></tbody>
+                                                <tbody id="report-summary-table-body" class="divide-y divide-gray-50"></tbody>
                                             </table>
                                         </div>
                                         <p id="report-chart-summary" class="text-sm text-gray-500 mt-4 text-center"></p>
