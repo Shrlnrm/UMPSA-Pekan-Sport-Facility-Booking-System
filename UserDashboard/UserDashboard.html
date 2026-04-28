@@ -172,6 +172,7 @@
                     <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
                     <i data-lucide="megaphone" class="w-4 h-4 flex-shrink-0"></i>
                     <span class="text-sm font-medium">Announcement</span>
+                    <span id="badge-announcement" class="hidden ml-auto min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none"></span>
                 </a>
             </nav>
 
@@ -907,6 +908,12 @@
                 });
             }
             if (pageId === 'search') fetchFacilities();
+            if (pageId === 'announcement') {
+                // Mark all current announcements as seen when user opens the page
+                const seenIds = allUserAnnouncements.map(a => a.announcement_id);
+                localStorage.setItem('user_seen_announcements_' + currentUser.id, JSON.stringify(seenIds));
+                updateUserBadges();
+            }
             
             if (pageId === 'booking-form' && extra) {
                 const facility = allFacilities.find(f => f.facility_id == extra);
@@ -1249,6 +1256,7 @@
         function updateUserBadges() {
             // Get seen IDs from localStorage (per user)
             const seenCancelled = JSON.parse(localStorage.getItem('user_seen_cancelled_' + currentUser.id) || '[]');
+            const seenAnnouncements = JSON.parse(localStorage.getItem('user_seen_announcements_' + currentUser.id) || '[]');
 
             // Count UNSEEN admin-cancelled bookings (those with cancel_reason)
             const unseenCancelled = allUserBookings.filter(b =>
@@ -1258,7 +1266,7 @@
                 !seenCancelled.includes(b.booking_id)
             ).length;
 
-            // Sidebar badge
+            // Sidebar badge for My Dashboard (cancelled)
             const badgeNav = document.getElementById('badge-user-cancelled');
             if (badgeNav) {
                 if (unseenCancelled > 0) {
@@ -1277,6 +1285,22 @@
                     badgeTab.classList.remove('hidden');
                 } else {
                     badgeTab.classList.add('hidden');
+                }
+            }
+
+            // Count UNSEEN announcements
+            const unseenAnnouncements = allUserAnnouncements.filter(a =>
+                !seenAnnouncements.includes(a.announcement_id)
+            ).length;
+
+            // Sidebar badge for Announcement
+            const badgeAnn = document.getElementById('badge-announcement');
+            if (badgeAnn) {
+                if (unseenAnnouncements > 0) {
+                    badgeAnn.textContent = unseenAnnouncements > 99 ? '99+' : unseenAnnouncements;
+                    badgeAnn.classList.remove('hidden');
+                } else {
+                    badgeAnn.classList.add('hidden');
                 }
             }
         }
@@ -2453,6 +2477,8 @@
 
             if (window.lucide) lucide.createIcons();
         }
+        let allUserAnnouncements = [];
+
         async function fetchAnnouncements() {
             const { data, error } = await db
                 .from('Announcement')
@@ -2464,6 +2490,8 @@
                 return;
             }
 
+            allUserAnnouncements = data || [];
+            updateUserBadges();
             renderAnnouncements(data);
         }
 

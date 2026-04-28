@@ -464,9 +464,10 @@
                                     <span id="badge-tab-confirmed" class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
                                 </button>
                                 <button id="admin-subtab-cancelled"
-                                    class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap"
+                                    class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap flex items-center gap-1.5"
                                     onclick="setAdminBookingsTab('cancelled')">
                                     Cancelled
+                                    <span id="badge-tab-cancelled" class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
                                 </button>
                                 <button id="admin-subtab-passed"
                                     class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap"
@@ -1451,23 +1452,15 @@
                 fetchRecentBookings();
             } else if (pageId === 'manage-bookings') {
                 fetchAdminBookings().then(() => {
-                    // Default tab is 'confirmed' ΓÇö mark as seen on page open
-                    if (currentAdminBookingsTab === 'confirmed') {
-                        const confirmedIds = allAdminBookings.filter(b => b.status === 'Confirmed').map(b => b.booking_id);
-                        localStorage.setItem('admin_seen_confirmed', JSON.stringify(confirmedIds));
-                        updateNavBadges();
-                    }
+                    // Mark seen based on whichever tab is currently active
+                    markAdminBookingTabSeen(currentAdminBookingsTab);
                 });
             } else if (pageId === 'manage-facilities') {
                 fetchAdminFacilities();
             } else if (pageId === 'manage-report') {
                 fetchAdminAllReports().then(() => {
-                    // Default tab is 'Pending' ΓÇö mark as seen on page open
-                    if (currentAdminReportTab === 'Pending') {
-                        const pendingIds = allAdminReports.filter(r => r.status === 'Pending').map(r => r.report_id);
-                        localStorage.setItem('admin_seen_pending_reports', JSON.stringify(pendingIds));
-                        updateNavBadges();
-                    }
+                    // Mark seen based on whichever report tab is currently active
+                    markAdminReportTabSeen(currentAdminReportTab);
                 });
             } else if (pageId === 'manage-announcement') {
                 fetchAdminAnnouncements();
@@ -1660,15 +1653,22 @@
                 }
             }
 
-            // Mark confirmed bookings as seen when viewing confirmed tab
-            if (tab === 'confirmed') {
-                const confirmedIds = allAdminBookings.filter(b => b.status === 'Confirmed').map(b => b.booking_id);
-                localStorage.setItem('admin_seen_confirmed', JSON.stringify(confirmedIds));
-                updateNavBadges();
-            }
-
+            // Mark items as seen per tab
+            markAdminBookingTabSeen(tab);
             renderAdminBookings();
         };
+
+        function markAdminBookingTabSeen(tab) {
+            if (tab === 'confirmed' || tab === 'all') {
+                const confirmedIds = allAdminBookings.filter(b => b.status === 'Confirmed').map(b => b.booking_id);
+                localStorage.setItem('admin_seen_confirmed', JSON.stringify(confirmedIds));
+            }
+            if (tab === 'cancelled' || tab === 'all') {
+                const cancelledIds = allAdminBookings.filter(b => b.status === 'Cancelled').map(b => b.booking_id);
+                localStorage.setItem('admin_seen_cancelled', JSON.stringify(cancelledIds));
+            }
+            updateNavBadges();
+        }
 
         async function fetchAdminBookings() {
             const { data, error } = await db
@@ -2650,12 +2650,8 @@
             if (reportTableArea) reportTableArea.style.display = '';
             if (searchBar) searchBar.style.display = '';
 
-            // Mark pending reports as seen when viewing pending tab
-            if (tab === 'Pending') {
-                const pendingIds = allAdminReports.filter(r => r.status === 'Pending').map(r => r.report_id);
-                localStorage.setItem('admin_seen_pending_reports', JSON.stringify(pendingIds));
-                updateNavBadges();
-            }
+            // Mark reports as seen per tab
+            markAdminReportTabSeen(tab);
 
             const actionCol = document.getElementById('admin-action-col-reports');
             if (actionCol) {
@@ -2667,6 +2663,14 @@
             }
 
             renderAdminReports();
+        }
+
+        function markAdminReportTabSeen(tab) {
+            if (tab === 'Pending') {
+                const pendingIds = allAdminReports.filter(r => r.status === 'Pending').map(r => r.report_id);
+                localStorage.setItem('admin_seen_pending_reports', JSON.stringify(pendingIds));
+            }
+            updateNavBadges();
         }
 
         window.fetchAdminAllReports = async function () {
@@ -2696,26 +2700,47 @@
         function updateNavBadges() {
             // Get seen IDs from localStorage
             const seenConfirmed = JSON.parse(localStorage.getItem('admin_seen_confirmed') || '[]');
+            const seenCancelled = JSON.parse(localStorage.getItem('admin_seen_cancelled') || '[]');
             const seenReports = JSON.parse(localStorage.getItem('admin_seen_pending_reports') || '[]');
 
             // Count UNSEEN confirmed bookings
-            const unseenBookings = allAdminBookings.filter(b => b.status === 'Confirmed' && !seenConfirmed.includes(b.booking_id)).length;
+            const unseenConfirmed = allAdminBookings.filter(b => b.status === 'Confirmed' && !seenConfirmed.includes(b.booking_id)).length;
+
+            // Count UNSEEN cancelled bookings
+            const unseenCancelled = allAdminBookings.filter(b => b.status === 'Cancelled' && !seenCancelled.includes(b.booking_id)).length;
+
+            // Combined total for sidebar badge-bookings
+            const unseenBookingsTotal = unseenConfirmed + unseenCancelled;
+
             const badgeB = document.getElementById('badge-bookings');
             if (badgeB) {
-                if (unseenBookings > 0) {
-                    badgeB.textContent = unseenBookings > 99 ? '99+' : unseenBookings;
+                if (unseenBookingsTotal > 0) {
+                    badgeB.textContent = unseenBookingsTotal > 99 ? '99+' : unseenBookingsTotal;
                     badgeB.classList.remove('hidden');
                 } else {
                     badgeB.classList.add('hidden');
                 }
             }
+
+            // Confirmed sub-tab badge (only confirmed unseen)
             const badgeTabC = document.getElementById('badge-tab-confirmed');
             if (badgeTabC) {
-                if (unseenBookings > 0) {
-                    badgeTabC.textContent = unseenBookings > 99 ? '99+' : unseenBookings;
+                if (unseenConfirmed > 0) {
+                    badgeTabC.textContent = unseenConfirmed > 99 ? '99+' : unseenConfirmed;
                     badgeTabC.classList.remove('hidden');
                 } else {
                     badgeTabC.classList.add('hidden');
+                }
+            }
+
+            // Cancelled sub-tab badge (only cancelled unseen)
+            const badgeTabCan = document.getElementById('badge-tab-cancelled');
+            if (badgeTabCan) {
+                if (unseenCancelled > 0) {
+                    badgeTabCan.textContent = unseenCancelled > 99 ? '99+' : unseenCancelled;
+                    badgeTabCan.classList.remove('hidden');
+                } else {
+                    badgeTabCan.classList.add('hidden');
                 }
             }
 
@@ -2740,6 +2765,38 @@
                 }
             }
         }
+
+        // ---- Background pre-fetch for badge counts (runs on page load) ----
+        async function prefetchAllBadgeData() {
+            // Fetch lightweight booking data: only id + status needed for badge
+            const { data: bookings } = await db
+                .from('Booking')
+                .select('booking_id, status, cancel_reason')
+                .order('created_at', { ascending: false });
+
+            if (bookings) {
+                // Merge into allAdminBookings only if it hasn't been populated yet
+                // (to avoid overwriting rich data already loaded by fetchAdminBookings)
+                if (allAdminBookings.length === 0) {
+                    allAdminBookings = bookings;
+                }
+            }
+
+            // Fetch lightweight report data: only id + status needed for badge
+            const { data: reports } = await db
+                .from('Report')
+                .select('report_id, status')
+                .order('created_at', { ascending: false });
+
+            if (reports) {
+                if (allAdminReports.length === 0) {
+                    allAdminReports = reports;
+                }
+            }
+
+            updateNavBadges();
+        }
+
 
         window.renderAdminReports = function () {
             const container = document.getElementById('admin-report-list-rows');
@@ -3470,6 +3527,8 @@
         // ---- Init ----
         fetchRecentReports();
         fetchRecentBookings();
+        prefetchAllBadgeData(); // Auto-load badge counts without requiring page navigation
+
     </script>
     <!-- PWA Service Worker -->
     <script>
