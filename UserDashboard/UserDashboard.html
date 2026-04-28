@@ -167,6 +167,7 @@
                     <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
                     <i data-lucide="file-text" class="w-4 h-4 flex-shrink-0"></i>
                     <span class="text-sm font-medium">Report</span>
+                    <span id="badge-user-report" class="hidden ml-auto min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none"></span>
                 </a>
                 <a href="#" data-nav="announcement" class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden" onclick="showPage('announcement', this)">
                     <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
@@ -908,6 +909,12 @@
                 localStorage.setItem('user_last_seen_announcements_' + currentUser.id, new Date().toISOString());
                 updateUserBadges();
             }
+            if (pageId === 'report') {
+                // Mark resolved reports count as seen when user opens Report page
+                const resolvedCount = allMyReports.filter(r => r.status === 'Resolved').length;
+                localStorage.setItem('user_seen_resolved_count_' + currentUser.id, resolvedCount);
+                updateUserBadges();
+            }
             
             if (pageId === 'booking-form' && extra) {
                 const facility = allFacilities.find(f => f.facility_id == extra);
@@ -1236,11 +1243,6 @@
             }
 
             allUserBookings = data;
-            // First-time baseline: if no timestamp stored, set to now so
-            // existing bookings don't trigger notifications on first login
-            if (!localStorage.getItem('user_last_seen_cancelled_' + currentUser.id)) {
-                localStorage.setItem('user_last_seen_cancelled_' + currentUser.id, new Date().toISOString());
-            }
             updateUserBadges();
             renderBookings();
         }
@@ -1294,6 +1296,21 @@
                     badgeAnn.classList.remove('hidden');
                 } else {
                     badgeAnn.classList.add('hidden');
+                }
+            }
+
+            // Count newly resolved reports (total resolved vs last seen count)
+            const currentResolvedCount = allMyReports.filter(r => r.status === 'Resolved').length;
+            const seenResolvedCount    = parseInt(localStorage.getItem('user_seen_resolved_count_' + currentUser.id) || '0', 10);
+            const unseenResolved       = Math.max(0, currentResolvedCount - seenResolvedCount);
+
+            const badgeReport = document.getElementById('badge-user-report');
+            if (badgeReport) {
+                if (unseenResolved > 0) {
+                    badgeReport.textContent = unseenResolved > 99 ? '99+' : unseenResolved;
+                    badgeReport.classList.remove('hidden');
+                } else {
+                    badgeReport.classList.add('hidden');
                 }
             }
         }
@@ -1752,8 +1769,10 @@
         }
 
         function handleLogout() {
+            // Only clear auth keys — preserve notification timestamps so badges survive
+            // login/logout cycles on the same browser
+            ['user_id', 'user_email'].forEach(k => localStorage.removeItem(k));
             sessionStorage.clear();
-            localStorage.clear();
             window.location.href = '../LogInPage/LogInPage.html';
         }
 
@@ -2341,6 +2360,7 @@
 
             allMyReports = data || [];
             currentReportPage = 1;
+            updateUserBadges(); // Refresh report badge after data loads
             renderMyReports();
         }
 
@@ -2484,11 +2504,8 @@
             }
 
             allUserAnnouncements = data || [];
-            // First-time baseline: if no timestamp stored, set to now so
-            // existing announcements don't trigger notifications on first login
-            if (!localStorage.getItem('user_last_seen_announcements_' + currentUser.id)) {
-                localStorage.setItem('user_last_seen_announcements_' + currentUser.id, new Date().toISOString());
-            }
+            // First-time: if no timestamp yet, default stays at epoch 0
+            // so all existing announcements appear as new on first login.
             updateUserBadges();
             renderAnnouncements(data);
         }
