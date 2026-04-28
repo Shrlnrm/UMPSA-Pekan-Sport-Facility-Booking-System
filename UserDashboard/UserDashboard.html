@@ -905,8 +905,11 @@
             }
             if (pageId === 'search') fetchFacilities();
             if (pageId === 'announcement') {
-                // Mark all announcements as seen (store timestamp)
-                localStorage.setItem('user_last_seen_announcements_' + currentUser.id, new Date().toISOString());
+                // Mark all announcements as seen — store highest announcement_id
+                const maxId = allUserAnnouncements.length > 0
+                    ? Math.max(...allUserAnnouncements.map(a => a.announcement_id))
+                    : 0;
+                localStorage.setItem('user_max_seen_announcement_' + currentUser.id, maxId);
                 updateUserBadges();
             }
             if (pageId === 'report') {
@@ -1255,8 +1258,7 @@
         // ---- User Notification Badges ----
         function updateUserBadges() {
             // Read last-seen timestamps (per user, per section)
-            const lastSeenCancelled     = new Date(localStorage.getItem('user_last_seen_cancelled_'     + currentUser.id) || 0);
-            const lastSeenAnnouncements = new Date(localStorage.getItem('user_last_seen_announcements_' + currentUser.id) || 0);
+            const lastSeenCancelled = new Date(localStorage.getItem('user_last_seen_cancelled_' + currentUser.id) || 0);
 
             // Count admin-cancelled bookings created AFTER last-seen timestamp
             const unseenCancelled = allUserBookings.filter(b =>
@@ -1288,9 +1290,10 @@
                 }
             }
 
-            // Count announcements posted AFTER last-seen timestamp
+            // Count unseen announcements (ID higher than last seen max ID)
+            const maxSeenAnnId = parseInt(localStorage.getItem('user_max_seen_announcement_' + currentUser.id) || '0', 10);
             const unseenAnnouncements = allUserAnnouncements.filter(a =>
-                new Date(a.date_posted) > lastSeenAnnouncements
+                a.announcement_id > maxSeenAnnId
             ).length;
 
             // Sidebar badge for Announcement
@@ -2509,10 +2512,13 @@
             }
 
             allUserAnnouncements = data || [];
-            // First-time initialization: set timestamp to now so existing
-            // announcements don't flood badge. Persists across sessions.
-            if (!localStorage.getItem('user_last_seen_announcements_' + currentUser.id)) {
-                localStorage.setItem('user_last_seen_announcements_' + currentUser.id, new Date().toISOString());
+            // First-time initialization: store the current max announcement ID so
+            // existing announcements don't flood badge. Persists across sessions.
+            if (!localStorage.getItem('user_max_seen_announcement_' + currentUser.id)) {
+                const maxId = allUserAnnouncements.length > 0
+                    ? Math.max(...allUserAnnouncements.map(a => a.announcement_id))
+                    : 0;
+                localStorage.setItem('user_max_seen_announcement_' + currentUser.id, maxId);
             }
             updateUserBadges();
             renderAnnouncements(data);
