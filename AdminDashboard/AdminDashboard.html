@@ -1454,14 +1454,15 @@
                 fetchRecentBookings();
             } else if (pageId === 'manage-bookings') {
                 fetchAdminBookings().then(() => {
-                    // Mark seen based on whichever tab is currently active
-                    markAdminBookingTabSeen(currentAdminBookingsTab);
+                    // Only mark as seen if on a specific tab (not 'all')
+                    if (currentAdminBookingsTab !== 'all') {
+                        markAdminBookingTabSeen(currentAdminBookingsTab);
+                    }
                 });
             } else if (pageId === 'manage-facilities') {
                 fetchAdminFacilities();
             } else if (pageId === 'manage-report') {
                 fetchAdminAllReports().then(() => {
-                    // Mark seen based on whichever report tab is currently active
                     markAdminReportTabSeen(currentAdminReportTab);
                 });
             } else if (pageId === 'manage-announcement') {
@@ -1661,12 +1662,15 @@
         };
 
         function markAdminBookingTabSeen(tab) {
+            // 'all' tab does NOT clear any badge — user must click specific tab
+            if (tab === 'all') return;
+
             const now = new Date().toISOString();
             const aid = currentAdmin.id;
-            if (tab === 'confirmed' || tab === 'all') {
+            if (tab === 'confirmed') {
                 localStorage.setItem(`admin_${aid}_last_seen_confirmed`, now);
             }
-            if (tab === 'cancelled' || tab === 'all') {
+            if (tab === 'cancelled') {
                 localStorage.setItem(`admin_${aid}_last_seen_cancelled`, now);
             }
             updateNavBadges();
@@ -2772,10 +2776,16 @@
 
         // ---- Background pre-fetch for badge counts (runs on page load) ----
         async function prefetchAllBadgeData() {
-            // NOTE: No baseline initialization here.
-            // If no timestamp exists (first login or cleared storage), default is epoch 0,
-            // meaning ALL existing items appear as new — correct for a fresh session.
-            // The timestamp is only updated when admin explicitly views a section.
+            const aid = currentAdmin.id;
+            const now = new Date().toISOString();
+
+            // First-time initialization: set timestamps to NOW so all existing
+            // items are considered "seen". Only items created AFTER this moment
+            // will show as new. This only runs once because logout no longer
+            // clears localStorage, so the key persists across sessions.
+            if (!localStorage.getItem(`admin_${aid}_last_seen_confirmed`))       localStorage.setItem(`admin_${aid}_last_seen_confirmed`, now);
+            if (!localStorage.getItem(`admin_${aid}_last_seen_cancelled`))       localStorage.setItem(`admin_${aid}_last_seen_cancelled`, now);
+            if (!localStorage.getItem(`admin_${aid}_last_seen_pending_reports`)) localStorage.setItem(`admin_${aid}_last_seen_pending_reports`, now);
 
             // Fetch lightweight booking data for badge counting (must include created_at)
             const { data: bookings } = await db
