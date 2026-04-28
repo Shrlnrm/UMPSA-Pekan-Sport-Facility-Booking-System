@@ -1609,7 +1609,13 @@
                 let statusHtml = '';
                 const baseStyle = "font-bold uppercase inline-block text-[10px]";
 
-                if (b.status === 'Confirmed') {
+                const todayCheck = new Date().toLocaleDateString('en-CA');
+                const lastDate = b.end_date || b.date;
+                const isPassed = b.status === 'Confirmed' && lastDate < todayCheck;
+
+                if (isPassed) {
+                    statusHtml = `<span class="${baseStyle} text-gray-400">PASSED</span>`;
+                } else if (b.status === 'Confirmed') {
                     statusHtml = `<span class="${baseStyle} text-primary-teal">CONFIRMED</span>`;
                 } else if (b.status === 'Cancelled') {
                     statusHtml = `<span class="${baseStyle} text-red-500">CANCELLED</span>`;
