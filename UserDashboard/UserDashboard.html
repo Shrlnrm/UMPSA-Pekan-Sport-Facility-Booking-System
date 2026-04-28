@@ -896,7 +896,7 @@
 
             if (pageId === 'dashboard') {
                 fetchBookings().then(() => {
-                    // If cancelled tab is active, mark as seen
+                    // Only mark cancelled as seen if specifically on cancelled tab
                     if (currentSubTab === 'cancelled') {
                         localStorage.setItem('user_last_seen_cancelled_' + currentUser.id, new Date().toISOString());
                         updateUserBadges();
@@ -1243,6 +1243,11 @@
             }
 
             allUserBookings = data;
+            // First-time initialization: set timestamp to now so existing
+            // cancelled bookings don't flood badge. Persists across sessions.
+            if (!localStorage.getItem('user_last_seen_cancelled_' + currentUser.id)) {
+                localStorage.setItem('user_last_seen_cancelled_' + currentUser.id, new Date().toISOString());
+            }
             updateUserBadges();
             renderBookings();
         }
@@ -2504,8 +2509,11 @@
             }
 
             allUserAnnouncements = data || [];
-            // First-time: if no timestamp yet, default stays at epoch 0
-            // so all existing announcements appear as new on first login.
+            // First-time initialization: set timestamp to now so existing
+            // announcements don't flood badge. Persists across sessions.
+            if (!localStorage.getItem('user_last_seen_announcements_' + currentUser.id)) {
+                localStorage.setItem('user_last_seen_announcements_' + currentUser.id, new Date().toISOString());
+            }
             updateUserBadges();
             renderAnnouncements(data);
         }
