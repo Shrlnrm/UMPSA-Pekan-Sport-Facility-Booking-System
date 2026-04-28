@@ -1659,13 +1659,12 @@
         };
 
         function markAdminBookingTabSeen(tab) {
+            const now = new Date().toISOString();
             if (tab === 'confirmed' || tab === 'all') {
-                const confirmedIds = allAdminBookings.filter(b => b.status === 'Confirmed').map(b => b.booking_id);
-                localStorage.setItem('admin_seen_confirmed', JSON.stringify(confirmedIds));
+                localStorage.setItem('admin_last_seen_confirmed', now);
             }
             if (tab === 'cancelled' || tab === 'all') {
-                const cancelledIds = allAdminBookings.filter(b => b.status === 'Cancelled').map(b => b.booking_id);
-                localStorage.setItem('admin_seen_cancelled', JSON.stringify(cancelledIds));
+                localStorage.setItem('admin_last_seen_cancelled', now);
             }
             updateNavBadges();
         }
@@ -2667,8 +2666,7 @@
 
         function markAdminReportTabSeen(tab) {
             if (tab === 'Pending') {
-                const pendingIds = allAdminReports.filter(r => r.status === 'Pending').map(r => r.report_id);
-                localStorage.setItem('admin_seen_pending_reports', JSON.stringify(pendingIds));
+                localStorage.setItem('admin_last_seen_pending_reports', new Date().toISOString());
             }
             updateNavBadges();
         }
@@ -2698,18 +2696,20 @@
 
         // ---- Nav Notification Badges ----
         function updateNavBadges() {
-            // Get seen IDs from localStorage
-            const seenConfirmed = JSON.parse(localStorage.getItem('admin_seen_confirmed') || '[]');
-            const seenCancelled = JSON.parse(localStorage.getItem('admin_seen_cancelled') || '[]');
-            const seenReports = JSON.parse(localStorage.getItem('admin_seen_pending_reports') || '[]');
+            // Read last-seen timestamps (per section)
+            const lastSeenConfirmed = new Date(localStorage.getItem('admin_last_seen_confirmed') || 0);
+            const lastSeenCancelled = new Date(localStorage.getItem('admin_last_seen_cancelled') || 0);
+            const lastSeenReports   = new Date(localStorage.getItem('admin_last_seen_pending_reports') || 0);
 
-            // Count UNSEEN confirmed bookings
-            const unseenConfirmed = allAdminBookings.filter(b => b.status === 'Confirmed' && !seenConfirmed.includes(b.booking_id)).length;
+            // Count items created AFTER the last-seen timestamp
+            const unseenConfirmed = allAdminBookings.filter(b =>
+                b.status === 'Confirmed' && new Date(b.created_at) > lastSeenConfirmed
+            ).length;
 
-            // Count UNSEEN cancelled bookings
-            const unseenCancelled = allAdminBookings.filter(b => b.status === 'Cancelled' && !seenCancelled.includes(b.booking_id)).length;
+            const unseenCancelled = allAdminBookings.filter(b =>
+                b.status === 'Cancelled' && new Date(b.created_at) > lastSeenCancelled
+            ).length;
 
-            // Combined total for sidebar badge-bookings
             const unseenBookingsTotal = unseenConfirmed + unseenCancelled;
 
             const badgeB = document.getElementById('badge-bookings');
@@ -2722,7 +2722,6 @@
                 }
             }
 
-            // Confirmed sub-tab badge (only confirmed unseen)
             const badgeTabC = document.getElementById('badge-tab-confirmed');
             if (badgeTabC) {
                 if (unseenConfirmed > 0) {
@@ -2733,7 +2732,6 @@
                 }
             }
 
-            // Cancelled sub-tab badge (only cancelled unseen)
             const badgeTabCan = document.getElementById('badge-tab-cancelled');
             if (badgeTabCan) {
                 if (unseenCancelled > 0) {
@@ -2744,8 +2742,10 @@
                 }
             }
 
-            // Count UNSEEN pending reports
-            const unseenReports = allAdminReports.filter(r => r.status === 'Pending' && !seenReports.includes(r.report_id)).length;
+            const unseenReports = allAdminReports.filter(r =>
+                r.status === 'Pending' && new Date(r.created_at) > lastSeenReports
+            ).length;
+
             const badgeR = document.getElementById('badge-reports');
             if (badgeR) {
                 if (unseenReports > 0) {
@@ -2768,30 +2768,32 @@
 
         // ---- Background pre-fetch for badge counts (runs on page load) ----
         async function prefetchAllBadgeData() {
-            // Fetch lightweight booking data: only id + status needed for badge
+            const now = new Date().toISOString();
+
+            // On FIRST ever login, set all timestamps to now so existing items
+            // don't flood the badges. Only items created AFTER this point are "new".
+            if (!localStorage.getItem('admin_last_seen_confirmed'))    localStorage.setItem('admin_last_seen_confirmed', now);
+            if (!localStorage.getItem('admin_last_seen_cancelled'))    localStorage.setItem('admin_last_seen_cancelled', now);
+            if (!localStorage.getItem('admin_last_seen_pending_reports')) localStorage.setItem('admin_last_seen_pending_reports', now);
+
+            // Fetch lightweight booking data for badge counting
             const { data: bookings } = await db
                 .from('Booking')
-                .select('booking_id, status, cancel_reason')
+                .select('booking_id, status, created_at')
                 .order('created_at', { ascending: false });
 
-            if (bookings) {
-                // Merge into allAdminBookings only if it hasn't been populated yet
-                // (to avoid overwriting rich data already loaded by fetchAdminBookings)
-                if (allAdminBookings.length === 0) {
-                    allAdminBookings = bookings;
-                }
+            if (bookings && allAdminBookings.length === 0) {
+                allAdminBookings = bookings;
             }
 
-            // Fetch lightweight report data: only id + status needed for badge
+            // Fetch lightweight report data for badge counting
             const { data: reports } = await db
                 .from('Report')
-                .select('report_id, status')
+                .select('report_id, status, created_at')
                 .order('created_at', { ascending: false });
 
-            if (reports) {
-                if (allAdminReports.length === 0) {
-                    allAdminReports = reports;
-                }
+            if (reports && allAdminReports.length === 0) {
+                allAdminReports = reports;
             }
 
             updateNavBadges();

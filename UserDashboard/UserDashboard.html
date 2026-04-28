@@ -895,23 +895,17 @@
 
             if (pageId === 'dashboard') {
                 fetchBookings().then(() => {
-                    // If cancelled tab is active, mark admin-cancelled bookings as seen
+                    // If cancelled tab is active, mark as seen
                     if (currentSubTab === 'cancelled') {
-                        const adminCancelledIds = allUserBookings.filter(b =>
-                            b.status === 'Cancelled' &&
-                            b.cancel_reason && b.cancel_reason !== 'null' &&
-                            b.cancel_reason !== 'undefined' && b.cancel_reason.trim() !== ''
-                        ).map(b => b.booking_id);
-                        localStorage.setItem('user_seen_cancelled_' + currentUser.id, JSON.stringify(adminCancelledIds));
+                        localStorage.setItem('user_last_seen_cancelled_' + currentUser.id, new Date().toISOString());
                         updateUserBadges();
                     }
                 });
             }
             if (pageId === 'search') fetchFacilities();
             if (pageId === 'announcement') {
-                // Mark all current announcements as seen when user opens the page
-                const seenIds = allUserAnnouncements.map(a => a.announcement_id);
-                localStorage.setItem('user_seen_announcements_' + currentUser.id, JSON.stringify(seenIds));
+                // Mark all announcements as seen (store timestamp)
+                localStorage.setItem('user_last_seen_announcements_' + currentUser.id, new Date().toISOString());
                 updateUserBadges();
             }
             
@@ -1202,14 +1196,8 @@
                 actionCol.style.display = '';
                 if (emptyStateColspan) emptyStateColspan.setAttribute('colspan', '7');
 
-                // Mark admin-cancelled bookings as seen
-                const adminCancelledIds = allUserBookings.filter(b =>
-                    b.status === 'Cancelled' &&
-                    b.cancel_reason &&
-                    b.cancel_reason !== 'null' &&
-                    b.cancel_reason !== 'undefined' && b.cancel_reason.trim() !== ''
-                ).map(b => b.booking_id);
-                localStorage.setItem('user_seen_cancelled_' + currentUser.id, JSON.stringify(adminCancelledIds));
+                // Mark admin-cancelled bookings as seen (timestamp)
+                localStorage.setItem('user_last_seen_cancelled_' + currentUser.id, new Date().toISOString());
                 updateUserBadges();
             } else if (tab === 'passed') {
                 actionCol.style.display = 'none';
@@ -1248,22 +1236,27 @@
             }
 
             allUserBookings = data;
+            // First-time baseline: if no timestamp stored, set to now so
+            // existing bookings don't trigger notifications on first login
+            if (!localStorage.getItem('user_last_seen_cancelled_' + currentUser.id)) {
+                localStorage.setItem('user_last_seen_cancelled_' + currentUser.id, new Date().toISOString());
+            }
             updateUserBadges();
             renderBookings();
         }
 
         // ---- User Notification Badges ----
         function updateUserBadges() {
-            // Get seen IDs from localStorage (per user)
-            const seenCancelled = JSON.parse(localStorage.getItem('user_seen_cancelled_' + currentUser.id) || '[]');
-            const seenAnnouncements = JSON.parse(localStorage.getItem('user_seen_announcements_' + currentUser.id) || '[]');
+            // Read last-seen timestamps (per user, per section)
+            const lastSeenCancelled     = new Date(localStorage.getItem('user_last_seen_cancelled_'     + currentUser.id) || 0);
+            const lastSeenAnnouncements = new Date(localStorage.getItem('user_last_seen_announcements_' + currentUser.id) || 0);
 
-            // Count UNSEEN admin-cancelled bookings (those with cancel_reason)
+            // Count admin-cancelled bookings created AFTER last-seen timestamp
             const unseenCancelled = allUserBookings.filter(b =>
                 b.status === 'Cancelled' &&
                 b.cancel_reason && b.cancel_reason !== 'null' &&
                 b.cancel_reason !== 'undefined' && b.cancel_reason.trim() !== '' &&
-                !seenCancelled.includes(b.booking_id)
+                new Date(b.created_at) > lastSeenCancelled
             ).length;
 
             // Sidebar badge for My Dashboard (cancelled)
@@ -1288,9 +1281,9 @@
                 }
             }
 
-            // Count UNSEEN announcements
+            // Count announcements posted AFTER last-seen timestamp
             const unseenAnnouncements = allUserAnnouncements.filter(a =>
-                !seenAnnouncements.includes(a.announcement_id)
+                new Date(a.date_posted) > lastSeenAnnouncements
             ).length;
 
             // Sidebar badge for Announcement
@@ -2491,6 +2484,11 @@
             }
 
             allUserAnnouncements = data || [];
+            // First-time baseline: if no timestamp stored, set to now so
+            // existing announcements don't trigger notifications on first login
+            if (!localStorage.getItem('user_last_seen_announcements_' + currentUser.id)) {
+                localStorage.setItem('user_last_seen_announcements_' + currentUser.id, new Date().toISOString());
+            }
             updateUserBadges();
             renderAnnouncements(data);
         }
