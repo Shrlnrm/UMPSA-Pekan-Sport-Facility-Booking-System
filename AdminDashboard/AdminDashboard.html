@@ -2950,7 +2950,7 @@
             if (!typeSelect || !nameSelect || !window.allFacilitiesData) return;
             const selectedType = typeSelect.value;
             const currentName = nameSelect.value;
-            nameSelect.innerHTML = '<option value="">(All Facilities)</option>';
+            nameSelect.innerHTML = '<option value="">All Facilities</option>';
             const filteredFacilities = selectedType ? window.allFacilitiesData.filter(f => f.type === selectedType) : window.allFacilitiesData;
             const uniqueNames = [...new Set(filteredFacilities.map(f => f.name))].sort();
             let nameExists = false;
