@@ -1,6 +1,6 @@
 # UMPSA Pekan Sport Facility Booking System
 
-A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA) Pekan campus. Students and staff can browse, search, and book sport facilities — and admins can manage bookings, facilities, announcements, and reports all in one place.
+A web based sport facility booking system for Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA) Pekan campus. Students and staff can browse, search, and book sport facilities and admins can manage bookings, facilities, announcements, and reports all in one place.
 
 ## Features
 
@@ -8,7 +8,7 @@ A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sult
 - **User Dashboard**: View booking history (All, Confirmed, Cancelled, Passed), book facilities, submit issue reports, and read announcements.
 - **Admin Dashboard**: Manage facilities, approve/cancel bookings, post announcements, handle maintenance reports, and generate PDF reports.
 - **Weekly Availability Grid**: Visual slot calendar (Free / Booked / Closed) for each facility.
-- **Real-time Data**: All bookings and facility status sync live via Supabase.
+- **Real time Data**: All bookings and facility status sync live via Supabase.
 - **PWA Support**: Installable as a Progressive Web App on mobile devices.
 
 ## Facilities (7 total)
@@ -28,7 +28,7 @@ A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sult
 | Role | How to Get | Access |
 |------|-----------|--------|
 | **Student / Staff (User)** | Register with a valid UMPSA email (`@adab.umpsa.edu.my` or `@umpsa.edu.my`) | Book facilities, view own bookings, submit reports, read announcements |
-| **Admin** | Account created manually in Supabase by a super-admin | Full dashboard: manage facilities, approve/cancel bookings, post announcements, handle reports, export PDF |
+| **Admin** | Account created manually in Supabase by a admin | Full dashboard: manage facilities, approve/cancel bookings, post announcements, handle reports, export PDF |
 
 > **Note:** Only UMPSA students and staff are allowed to use the facilities. Strict action or fines will be imposed if outsiders are involved.
 
@@ -40,7 +40,7 @@ A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sult
    - **Full Name**
    - **UMPSA Email** (must be an official UMPSA email address)
    - **Password** (minimum 6 characters)
-4. Click **Register** — you will be redirected to the Login page.
+4. Click **Register** you will be redirected to the Login page.
 5. Log in with your email and password to access the User Dashboard.
 
 > To reset your password, click **Forgot Password?** on the Login page and follow the email link.
@@ -67,7 +67,7 @@ A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sult
 
 4. **Run the site**:
 
-   The project is a static multi-page HTML site. No build step is needed. Simply open `index.html` in a browser, or serve it using any local static server:
+   The project is a static multi page HTML site. No build step is needed. Simply open `index.html` in a browser, or serve it using any local static server:
    ```bash
    # Option A – VS Code Live Server (recommended)
    # Right-click index.html → "Open with Live Server"
@@ -91,7 +91,7 @@ A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sult
 - **Storage**: Supabase Storage (facility images, report photo proofs)
 - **PWA**: Web App Manifest + Service Worker
 - **Fonts**: Inter (Google Fonts)
-- **PDF Export**: Admin dashboard report export (client-side)
+- **PDF Export**: Admin dashboard report export (client side)
 - **CI/CD**: GitHub Actions (`deploy.yml`)
 
 ## Project Structure
