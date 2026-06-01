@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://hcaptcha.com https://*.hcaptcha.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co https://hcaptcha.com https://*.hcaptcha.com; frame-src https://hcaptcha.com https://*.hcaptcha.com;">
     <title>Register</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,10 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -39,7 +40,8 @@
         }
     </script>
     <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <script src="../js/supabaseClient.js"></script>
     <script src="../js/auth.js"></script>
     <!-- PWA -->
@@ -137,6 +139,11 @@
                         </div>
                     </div>
 
+                    <!-- hCaptcha Widget -->
+                    <div class="flex justify-center">
+                        <div class="h-captcha" data-sitekey="d8507d84-b360-4ac0-97a4-0938b04c033a" data-theme="light"></div>
+                    </div>
+
                     <!-- Error / Success Messages -->
                     <div id="registerError" class="hidden text-[12.5px] font-medium text-red-500 text-center tracking-wide"></div>
                     <div id="registerSuccess" class="hidden text-[12.5px] font-medium text-primary-teal text-center tracking-wide"></div>
@@ -155,9 +162,8 @@
                 </form>
                 
                 <script>
-                    // Pass redirect_facility back to login page if present
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const redirectFacility = urlParams.get('redirect_facility');
+                    // Pass redirect_facility back to login page if present (validated)
+                    const redirectFacility = getSafeRedirectFacility();
                     if (redirectFacility) {
                         const loginLink = document.getElementById('loginLink');
                         loginLink.href = `../LogInPage/LogInPage.html?redirect_facility=${redirectFacility}`;

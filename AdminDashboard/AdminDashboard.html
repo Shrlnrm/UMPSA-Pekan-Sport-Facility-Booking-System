@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://placehold.co; connect-src 'self' https://*.supabase.co;">
     <title>Admin Dashboard</title>
     <!-- Auth Guard -->
     <script>
@@ -15,11 +16,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
     <script src="../js/supabaseClient.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -1365,6 +1366,14 @@
             });
         }
 
+        // ---- XSS Prevention Utility ----
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = String(str);
+            return div.innerHTML;
+        }
+
         // ---- Toast Notification ----
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
@@ -1533,15 +1542,16 @@
 
             paginated.forEach(r => {
                 const reportIdFmt = 'REP-' + r.report_id.toString().padStart(3, '0');
-                const facilityName = r.Facility ? r.Facility.name : 'Unknown';
+                const facilityName = escapeHtml(r.Facility ? r.Facility.name : 'Unknown');
                 const reportDate = new Date(r.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                const safeDesc = escapeHtml(r.issue_description);
 
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50 transition-colors';
                 tr.innerHTML = `
                     <td class="px-2 sm:px-6 py-2 sm:py-4 font-bold text-primary-blue text-xs">${reportIdFmt}</td>
                     <td class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-primary-teal text-xs">${facilityName}</td>
-                    <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs text-gray-600 max-w-xs truncate" title="${r.issue_description}">${r.issue_description}</td>
+                    <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs text-gray-600 max-w-xs truncate" title="${safeDesc}">${safeDesc}</td>
                     <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs text-gray-600">${reportDate}</td>
                 `;
                 container.appendChild(tr);
@@ -1603,8 +1613,8 @@
             renderPaginationControls('dashboard-bookings-pagination', currentDashboardBookingPage, totalPages, 'changeDashboardBookingPage');
 
             paginated.forEach(b => {
-                const userEmail = b.User ? b.User.email : 'Unknown';
-                const facilityName = b.Facility ? b.Facility.name : 'Unknown';
+                const userEmail = escapeHtml(b.User ? b.User.email : 'Unknown');
+                const facilityName = escapeHtml(b.Facility ? b.Facility.name : 'Unknown');
                 const bookingDate = new Date(b.date).toLocaleDateString();
                 let statusHtml = '';
                 const baseStyle = "font-bold uppercase inline-block text-[10px]";
@@ -2854,7 +2864,7 @@
             const baseStyle = "border px-4 py-1.5 rounded text-[10px] font-bold uppercase inline-block text-center";
 
             paginatedReports.forEach(r => {
-                const facilityName = r.Facility ? r.Facility.name : 'Unknown';
+                const facilityName = escapeHtml(r.Facility ? r.Facility.name : 'Unknown');
                 const reportDate = new Date(r.created_at).toLocaleDateString();
 
                 const baseStyle = "font-bold uppercase inline-block text-[10px]";
@@ -2867,7 +2877,8 @@
 
                 let proofHtml = `<span class="text-xs text-gray-400">No Image</span>`;
                 if (r.image_proof) {
-                    proofHtml = `<a href="${r.image_proof}" target="_blank" class="text-primary-blue hover:underline text-[10px] font-medium flex items-center gap-1"><i data-lucide="image" class="w-3 h-3"></i> VIEW</a>`;
+                    const safeProofUrl = escapeHtml(r.image_proof);
+                    proofHtml = `<a href="${safeProofUrl}" target="_blank" class="text-primary-blue hover:underline text-[10px] font-medium flex items-center gap-1"><i data-lucide="image" class="w-3 h-3"></i> VIEW</a>`;
                 }
 
                 const actionHtml = r.status === 'Pending'
@@ -2879,7 +2890,7 @@
                 tr.innerHTML = `
                     <td class="px-2 sm:px-6 py-2 sm:py-4 font-bold text-primary-blue text-xs">REP-${r.report_id.toString().padStart(3, '0')}</td>
                     <td class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-primary-teal text-xs">${facilityName}</td>
-                    <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs text-gray-600 max-w-xs truncate" title="${r.issue_description}">${r.issue_description}</td>
+                    <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs text-gray-600 max-w-xs truncate" title="${escapeHtml(r.issue_description)}">${escapeHtml(r.issue_description)}</td>
                     <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs text-gray-600">${reportDate}</td>
                     <td class="px-2 sm:px-6 py-2 sm:py-4">${proofHtml}</td>
                     <td class="px-2 sm:px-6 py-2 sm:py-4">${statusHtml}</td>
