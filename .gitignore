@@ -11,4 +11,3 @@ _agent/
 _agents/
 tmp/
 *.log
-supabase/migrations/

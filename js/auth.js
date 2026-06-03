@@ -1,11 +1,3 @@
-// ─── XSS Prevention: HTML Escape Utility ──────────────────────────────────
-function escapeHtml(str) {
-    if (str === null || str === undefined) return '';
-    const div = document.createElement('div');
-    div.textContent = String(str);
-    return div.innerHTML;
-}
-
 // ─── Password Hashing (SHA-256) ────────────────────────────────────────────
 async function hashPassword(password) {
     const encoder = new TextEncoder();
@@ -13,41 +5,6 @@ async function hashPassword(password) {
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-// ─── Password Strength Validation ─────────────────────────────────────────
-function validatePassword(pass) {
-    if (pass.length < 10) return 'Password must be at least 10 characters.';
-    if (!/[a-z]/.test(pass)) return 'Password must include a lowercase letter.';
-    if (!/[A-Z]/.test(pass)) return 'Password must include an uppercase letter.';
-    if (!/[0-9]/.test(pass)) return 'Password must include a number.';
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)) return 'Password must include a special character (!@#$%^&* etc.).';
-    return null;
-}
-
-// ─── Safe Redirect Parameter ──────────────────────────────────────────────
-function getSafeRedirectFacility() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const val = urlParams.get('redirect_facility');
-    // Only allow alphanumeric, hyphens, underscores (facility IDs/names)
-    if (val && /^[a-zA-Z0-9_-]+$/.test(val)) return val;
-    return null;
-}
-
-// ─── hCaptcha Verification ────────────────────────────────────────────────
-function getHcaptchaToken() {
-    if (typeof hcaptcha === 'undefined') return null;
-    try {
-        return hcaptcha.getResponse();
-    } catch (e) {
-        return null;
-    }
-}
-
-function resetHcaptcha() {
-    if (typeof hcaptcha !== 'undefined') {
-        try { hcaptcha.reset(); } catch (e) { /* ignore */ }
-    }
 }
 
 // ─── Show / Hide Alert Helpers ─────────────────────────────────────────────
@@ -115,7 +72,6 @@ async function handleRegister() {
     
     const setError = (msg) => {
         setButtonLoading(btnId, false, 'Register');
-        resetHcaptcha();
         return showError(errorEl, msg);
     };
 
@@ -133,21 +89,11 @@ async function handleRegister() {
     } else {
         return setError('Invalid role selected.');
     }
-
-    // Strong password validation
-    const passError = validatePassword(pass);
-    if (passError) {
-        return setError(passError);
+    if (pass.length < 8) {
+        return setError('Password must be at least 8 characters.');
     }
-
     if (pass !== confirm) {
         return setError('Passwords do not match.');
-    }
-
-    // hCaptcha verification
-    const captchaToken = getHcaptchaToken();
-    if (!captchaToken) {
-        return setError('Please complete the CAPTCHA verification.');
     }
 
     setButtonLoading(btnId, true);
@@ -173,7 +119,8 @@ async function handleRegister() {
     showSuccess(successEl, 'Account created successfully!');
     setButtonLoading(btnId, false, 'Redirecting...');
     setTimeout(() => { 
-        const redirectFacility = getSafeRedirectFacility();
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectFacility = urlParams.get('redirect_facility');
         if (redirectFacility) {
             window.location.href = `../LogInPage/LogInPage.html?redirect_facility=${redirectFacility}`;
         } else {
@@ -196,18 +143,11 @@ async function handleLogin() {
 
     const setError = (msg) => {
         setButtonLoading(btnId, false, 'Login');
-        resetHcaptcha();
         return showError(errorEl, msg);
     };
 
     if (!email || !pass || !role) {
         return setError('All fields are required.');
-    }
-
-    // hCaptcha verification
-    const captchaToken = getHcaptchaToken();
-    if (!captchaToken) {
-        return setError('Please complete the CAPTCHA verification.');
     }
 
     setButtonLoading(btnId, true);
@@ -256,8 +196,9 @@ async function handleLogin() {
 
     setButtonLoading(btnId, false, 'Redirecting...');
     
-    // Check if there's a safe redirect_facility in the URL
-    const redirectFacility = getSafeRedirectFacility();
+    // Check if there's a redirect_facility in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectFacility = urlParams.get('redirect_facility');
     
     if (redirectFacility) {
         window.location.href = `../UserDashboard/UserDashboard.html?open_booking=${redirectFacility}`;
@@ -278,17 +219,10 @@ async function handleForgotPassword() {
 
     const setError = (msg) => {
         setButtonLoading(btnId, false, 'Send Reset Link');
-        resetHcaptcha();
         return showError(errorEl, msg);
     };
 
     if (!email) return setError('Please enter your email address.');
-
-    // hCaptcha verification
-    const captchaToken = getHcaptchaToken();
-    if (!captchaToken) {
-        return setError('Please complete the CAPTCHA verification.');
-    }
 
     setButtonLoading(btnId, true);
 
@@ -317,7 +251,7 @@ async function handleForgotPassword() {
 
     if (updateError) return setError('System error setting up reset. Please try again.');
 
-    // 4. Generate the reset link
+    // 4. Generate the reset link (based on current URL path)
     const baseUrl = window.location.href.split('?')[0].replace(/NewPasswordPage/g, 'ResetPasswordPage');
     const resetLink = `${baseUrl}?token=${token}&email=${encodeURIComponent(email)}&type=${table}`;
 
@@ -344,7 +278,7 @@ async function handleResetPassword() {
     const successEl   = 'resetSuccess';
     const btnId       = 'resetBtn';
     
-    // Read from URL params (validated)
+    // Read from URL params
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email');
     const token = urlParams.get('token');
@@ -367,13 +301,9 @@ async function handleResetPassword() {
     if (!newPass || !confirmPass) {
         return setError('All fields are required.');
     }
-
-    // Strong password validation
-    const passError = validatePassword(newPass);
-    if (passError) {
-        return setError(passError);
+    if (newPass.length < 8) {
+        return setError('Password must be at least 8 characters.');
     }
-
     if (newPass !== confirmPass) {
         return setError('Passwords do not match.');
     }
@@ -404,7 +334,7 @@ async function handleResetPassword() {
     const { error: updateError } = await db.from(table)
         .update({ 
             password: hashedPass,
-            reset_token: null,
+            reset_token: null,          // Clear the token
             reset_token_expires: null 
         })
         .eq('email', email);
