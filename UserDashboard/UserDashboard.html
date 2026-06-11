@@ -905,7 +905,7 @@
             }
             if (pageId === 'search') fetchFacilities();
             if (pageId === 'announcement') {
-                // Mark all announcements as seen — store highest announcement_id
+                // Mark all announcements as seen: store highest announcement_id
                 const maxId = allUserAnnouncements.length > 0
                     ? Math.max(...allUserAnnouncements.map(a => a.announcement_id))
                     : 0;
@@ -1777,7 +1777,7 @@
         }
 
         function handleLogout() {
-            // Only clear auth keys — preserve notification timestamps so badges survive
+            // Only clear auth keys: preserve notification timestamps so badges survive
             // login/logout cycles on the same browser
             ['user_id', 'user_email'].forEach(k => localStorage.removeItem(k));
             sessionStorage.clear();
@@ -1847,7 +1847,7 @@
             }
         }
 
-        // When year selector changes — repopulate months and jump
+        // When year selector changes: repopulate months and jump
         function onYearSelectorChange(year) {
             year = parseInt(year);
             const now = new Date();
@@ -2047,7 +2047,7 @@
                 return;
             }
 
-            // Capacity Validation (After ensuring it's filled) — skip for no-limit facilities
+            // Capacity Validation (After ensuring it's filled): skip for no limit facilities
             const parsedParticipants = parseInt(participants);
             if (selectedFacility.max_capacity != null && parsedParticipants > selectedFacility.max_capacity) {
                 showToast(`Number of participants exceeds facility capacity (Max: ${selectedFacility.max_capacity}).`, 'warning');
