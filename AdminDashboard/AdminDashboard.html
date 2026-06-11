@@ -1429,7 +1429,7 @@
 
         // ---- Logout ----
         function handleLogout() {
-            // Only clear auth keys — preserve notification timestamps so badges survive
+            // Only clear auth keys: preserve notification timestamps so badges survive
             // login/logout cycles on the same browser
             ['admin_id', 'admin_email', 'admin_role'].forEach(k => localStorage.removeItem(k));
             sessionStorage.clear();
@@ -1674,7 +1674,7 @@
         };
 
         function markAdminBookingTabSeen(tab) {
-            // 'all' tab does NOT clear any badge — user must click specific tab
+            // 'all' tab does NOT clear any badge: user must click specific tab
             if (tab === 'all') return;
 
             const now = new Date().toISOString();
@@ -3133,7 +3133,7 @@
 
             chartEmpty.classList.add('hidden');
             chartContainer.classList.remove('hidden');
-            chartTitle.textContent = `Facility Usage — ${buildFilterSummaryText()}`;
+            chartTitle.textContent = `Facility Usage | ${buildFilterSummaryText()}`;
 
             const groupBySlot = !!facilityName;
             const groupCounts = {};
