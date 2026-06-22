@@ -66,12 +66,11 @@
             opacity: 0;
             transition: opacity 0.15s;
             background: #009ca6;
-            width: 0 !important;
         }
 
         .nav-link:hover .nav-bar,
         .nav-link.active .nav-bar {
-            opacity: 0;
+            opacity: 1;
         }
 
         .nav-link:hover i,
@@ -1450,12 +1449,8 @@
 
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
 
-            if (navEl && navEl.classList) {
-                navEl.classList.add('active');
-            } else {
-                const sidebarBtn = document.querySelector(`.nav-link[onclick*="'${pageId}'"]`);
-                if (sidebarBtn) sidebarBtn.classList.add('active');
-            }
+            const sidebarBtn = document.querySelector(`.nav-link[onclick*="showPage('${pageId}'"]`);
+            if (sidebarBtn) sidebarBtn.classList.add('active');
 
             // Close sidebar on mobile nav
             if (window.innerWidth < 1024) closeSidebar();

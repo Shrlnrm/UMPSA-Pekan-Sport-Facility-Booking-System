@@ -40,8 +40,8 @@
         .nav-link { transition: color 0.15s, background 0.15s; color: #6b7280; }
         .nav-link:hover  { color: #009ca6; background: #f0fdfe; }
         .nav-link.active { color: #009ca6; background: #f0fdfe; }
-        .nav-link .nav-bar { opacity: 0; transition: opacity 0.15s; background: #009ca6; width: 0 !important; }
-        .nav-link:hover  .nav-bar, .nav-link.active .nav-bar { opacity: 0; }
+        .nav-link .nav-bar { opacity: 0; transition: opacity 0.15s; background: #009ca6; }
+        .nav-link:hover  .nav-bar, .nav-link.active .nav-bar { opacity: 1; }
         .nav-link:hover  i, .nav-link.active i { color: #009ca6; }
 
         /* Main tabs (dark blue for bookings and search) */
@@ -877,7 +877,7 @@
         // ---- App Shell: show/hide pages ----
         const pages = ['dashboard', 'search', 'report', 'announcement', 'booking-form', 'book-now-summary', 'confirm-booking'];
 
-        function showPage(pageId, navEl) {
+        function showPage(pageId, extra) {
             pages.forEach(p => {
                 const el = document.getElementById('page-' + p);
                 if (el) el.classList.add('hidden');
@@ -887,13 +887,9 @@
 
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             
-            // Highlight sidebar
-            if (navEl && navEl.classList) {
-                navEl.classList.add('active');
-            } else {
-                const sidebarBtn = document.querySelector(`.nav-link[onclick*="'${pageId}'"]`);
-                if (sidebarBtn) sidebarBtn.classList.add('active');
-            }
+            // Highlight sidebar if matching pageId
+            const sidebarBtn = document.querySelector(`.nav-link[onclick*="showPage('${pageId}')"]`);
+            if (sidebarBtn) sidebarBtn.classList.add('active');
 
             // Close sidebar on mobile nav
             if (window.innerWidth < 1024) closeSidebar();
