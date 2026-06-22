@@ -896,9 +896,20 @@
             if (target) target.classList.remove('hidden');
 
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-            
-            // Highlight sidebar if matching pageId
-            const sidebarBtn = document.querySelector(`.nav-link[onclick*="showPage('${pageId}'"]`);
+
+            // Map sub-pages to their parent nav item
+            const navMap = {
+                'dashboard': 'dashboard',
+                'search': 'search',
+                'booking-form': 'search',
+                'book-now-summary': 'search',
+                'confirm-booking': 'search',
+                'report': 'report',
+                'announcement': 'announcement'
+            };
+            const navKey = navMap[pageId] || pageId;
+            // Use data-nav attribute for reliable lookup
+            const sidebarBtn = document.querySelector(`.nav-link[data-nav="${navKey}"]`);
             if (sidebarBtn) sidebarBtn.classList.add('active');
 
             // Close sidebar on mobile nav
