@@ -1450,8 +1450,12 @@
 
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
 
-            const sidebarBtn = document.querySelector(`.nav-link[onclick*="showPage('${pageId}'"]`);
-            if (sidebarBtn) sidebarBtn.classList.add('active');
+            if (navEl && navEl.classList) {
+                navEl.classList.add('active');
+            } else {
+                const sidebarBtn = document.querySelector(`.nav-link[onclick*="'${pageId}'"]`);
+                if (sidebarBtn) sidebarBtn.classList.add('active');
+            }
 
             // Close sidebar on mobile nav
             if (window.innerWidth < 1024) closeSidebar();
