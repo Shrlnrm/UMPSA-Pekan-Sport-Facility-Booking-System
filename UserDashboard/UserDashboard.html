@@ -40,7 +40,8 @@
         .nav-link { transition: color 0.15s, background 0.15s; color: #6b7280; }
         .nav-link:hover  { color: #009ca6; background: #f0fdfe; }
         .nav-link.active { color: #009ca6; background: #f0fdfe; }
-        .nav-link .nav-bar { display: none; }
+        .nav-link .nav-bar { opacity: 0; transition: opacity 0.15s; background: #009ca6; width: 0 !important; }
+        .nav-link:hover  .nav-bar, .nav-link.active .nav-bar { opacity: 0; }
         .nav-link:hover  i, .nav-link.active i { color: #009ca6; }
 
         /* Main tabs (dark blue for bookings and search) */
