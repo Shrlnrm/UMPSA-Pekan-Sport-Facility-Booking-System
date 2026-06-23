@@ -669,6 +669,13 @@
                             </div>
                             <!-- Generate Report Panel -->
                             <div id="generate-report-panel" class="p-3 sm:p-6 flex-1 flex-col bg-gray-50/30 hidden">
+
+                                <!-- ===== SECTION: FACILITY USAGE REPORT ===== -->
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-1 h-7 bg-primary-blue rounded-full"></div>
+                                    <h2 class="text-base font-bold text-primary-blue tracking-tight">Facility Usage Report</h2>
+                                </div>
+
                                 <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 mb-6">
                                     <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">Date Range</h3>
                                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -820,9 +827,14 @@
                                     </div>
                                 </div>
 
-                                <!-- ====== ISSUES REPORT SECTION ====== -->
-                                <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 mt-6">
-                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">Facility Issues Report</h3>
+                                <!-- ===== SECTION: FACILITY ISSUES REPORT ===== -->
+                                <div class="flex items-center gap-3 mb-4 mt-10">
+                                    <div class="w-1 h-7 bg-primary-blue rounded-full"></div>
+                                    <h2 class="text-base font-bold text-primary-blue tracking-tight">Facility Issues Report</h2>
+                                </div>
+
+                                <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
+                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">Date Range</h3>
 
                                     <!-- Date Range -->
                                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -914,6 +926,7 @@
 
                                 <!-- Issues Results Area -->
                                 <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 mt-6 relative">
+                                    <div id="issue-report-active-filters" class="flex flex-wrap gap-2 mb-6 hidden"></div>
                                     <div id="issue-report-chart-container" class="hidden">
                                         <h3 id="issue-report-chart-title" class="text-lg font-bold text-primary-blue mb-4 text-center"></h3>
                                         <div class="relative w-full mb-8" style="height: 400px;"><canvas id="issuesChart"></canvas></div>
@@ -3494,11 +3507,31 @@
                 const values = sorted.map(([, s]) => s.total);
                 const totalIssues = filtered.length;
 
-                // Build title
-                const parts = [];
-                if (specificDate) { parts.push(specificDate); }
+                // Render active filter chips
+                const issueChipsContainer = document.getElementById('issue-report-active-filters');
+                issueChipsContainer.innerHTML = '';
+                issueChipsContainer.classList.remove('hidden');
+                const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                const addIssueChip = (label, id) => {
+                    const chip = document.createElement('div');
+                    chip.className = 'inline-flex items-center gap-1.5 bg-blue-50 text-primary-blue px-3 py-1 rounded-full text-xs font-medium border border-blue-100';
+                    chip.innerHTML = `<span>${label}</span><button onclick="clearIssueReportFilter('${id}')" class="hover:bg-blue-100 rounded-full p-0.5 transition-colors"><i data-lucide="x" class="w-3 h-3"></i></button>`;
+                    issueChipsContainer.appendChild(chip);
+                };
+                if (specificDate) addIssueChip(`Date: ${new Date(specificDate).toLocaleDateString()}`, 'issue-report-date');
                 else {
-                    if (month) parts.push(['January','February','March','April','May','June','July','August','September','October','November','December'][parseInt(month)-1]);
+                    if (month) addIssueChip(`Month: ${monthNames[parseInt(month)-1]}`, 'issue-report-month');
+                    if (year)  addIssueChip(`Year: ${year}`, 'issue-report-year');
+                }
+                if (facilityName) addIssueChip(`Facility: ${facilityName}`, 'issue-report-facility');
+                if (status)       addIssueChip(`Status: ${status}`, 'issue-report-status');
+                lucide.createIcons();
+
+                // Build chart title
+                const parts = [];
+                if (specificDate) { parts.push(new Date(specificDate).toLocaleDateString()); }
+                else {
+                    if (month) parts.push(monthNames[parseInt(month)-1]);
                     if (year)  parts.push(year);
                 }
                 if (facilityName) parts.push(facilityName);
@@ -3604,10 +3637,37 @@
             const styleLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.outerHTML).join('\n');
             const styleTags  = Array.from(document.querySelectorAll('style')).map(s => `<style>${s.innerHTML}</style>`).join('\n');
             const bodyHtml = element.innerHTML;
-            const printWindow = window.open('', '_blank', 'width=900,height=700');
+            const w = 900, h = 700;
+            const left = Math.max(0, Math.round((screen.width  - w) / 2));
+            const top  = Math.max(0, Math.round((screen.height - h) / 2));
+            const printWindow = window.open('', '_blank',
+                `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no`);
             if (!printWindow) { showToast('Pop-up blocked. Please allow pop-ups and try again.', 'warning'); return; }
-            printWindow.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Facility Issues Report</title>${styleLinks}${styleTags}<style>@media print{body{margin:0;padding:0;}@page{margin:10mm;size:A4 portrait;}}body{background:#fff;margin:0;padding:0;font-family:Arial,sans-serif;color:#000;}*{box-sizing:border-box;}</style></head><body><div style="background:white;padding:20px;max-width:210mm;margin:0 auto;">${bodyHtml}</div><script>window.addEventListener('load',function(){setTimeout(function(){window.print();},800);});<\/script></body></html>`);
+            printWindow.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Facility Issues Report</title>${styleLinks}${styleTags}<style>@media print{body{margin:0;padding:0;}@page{margin:10mm;size:A4 portrait;}}body{background:#fff;margin:0;padding:0;font-family:Arial,sans-serif;color:#000;}*{box-sizing:border-box;}</style></head><body><div style="background:white;padding:20px;max-width:210mm;margin:0 auto;">${bodyHtml}</div><script>window.addEventListener('load',function(){setTimeout(function(){window.print();},800);});window.addEventListener('afterprint',function(){window.close();});<\/script></body></html>`);
             printWindow.document.close();
+        };
+
+        window.clearIssueReportFilter = function(filterId) {
+            const el = document.getElementById(filterId);
+            if (el) el.value = '';
+            updateIssueButtonState();
+            // Check if any filters remain
+            const hasFilter = !!(
+                document.getElementById('issue-report-month')?.value ||
+                document.getElementById('issue-report-year')?.value ||
+                document.getElementById('issue-report-date')?.value ||
+                document.getElementById('issue-report-facility')?.value ||
+                document.getElementById('issue-report-status')?.value
+            );
+            if (hasFilter) {
+                generateIssuesReport();
+            } else {
+                document.getElementById('issue-report-active-filters').classList.add('hidden');
+                document.getElementById('issue-report-chart-container').classList.add('hidden');
+                document.getElementById('issue-report-empty').classList.remove('hidden');
+                const btnPrint = document.getElementById('btn-print-issues');
+                if (btnPrint) { btnPrint.disabled = true; btnPrint.classList.add('opacity-50', 'cursor-not-allowed'); }
+            }
         };
 
         window.populatePDFTemplate = function() {
@@ -3685,10 +3745,8 @@
         ${bodyHtml}
     </div>
     <script>
-        // Auto-print once all resources (fonts, images) are ready
-        window.addEventListener('load', function() {
-            setTimeout(function() { window.print(); }, 800);
-        });
+        window.addEventListener('load', function() { setTimeout(function() { window.print(); }, 800); });
+        window.addEventListener('afterprint', function() { window.close(); });
     <\/script>
 </body>
 </html>`);
@@ -3698,13 +3756,17 @@
         window.printReport = function() {
             populatePDFTemplate();
             const element = document.getElementById('pdf-report-template');
-            document.body.innerHTML = element.innerHTML;
-            
-            // Give browser time to render the base64 chart image before printing
-            setTimeout(() => {
-                window.print();
-                location.reload();
-            }, 800);
+            const styleLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.outerHTML).join('\n');
+            const styleTags  = Array.from(document.querySelectorAll('style')).map(s => `<style>${s.innerHTML}</style>`).join('\n');
+            const bodyHtml   = element.innerHTML;
+            const w = 900, h = 700;
+            const left = Math.max(0, Math.round((screen.width  - w) / 2));
+            const top  = Math.max(0, Math.round((screen.height - h) / 2));
+            const printWindow = window.open('', '_blank',
+                `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no`);
+            if (!printWindow) { showToast('Pop-up blocked. Please allow pop-ups and try again.', 'warning'); return; }
+            printWindow.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Facility Usage Report</title>${styleLinks}${styleTags}<style>@media print{body{margin:0;padding:0;}@page{margin:10mm;size:A4 portrait;}}body{background:#fff;margin:0;padding:0;font-family:Arial,sans-serif;color:#000;}*{box-sizing:border-box;}</style></head><body><div style="background:white;padding:20px;max-width:210mm;margin:0 auto;">${bodyHtml}</div><script>window.addEventListener('load',function(){setTimeout(function(){window.print();},800);});window.addEventListener('afterprint',function(){window.close();});<\/script></body></html>`);
+            printWindow.document.close();
         };
 
 
