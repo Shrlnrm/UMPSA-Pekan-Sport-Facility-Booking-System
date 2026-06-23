@@ -79,8 +79,6 @@
 
             <!-- Form Section -->
             <div class="px-6 py-8">
-                <!-- Form (hidden after successful registration) -->
-                <div id="register-form-area">
                 <form class="flex flex-col gap-4" onsubmit="event.preventDefault(); handleRegister();">
                     
                     <!-- Email Input -->
@@ -155,38 +153,14 @@
                         <a id="loginLink" href="../LogInPage/LogInPage.html" class="text-[13px] text-primary-teal hover:text-primary-teal-hover transition-colors">Login here</a>
                     </div>
                 </form>
-                </div><!-- /register-form-area -->
-
-                <!-- Check Email Panel (shown after successful registration) -->
-                <div id="register-email-sent" class="hidden flex-col items-center text-center gap-5 py-2">
-                    <div class="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center mx-auto">
-                        <i data-lucide="mail-check" class="w-8 h-8 text-primary-teal"></i>
-                    </div>
-                    <div>
-                        <p class="font-bold text-gray-900 text-base">Check Your Email</p>
-                        <p class="text-[13px] text-gray-500 mt-2 leading-relaxed">
-                            We sent a verification link to<br>
-                            <span id="registered-email-display" class="font-semibold text-primary-blue"></span>
-                        </p>
-                        <p class="text-[12px] text-gray-400 mt-3">Click <strong>Activate My Account</strong> in the email to complete registration. The link expires in 2 hours.</p>
-                    </div>
-                    <div class="w-full border-t border-gray-100 pt-4 flex flex-col gap-2">
-                        <p class="text-[12px] text-gray-400">Didn't receive it?</p>
-                        <button id="resend-btn" onclick="handleRegisterResend()"
-                            class="text-[13px] text-primary-teal hover:text-primary-teal-hover transition-colors font-medium">
-                            Resend verification email
-                        </button>
-                    </div>
-                    <a href="../LogInPage/LogInPage.html" class="text-[13px] text-gray-400 hover:text-gray-600 transition-colors">Back to Login</a>
-                </div>
-
+                
                 <script>
                     // Pass redirect_facility back to login page if present
                     const urlParams = new URLSearchParams(window.location.search);
                     const redirectFacility = urlParams.get('redirect_facility');
                     if (redirectFacility) {
                         const loginLink = document.getElementById('loginLink');
-                        if (loginLink) loginLink.href = `../LogInPage/LogInPage.html?redirect_facility=${redirectFacility}`;
+                        loginLink.href = `../LogInPage/LogInPage.html?redirect_facility=${redirectFacility}`;
                     }
                 </script>
             </div>
