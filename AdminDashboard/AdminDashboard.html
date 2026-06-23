@@ -822,18 +822,14 @@
 
                                 <!-- ====== ISSUES REPORT SECTION ====== -->
                                 <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 mt-6">
-                                    <div class="flex items-center gap-2 mb-5 border-b border-gray-100 pb-4">
-                                        <i data-lucide="alert-triangle" class="w-4 h-4 text-orange-500"></i>
-                                        <h3 class="text-sm font-bold text-primary-blue">Facility Issues Report</h3>
-                                    </div>
+                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">Facility Issues Report</h3>
 
-                                    <!-- Issues Filters -->
-                                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-5">
-                                        <!-- Month -->
+                                    <!-- Date Range -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Month</label>
                                             <div class="relative">
-                                                <select id="issue-report-month" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer" onchange="updateIssueButtonState()">
+                                                <select id="issue-report-month" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Months</option>
                                                     <option value="1">January</option><option value="2">February</option><option value="3">March</option>
                                                     <option value="4">April</option><option value="5">May</option><option value="6">June</option>
@@ -843,40 +839,38 @@
                                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
                                             </div>
                                         </div>
-                                        <!-- Year -->
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Year</label>
                                             <div class="relative">
-                                                <select id="issue-report-year" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer" onchange="updateIssueButtonState()">
+                                                <select id="issue-report-year" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Years</option>
                                                 </select>
                                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
                                             </div>
                                         </div>
-                                        <!-- Specific Date -->
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Specific Date</label>
-                                            <input id="issue-report-date" type="date" oninput="updateIssueButtonState()" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2 outline-none focus:border-primary-teal transition-all">
+                                            <input id="issue-report-date" type="date" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2 outline-none focus:border-primary-teal transition-all">
                                             <span class="text-[10px] text-gray-400 mt-0.5">Overrides month/year if set</span>
                                         </div>
-                                        <!-- Facility Name -->
+                                    </div>
+
+                                    <!-- Advanced Filters -->
+                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">Advanced Filters</h3>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Facility Name</label>
                                             <div class="relative">
-                                                <select id="issue-report-facility" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer" onchange="updateIssueButtonState()">
+                                                <select id="issue-report-facility" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Facilities</option>
                                                 </select>
                                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <!-- Status Filter + Generate Button Row -->
-                                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-100 pt-5">
-                                        <div class="flex items-center gap-3 w-full sm:w-auto">
-                                            <label class="text-[11px] font-bold text-primary-blue whitespace-nowrap">Issue Status</label>
+                                        <div class="flex flex-col gap-1.5">
+                                            <label class="text-[11px] font-bold text-primary-blue">Issue Status</label>
                                             <div class="relative">
-                                                <select id="issue-report-status" class="h-[38px] bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer" onchange="updateIssueButtonState()">
+                                                <select id="issue-report-status" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Statuses</option>
                                                     <option value="Pending">Pending</option>
                                                     <option value="Resolved">Resolved</option>
@@ -884,40 +878,113 @@
                                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
                                             </div>
                                         </div>
-                                        <div class="flex flex-col items-center relative">
-                                            <button id="btn-generate-issues" onclick="generateIssuesReport()" disabled
-                                                class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-bold text-sm transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                                                <i data-lucide="alert-triangle" class="w-4 h-4"></i> Generate Issues Report
-                                            </button>
-                                            <span id="issue-report-helper" class="text-[10px] text-gray-400 absolute -bottom-5 w-max">Select at least 1 filter</span>
-                                        </div>
                                     </div>
 
-                                    <!-- Issues Results -->
-                                    <div id="issue-report-results" class="mt-6 hidden">
-                                        <h4 id="issue-report-chart-title" class="text-base font-bold text-primary-blue mb-4 text-center"></h4>
-                                        <div class="relative w-full mb-6" style="height:320px;">
-                                            <canvas id="issuesChart"></canvas>
+                                    <!-- Chart Type + Generate Row -->
+                                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-gray-100 pt-6 gap-4">
+                                        <div class="flex items-center gap-4 w-full sm:w-auto">
+                                            <div class="flex flex-col gap-1.5">
+                                                <label class="text-[10px] font-bold text-primary-blue">Chart Type</label>
+                                                <div class="relative">
+                                                    <select id="issue-report-chart-type" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                        <option value="bar">Bar Chart</option>
+                                                        <option value="pie">Pie Chart</option>
+                                                    </select>
+                                                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2 mt-5">
+                                                <input type="checkbox" id="issue-report-include-chart" checked class="w-4 h-4 text-primary-teal rounded border-gray-300 focus:ring-primary-teal">
+                                                <label for="issue-report-include-chart" class="text-sm text-gray-600">Include chart in PDF</label>
+                                            </div>
                                         </div>
-                                        <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white mb-3">
+                                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                                            <button id="btn-print-issues" onclick="printIssuesReport()" disabled class="px-4 py-2 border border-gray-200 rounded-md text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                <i data-lucide="printer" class="w-4 h-4"></i> Print
+                                            </button>
+                                            <div class="flex flex-col items-center relative">
+                                                <button id="btn-generate-issues" onclick="generateIssuesReport()" disabled class="bg-primary-blue hover:bg-blue-900 text-white px-6 py-2 rounded-md font-bold text-sm transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Generate Report
+                                                </button>
+                                                <span id="issue-report-helper" class="text-[10px] text-gray-400 absolute -bottom-5 w-max">Select at least 1 filter</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Issues Results Area -->
+                                <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 mt-6 relative">
+                                    <div id="issue-report-chart-container" class="hidden">
+                                        <h3 id="issue-report-chart-title" class="text-lg font-bold text-primary-blue mb-4 text-center"></h3>
+                                        <div class="relative w-full mb-8" style="height: 400px;"><canvas id="issuesChart"></canvas></div>
+                                        <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white mb-4">
                                             <table class="w-full text-xs sm:text-sm text-left">
                                                 <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-gray-50/50">
                                                     <tr>
-                                                        <th class="px-4 py-3 font-medium text-left">Facility</th>
-                                                        <th class="px-4 py-3 font-medium text-center">Total Issues</th>
-                                                        <th class="px-4 py-3 font-medium text-center">Pending</th>
-                                                        <th class="px-4 py-3 font-medium text-center">Resolved</th>
-                                                        <th class="px-4 py-3 font-medium text-left">Most Recent Report</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Facility</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Total Issues</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Pending</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Resolved</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Most Recent Report</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="issue-report-table-body" class="divide-y divide-gray-50"></tbody>
                                             </table>
                                         </div>
-                                        <p id="issue-report-summary" class="text-sm text-gray-500 text-center mt-2"></p>
+                                        <p id="issue-report-summary" class="text-sm text-gray-500 mt-4 text-center"></p>
                                     </div>
-                                    <div id="issue-report-empty" class="mt-6 text-center py-10">
-                                        <i data-lucide="alert-triangle" class="w-10 h-10 text-gray-200 mx-auto mb-3"></i>
-                                        <p class="text-sm text-gray-400">Select filters and click <strong>Generate Issues Report</strong> to view facility issues.</p>
+                                    <div id="issue-report-empty" class="text-center py-16">
+                                        <i data-lucide="bar-chart-3" class="w-12 h-12 text-gray-200 mx-auto mb-3"></i>
+                                        <p class="text-sm text-gray-400">Select filters and click <strong>Generate Report</strong> to view facility issues.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Hidden PDF Template for Issues -->
+                                <div id="pdf-issues-template" class="hidden bg-white text-black p-6" style="width:210mm;min-height:297mm;box-sizing:border-box;">
+                                    <style>
+                                        @media print {
+                                            @page { margin: 0; }
+                                            body { padding: 10mm; }
+                                        }
+                                    </style>
+                                    <div class="border-b-2 border-primary-blue pb-3 mb-4 flex justify-between items-start">
+                                        <div>
+                                            <h1 class="text-xl font-bold text-primary-blue mb-1" style="font-family:Arial,sans-serif;">UMPSA Pekan Sport Facility Booking System</h1>
+                                            <h2 class="text-lg font-bold text-gray-800">Facility Issues Report</h2>
+                                        </div>
+                                        <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo" style="height:50px;object-fit:contain;">
+                                    </div>
+                                    <div class="flex justify-between items-start mb-4 text-xs text-gray-700">
+                                        <div><p class="font-bold mb-1">Filters Applied:</p><ul id="pdf-issue-filter-list" class="list-disc pl-5 space-y-0.5"></ul></div>
+                                        <div class="text-right">
+                                            <p><span class="font-bold">Generated By:</span> <span id="pdf-issue-admin-email"></span></p>
+                                            <p><span class="font-bold">Date Generated:</span> <span id="pdf-issue-timestamp"></span></p>
+                                        </div>
+                                    </div>
+                                    <div id="pdf-issue-chart-section" class="mb-4 text-center hidden">
+                                        <h3 id="pdf-issue-chart-title" class="text-base font-bold text-primary-blue mb-2"></h3>
+                                        <img id="pdf-issue-chart-image" src="" alt="Chart" style="max-height:250px;width:auto;margin:0 auto;">
+                                    </div>
+                                    <div>
+                                        <h3 class="text-base font-bold text-primary-blue mb-2 border-b border-gray-200 pb-1">Issues Summary</h3>
+                                        <table class="w-full text-left text-xs mb-4" style="border-collapse:collapse;">
+                                            <thead class="bg-gray-100 text-gray-700 font-bold uppercase text-[10px]">
+                                                <tr>
+                                                    <th class="border border-gray-300 px-2 py-1.5">Facility</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Total Issues</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Pending</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Resolved</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5">Most Recent Report</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="pdf-issue-table-body" class="text-gray-800"></tbody>
+                                        </table>
+                                        <div class="flex justify-between items-center text-xs font-bold text-gray-800 bg-gray-50 p-3 border border-gray-200 rounded">
+                                            <span id="pdf-issue-total"></span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-12 pt-4 border-t border-gray-200 text-center text-xs text-gray-500">
+                                        UMPSA Pekan - Sport Facility Booking System &copy; <span id="pdf-issue-copyright-year"></span>
                                     </div>
                                 </div>
 
@@ -3347,7 +3414,8 @@
                     facSel.appendChild(o);
                 });
             }
-            ['issue-report-month','issue-report-year','issue-report-date','issue-report-facility','issue-report-status'].forEach(id => {
+            const issueFilters = ['issue-report-month','issue-report-year','issue-report-date','issue-report-facility','issue-report-status'];
+            issueFilters.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) { el.addEventListener('change', updateIssueButtonState); el.addEventListener('input', updateIssueButtonState); }
             });
@@ -3367,11 +3435,12 @@
         };
 
         window.generateIssuesReport = async function() {
-            const month = document.getElementById('issue-report-month').value;
-            const year = document.getElementById('issue-report-year').value;
+            const month        = document.getElementById('issue-report-month').value;
+            const year         = document.getElementById('issue-report-year').value;
             const specificDate = document.getElementById('issue-report-date').value;
             const facilityName = document.getElementById('issue-report-facility').value;
-            const status = document.getElementById('issue-report-status').value;
+            const status       = document.getElementById('issue-report-status').value;
+            const chartType    = document.getElementById('issue-report-chart-type').value;
 
             const btn = document.getElementById('btn-generate-issues');
             btn.disabled = true;
@@ -3393,22 +3462,23 @@
                         const d = new Date(specificDate + 'T00:00:00');
                         return date.toDateString() === d.toDateString();
                     }
-                    if (year && date.getFullYear() !== parseInt(year)) return false;
-                    if (month && (date.getMonth() + 1) !== parseInt(month)) return false;
+                    if (year  && date.getFullYear() !== parseInt(year))          return false;
+                    if (month && (date.getMonth() + 1) !== parseInt(month))      return false;
                     return true;
                 });
 
-                const resultsDiv = document.getElementById('issue-report-results');
-                const emptyDiv = document.getElementById('issue-report-empty');
+                const containerDiv = document.getElementById('issue-report-chart-container');
+                const emptyDiv     = document.getElementById('issue-report-empty');
 
                 if (!filtered.length) {
-                    resultsDiv.classList.add('hidden');
-                    emptyDiv.innerHTML = '<i data-lucide="calendar-x" class="w-10 h-10 text-gray-200 mx-auto mb-3"></i><p class="text-sm text-gray-400">No issues found matching your filters.</p>';
+                    containerDiv.classList.add('hidden');
+                    emptyDiv.innerHTML = '<i data-lucide="bar-chart-3" class="w-12 h-12 text-gray-200 mx-auto mb-3"></i><p class="text-sm text-gray-400">No issues found matching your filters.</p>';
                     emptyDiv.classList.remove('hidden');
                     lucide.createIcons();
                     return;
                 }
 
+                // Group by facility, sorted by most issues
                 const grouped = {};
                 filtered.forEach(r => {
                     const fName = r.Facility?.name || 'Unknown';
@@ -3422,73 +3492,57 @@
                 const sorted = Object.entries(grouped).sort((a, b) => b[1].total - a[1].total);
                 const labels = sorted.map(([n]) => n);
                 const values = sorted.map(([, s]) => s.total);
+                const totalIssues = filtered.length;
 
+                // Build title
                 const parts = [];
                 if (specificDate) { parts.push(specificDate); }
                 else {
-                    if (month) parts.push(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(month)-1]);
-                    if (year) parts.push(year);
+                    if (month) parts.push(['January','February','March','April','May','June','July','August','September','October','November','December'][parseInt(month)-1]);
+                    if (year)  parts.push(year);
                 }
                 if (facilityName) parts.push(facilityName);
                 if (status) parts.push(status);
-                document.getElementById('issue-report-chart-title').textContent =
-                    'Issues per Facility' + (parts.length ? ' | ' + parts.join(', ') : '');
+                const chartTitle = 'Facility Issues Report' + (parts.length ? ' — ' + parts.join(', ') : '');
+                document.getElementById('issue-report-chart-title').textContent = chartTitle;
 
-                if (issuesChartInstance) issuesChartInstance.destroy();
+                // Accessible palette (same as usage report)
                 const issuePalette = [
-                    'rgba(238,119,51,0.88)','rgba(0,119,187,0.88)','rgba(238,51,119,0.88)',
-                    'rgba(0,153,136,0.88)','rgba(255,193,7,0.88)','rgba(204,121,167,0.88)',
-                    'rgba(51,187,238,0.88)','rgba(153,0,0,0.88)','rgba(102,153,204,0.88)','rgba(187,187,187,0.88)'
+                    'rgba(0,119,187,0.88)','rgba(238,119,51,0.88)','rgba(51,187,238,0.88)',
+                    'rgba(238,51,119,0.88)','rgba(187,187,187,0.88)','rgba(0,153,136,0.88)',
+                    'rgba(204,121,167,0.88)','rgba(255,193,7,0.88)','rgba(102,153,204,0.88)','rgba(153,0,0,0.88)'
                 ];
                 const issueBorders = issuePalette.map(c => c.replace(/0\.[0-9]+\)/, '1)'));
-                const ctx2 = document.getElementById('issuesChart').getContext('2d');
-                issuesChartInstance = new Chart(ctx2, {
-                    type: 'bar',
-                    data: { labels, datasets: [{ label: 'Issues Reported', data: values,
-                        backgroundColor: issuePalette.slice(0, labels.length),
-                        borderColor: issueBorders.slice(0, labels.length),
-                        borderWidth: 2, borderRadius: 8, barPercentage: 0.6, categoryPercentage: 0.7 }] },
-                    options: { responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false },
-                            tooltip: { backgroundColor: '#183e87', titleFont: { family:'Inter', weight:'bold', size:13 },
-                                bodyFont: { family:'Inter', size:12 }, padding:12, cornerRadius:8,
-                                callbacks: { label: ctx => ` ${ctx.parsed.y} issue${ctx.parsed.y !== 1 ? 's' : ''}` } } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { stepSize:1, font:{ family:'Inter', size:12 }, color:'#6b7280' },
-                                grid: { color:'rgba(0,0,0,0.04)' },
-                                title: { display:true, text:'Number of Issues', font:{ family:'Inter', size:12, weight:'bold' }, color:'#183e87' } },
-                            x: { ticks: { font:{ family:'Inter', size:11, weight:'600' }, color:'#183e87' }, grid: { display:false },
-                                title: { display:true, text:'Facility', font:{ family:'Inter', size:12, weight:'bold' }, color:'#183e87' } } } }
-                });
 
+                if (issuesChartInstance) issuesChartInstance.destroy();
+                const ctx2 = document.getElementById('issuesChart').getContext('2d');
+
+                if (chartType === 'pie') {
+                    issuesChartInstance = new Chart(ctx2, { type: 'pie', data: { labels, datasets: [{ data: values, backgroundColor: issuePalette.slice(0, labels.length), borderColor: issueBorders.slice(0, labels.length), borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12, weight: '600' }, color: '#183e87', padding: 16, usePointStyle: true, pointStyle: 'circle', pointStyleWidth: 12 } }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { const pct = ((context.parsed / totalIssues) * 100).toFixed(1); return ` ${context.label}: ${context.parsed} issue${context.parsed !== 1 ? 's' : ''} (${pct}%)`; } } } } } });
+                } else {
+                    issuesChartInstance = new Chart(ctx2, { type: 'bar', data: { labels, datasets: [{ label: 'Issues Reported', data: values, backgroundColor: issuePalette.slice(0, labels.length), borderColor: issueBorders.slice(0, labels.length), borderWidth: 2, borderRadius: 8, barPercentage: 0.6, categoryPercentage: 0.7 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { return ` ${context.parsed.y} issue${context.parsed.y !== 1 ? 's' : ''}`; } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 12 }, color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: 'Number of Issues', font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } }, x: { ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#183e87' }, grid: { display: false }, title: { display: true, text: 'Facility', font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } } } } });
+                }
+
+                // Render table (plain — no badges or emoji)
                 const tbody = document.getElementById('issue-report-table-body');
                 tbody.innerHTML = '';
-                sorted.forEach(([fName, s], i) => {
-                    const isMost = i === 0;
+                sorted.forEach(([fName, s]) => {
                     const dateStr = s.latestDate
                         ? s.latestDate.toLocaleDateString('en-MY', { day:'2-digit', month:'short', year:'numeric' })
                         : '-';
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="px-4 py-3 font-medium text-gray-900">
-                            <div class="flex items-center gap-2">
-                                ${isMost ? '<span class="inline-flex items-center gap-1 bg-orange-100 text-orange-700 text-[10px] font-bold px-1.5 py-0.5 rounded"><i data-lucide="flame" class="w-3 h-3"></i> Most</span>' : ''}
-                                ${fName}
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-center font-bold text-gray-800">${s.total}</td>
-                        <td class="px-4 py-3 text-center"><span class="inline-block bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-0.5 rounded">${s.pending}</span></td>
-                        <td class="px-4 py-3 text-center"><span class="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded">${s.resolved}</span></td>
-                        <td class="px-4 py-3 text-sm text-gray-600">${dateStr}</td>`;
+                    tr.innerHTML = `<td class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-gray-900">${fName}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-bold text-primary-teal">${s.total}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${s.pending}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${s.resolved}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-xs">${dateStr}</td>`;
                     tbody.appendChild(tr);
                 });
-                lucide.createIcons();
 
                 document.getElementById('issue-report-summary').textContent =
-                    `Total: ${filtered.length} issue${filtered.length !== 1 ? 's' : ''} across ${sorted.length} facilit${sorted.length !== 1 ? 'ies' : 'y'} | Most Reported: ${sorted[0][0]} (${sorted[0][1].total} issues)`;
+                    `Total: ${totalIssues} issue${totalIssues !== 1 ? 's' : ''} across ${sorted.length} facilit${sorted.length !== 1 ? 'ies' : 'y'}`;
 
                 emptyDiv.classList.add('hidden');
-                resultsDiv.classList.remove('hidden');
+                containerDiv.classList.remove('hidden');
+
+                const btnPrint = document.getElementById('btn-print-issues');
+                if (btnPrint) { btnPrint.disabled = false; btnPrint.classList.remove('opacity-50', 'cursor-not-allowed'); }
 
             } catch(err) {
                 console.error(err);
@@ -3498,6 +3552,62 @@
                 btn.innerHTML = orig;
                 lucide.createIcons();
             }
+        };
+
+        window.populateIssuesPDFTemplate = function() {
+            const adminEmailEl = document.getElementById('admin-email-display');
+            document.getElementById('pdf-issue-admin-email').textContent = adminEmailEl ? adminEmailEl.textContent.trim() : 'Admin';
+            const now = new Date();
+            document.getElementById('pdf-issue-timestamp').textContent = now.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) + ', ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            document.getElementById('pdf-issue-copyright-year').textContent = now.getFullYear();
+            // Filters
+            const filterList = document.getElementById('pdf-issue-filter-list');
+            filterList.innerHTML = '';
+            const addFilter = (label, val) => { if (val) { const li = document.createElement('li'); li.textContent = label + ': ' + val; filterList.appendChild(li); } };
+            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const mVal = document.getElementById('issue-report-month')?.value;
+            addFilter('Month', mVal ? monthNames[parseInt(mVal)-1] : '');
+            addFilter('Year',  document.getElementById('issue-report-year')?.value);
+            addFilter('Date',  document.getElementById('issue-report-date')?.value);
+            addFilter('Facility', document.getElementById('issue-report-facility')?.value);
+            addFilter('Status', document.getElementById('issue-report-status')?.value);
+            if (!filterList.children.length) { const li = document.createElement('li'); li.textContent = 'None (All Issues)'; filterList.appendChild(li); }
+            // Chart
+            const includeChart = document.getElementById('issue-report-include-chart')?.checked;
+            const pdfChartSection = document.getElementById('pdf-issue-chart-section');
+            if (includeChart && issuesChartInstance) {
+                const canvas = document.getElementById('issuesChart');
+                const bgCanvas = document.createElement('canvas'); bgCanvas.width = canvas.width; bgCanvas.height = canvas.height;
+                const bgCtx = bgCanvas.getContext('2d'); bgCtx.fillStyle = '#ffffff'; bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height); bgCtx.drawImage(canvas, 0, 0);
+                document.getElementById('pdf-issue-chart-image').src = bgCanvas.toDataURL('image/png', 1.0);
+                document.getElementById('pdf-issue-chart-title').textContent = document.getElementById('issue-report-chart-title').textContent;
+                pdfChartSection.classList.remove('hidden');
+            } else { pdfChartSection.classList.add('hidden'); }
+            // Table
+            const sourceTbody = document.getElementById('issue-report-table-body');
+            const pdfTbody = document.getElementById('pdf-issue-table-body');
+            pdfTbody.innerHTML = '';
+            let total = 0;
+            Array.from(sourceTbody.children).forEach(tr => {
+                const tds = Array.from(tr.children);
+                const pdfTr = document.createElement('tr'); pdfTr.className = 'border-b border-gray-200';
+                tds.forEach((td, i) => { const pdfTd = document.createElement('td'); pdfTd.className = 'border border-gray-300 px-2 py-1.5 text-xs' + (i >= 1 && i <= 3 ? ' text-center' : ''); pdfTd.textContent = td.textContent.trim(); pdfTr.appendChild(pdfTd); });
+                total += parseInt(tds[1].textContent.trim()) || 0;
+                pdfTbody.appendChild(pdfTr);
+            });
+            document.getElementById('pdf-issue-total').textContent = `Total Issues: ${total}`;
+        };
+
+        window.printIssuesReport = function() {
+            populateIssuesPDFTemplate();
+            const element = document.getElementById('pdf-issues-template');
+            const styleLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.outerHTML).join('\n');
+            const styleTags  = Array.from(document.querySelectorAll('style')).map(s => `<style>${s.innerHTML}</style>`).join('\n');
+            const bodyHtml = element.innerHTML;
+            const printWindow = window.open('', '_blank', 'width=900,height=700');
+            if (!printWindow) { showToast('Pop-up blocked. Please allow pop-ups and try again.', 'warning'); return; }
+            printWindow.document.write(`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Facility Issues Report</title>${styleLinks}${styleTags}<style>@media print{body{margin:0;padding:0;}@page{margin:10mm;size:A4 portrait;}}body{background:#fff;margin:0;padding:0;font-family:Arial,sans-serif;color:#000;}*{box-sizing:border-box;}</style></head><body><div style="background:white;padding:20px;max-width:210mm;margin:0 auto;">${bodyHtml}</div><script>window.addEventListener('load',function(){setTimeout(function(){window.print();},800);});<\/script></body></html>`);
+            printWindow.document.close();
         };
 
         window.populatePDFTemplate = function() {
