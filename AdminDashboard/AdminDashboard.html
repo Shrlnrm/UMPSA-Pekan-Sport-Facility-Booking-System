@@ -157,11 +157,13 @@
                 display: none !important;
             }
         }
+
         /* Hide datalist dropdown arrow on report user email input */
         #report-user-email::-webkit-calendar-picker-indicator {
             display: none !important;
             opacity: 0;
         }
+
         #report-user-email::-webkit-list-button {
             display: none !important;
         }
@@ -173,7 +175,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="UMPSA Pekan Sport"></head>
+    <meta name="apple-mobile-web-app-title" content="UMPSA Pekan Sport">
+</head>
 
 <body class="font-sans antialiased text-gray-900 bg-white">
     <div class="fixed inset-0 flex flex-col overflow-hidden">
@@ -405,7 +408,8 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div id="dashboard-reports-pagination" class="flex items-center justify-end gap-2 mb-6 sm:mb-8 hidden"></div>
+                                <div id="dashboard-reports-pagination"
+                                    class="flex items-center justify-end gap-2 mb-6 sm:mb-8 hidden"></div>
 
                                 <!-- Recent Bookings -->
                                 <h3 class="text-sm font-semibold text-primary-blue mb-4">Recent Bookings</h3>
@@ -430,7 +434,8 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div id="dashboard-bookings-pagination" class="flex items-center justify-end gap-2 mt-4 hidden"></div>
+                                <div id="dashboard-bookings-pagination"
+                                    class="flex items-center justify-end gap-2 mt-4 hidden"></div>
                             </div>
                         </div>
                     </div>
@@ -461,13 +466,15 @@
                                     class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap flex items-center gap-1.5"
                                     onclick="setAdminBookingsTab('confirmed')">
                                     Confirmed
-                                    <span id="badge-tab-confirmed" class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
+                                    <span id="badge-tab-confirmed"
+                                        class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
                                 </button>
                                 <button id="admin-subtab-cancelled"
                                     class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap flex items-center gap-1.5"
                                     onclick="setAdminBookingsTab('cancelled')">
                                     Cancelled
-                                    <span id="badge-tab-cancelled" class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
+                                    <span id="badge-tab-cancelled"
+                                        class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
                                 </button>
                                 <button id="admin-subtab-passed"
                                     class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap"
@@ -500,8 +507,10 @@
                                                 </th>
                                                 <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Facility
                                                 </th>
-                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Booking Date</th>
-                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Event Date</th>
+                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Booking Date
+                                                </th>
+                                                <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Event Date
+                                                </th>
                                                 <th class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Status</th>
                                                 <th id="admin-booking-action-col"
                                                     class="px-2 sm:px-6 py-2 sm:py-4 font-medium text-left">Action</th>
@@ -545,7 +554,8 @@
                                     Manage Facilities
                                 </button>
                             </div>
-                            <div class="flex px-6 gap-8 border-b border-gray-100 z-10 bg-white shadow-sm relative overflow-x-auto">
+                            <div
+                                class="flex px-6 gap-8 border-b border-gray-100 z-10 bg-white shadow-sm relative overflow-x-auto">
                                 <button id="admin-subtab-all-facilities"
                                     class="sub-tab active py-3 text-sm font-medium text-gray-500 whitespace-nowrap"
                                     onclick="setAdminFacilitiesTab('all')">
@@ -584,7 +594,7 @@
                                     id="admin-facility-pagination">
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
 
@@ -608,7 +618,8 @@
                                     class="sub-tab active py-3 text-sm font-medium text-gray-500 flex items-center gap-1.5"
                                     onclick="setAdminReportsTab('Pending')">
                                     Pending Reports
-                                    <span id="badge-tab-pending-rep" class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
+                                    <span id="badge-tab-pending-rep"
+                                        class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
                                 </button>
                                 <button id="admin-subtab-resolved-rep"
                                     class="sub-tab py-3 text-sm font-medium text-gray-500"
@@ -673,23 +684,35 @@
                                 <!-- ===== SECTION: FACILITY USAGE REPORT ===== -->
                                 <div class="flex items-center gap-3 mb-4">
                                     <div class="w-1 h-7 bg-primary-blue rounded-full"></div>
-                                    <h2 class="text-base font-bold text-primary-blue tracking-tight">Facility Usage Report</h2>
+                                    <h2 class="text-base font-bold text-primary-blue tracking-tight">Facility Usage
+                                        Report</h2>
                                 </div>
 
                                 <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 mb-6">
-                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">Date Range</h3>
+                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">
+                                        Date Range</h3>
                                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Month</label>
                                             <div class="relative">
-                                                <select id="report-month" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                <select id="report-month"
+                                                    class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Months</option>
-                                                    <option value="1">January</option><option value="2">February</option><option value="3">March</option>
-                                                    <option value="4">April</option><option value="5">May</option><option value="6">June</option>
-                                                    <option value="7">July</option><option value="8">August</option><option value="9">September</option>
-                                                    <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                                                    <option value="1">January</option>
+                                                    <option value="2">February</option>
+                                                    <option value="3">March</option>
+                                                    <option value="4">April</option>
+                                                    <option value="5">May</option>
+                                                    <option value="6">June</option>
+                                                    <option value="7">July</option>
+                                                    <option value="8">August</option>
+                                                    <option value="9">September</option>
+                                                    <option value="10">October</option>
+                                                    <option value="11">November</option>
+                                                    <option value="12">December</option>
                                                 </select>
-                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <div
+                                                    class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                                                     <i data-lucide="chevron-down" class="w-4 h-4"></i>
                                                 </div>
                                             </div>
@@ -697,39 +720,50 @@
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Year</label>
                                             <div class="relative">
-                                                <select id="report-year" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                <select id="report-year"
+                                                    class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Years</option>
                                                 </select>
-                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <div
+                                                    class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                                                     <i data-lucide="chevron-down" class="w-4 h-4"></i>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Specific Date</label>
-                                            <input id="report-specific-date" type="date" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2 outline-none focus:border-primary-teal transition-all">
-                                            <span class="text-[10px] text-gray-400 mt-0.5">Overrides month/year if set</span>
+                                            <input id="report-specific-date" type="date"
+                                                class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2 outline-none focus:border-primary-teal transition-all">
+                                            <span class="text-[10px] text-gray-400 mt-0.5">Overrides month/year if
+                                                set</span>
                                         </div>
                                     </div>
-                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">Advanced Filters</h3>
+                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">
+                                        Advanced Filters</h3>
                                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">User Email</label>
                                             <div class="relative">
-                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i data-lucide="search" class="w-3 h-3"></i></div>
-                                                <input id="report-user-email" list="report-email-list" type="text" placeholder="Search email..." class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-8 pr-3 py-2 outline-none focus:border-primary-teal transition-all">
+                                                <div
+                                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                                    <i data-lucide="search" class="w-3 h-3"></i></div>
+                                                <input id="report-user-email" list="report-email-list" type="text"
+                                                    placeholder="Search email..."
+                                                    class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-8 pr-3 py-2 outline-none focus:border-primary-teal transition-all">
                                                 <datalist id="report-email-list"></datalist>
                                             </div>
                                         </div>
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Facility Type</label>
                                             <div class="relative">
-                                                <select id="report-facility-type" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                <select id="report-facility-type"
+                                                    class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Types</option>
                                                     <option value="Indoor">Indoor</option>
                                                     <option value="Outdoor">Outdoor</option>
                                                 </select>
-                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <div
+                                                    class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                                                     <i data-lucide="chevron-down" class="w-4 h-4"></i>
                                                 </div>
                                             </div>
@@ -737,10 +771,12 @@
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Facility Name</label>
                                             <div class="relative">
-                                                <select id="report-facility-name" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                <select id="report-facility-name"
+                                                    class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Facilities</option>
                                                 </select>
-                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <div
+                                                    class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                                                     <i data-lucide="chevron-down" class="w-4 h-4"></i>
                                                 </div>
                                             </div>
@@ -748,7 +784,8 @@
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Time Slot</label>
                                             <div class="relative">
-                                                <select id="report-time-slot" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                <select id="report-time-slot"
+                                                    class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Slots</option>
                                                     <option value="07:00 am - 08:30 am">07:00 am - 08:30 am</option>
                                                     <option value="08:30 am - 10:00 am">08:30 am - 10:00 am</option>
@@ -759,40 +796,52 @@
                                                     <option value="04:00 pm - 05:30 pm">04:00 pm - 05:30 pm</option>
                                                     <option value="05:30 pm - 07:00 pm">05:30 pm - 07:00 pm</option>
                                                 </select>
-                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <div
+                                                    class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                                                     <i data-lucide="chevron-down" class="w-4 h-4"></i>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-gray-100 pt-6 gap-4">
+                                    <div
+                                        class="flex flex-col sm:flex-row items-center justify-between border-t border-gray-100 pt-6 gap-4">
                                         <div class="flex items-center gap-4 w-full sm:w-auto">
                                             <div class="flex flex-col gap-1.5">
-                                                <label class="text-[10px] font-bold text-primary-blue">Chart Type</label>
+                                                <label class="text-[10px] font-bold text-primary-blue">Chart
+                                                    Type</label>
                                                 <div class="relative">
-                                                    <select id="report-chart-type" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                    <select id="report-chart-type"
+                                                        class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                         <option value="bar">Bar Chart</option>
                                                         <option value="pie">Pie Chart</option>
                                                     </select>
-                                                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <div
+                                                        class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                                                         <i data-lucide="chevron-down" class="w-4 h-4"></i>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="flex items-center gap-2 mt-5">
-                                                <input type="checkbox" id="report-include-chart" checked class="w-4 h-4 text-primary-teal rounded border-gray-300 focus:ring-primary-teal">
-                                                <label for="report-include-chart" class="text-sm text-gray-600">Include chart in PDF</label>
+                                                <input type="checkbox" id="report-include-chart" checked
+                                                    class="w-4 h-4 text-primary-teal rounded border-gray-300 focus:ring-primary-teal">
+                                                <label for="report-include-chart" class="text-sm text-gray-600">Include
+                                                    chart in PDF</label>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 w-full sm:w-auto">
-                                            <button id="btn-print-report" onclick="printReport()" disabled class="px-4 py-2 border border-gray-200 rounded-md text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <button id="btn-print-report" onclick="printReport()" disabled
+                                                class="px-4 py-2 border border-gray-200 rounded-md text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                                 <i data-lucide="printer" class="w-4 h-4"></i> Print
                                             </button>
                                             <div class="flex flex-col items-center relative">
-                                                <button id="btn-generate-report" onclick="generateFacilityUsageReport()" disabled class="bg-primary-blue hover:bg-blue-900 text-white px-6 py-2 rounded-md font-bold text-sm transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                <button id="btn-generate-report" onclick="generateFacilityUsageReport()"
+                                                    disabled
+                                                    class="bg-primary-blue hover:bg-blue-900 text-white px-6 py-2 rounded-md font-bold text-sm transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                                     <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Generate Report
                                                 </button>
-                                                <span id="report-filter-helper" class="text-[10px] text-gray-400 absolute -bottom-5 w-max">Select at least 1 filter</span>
+                                                <span id="report-filter-helper"
+                                                    class="text-[10px] text-gray-400 absolute -bottom-5 w-max">Select at
+                                                    least 1 filter</span>
                                             </div>
                                         </div>
                                     </div>
@@ -801,124 +850,173 @@
                                 <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 relative">
                                     <div id="report-active-filters" class="flex flex-wrap gap-2 mb-6 hidden"></div>
                                     <div id="report-chart-container" class="hidden">
-                                        <h3 id="report-chart-title" class="text-lg font-bold text-primary-blue mb-4 text-center"></h3>
-                                        <div class="relative w-full mb-8" style="height: 400px;"><canvas id="facilityUsageChart"></canvas></div>
+                                        <h3 id="report-chart-title"
+                                            class="text-lg font-bold text-primary-blue mb-4 text-center"></h3>
+                                        <div class="relative w-full mb-8" style="height: 400px;"><canvas
+                                                id="facilityUsageChart"></canvas></div>
                                         <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white mb-4">
                                             <table class="w-full text-xs sm:text-sm text-left">
-                                                <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-gray-50/50">
+                                                <thead
+                                                    class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-gray-50/50">
                                                     <tr>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Facility</th>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Type</th>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Bookings</th>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Participants</th>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Unique Users</th>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Top Slot</th>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Peak Day</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">
+                                                            Facility</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Type
+                                                        </th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">
+                                                            Bookings</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">
+                                                            Participants</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">
+                                                            Unique Users</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Top
+                                                            Slot</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Peak
+                                                            Day</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="report-summary-table-body" class="divide-y divide-gray-50"></tbody>
+                                                <tbody id="report-summary-table-body" class="divide-y divide-gray-50">
+                                                </tbody>
                                             </table>
                                         </div>
                                         <p id="report-chart-summary" class="text-sm text-gray-500 mt-4 text-center"></p>
                                     </div>
                                     <div id="report-chart-empty" class="text-center py-16">
                                         <i data-lucide="bar-chart-3" class="w-12 h-12 text-gray-200 mx-auto mb-3"></i>
-                                        <p class="text-sm text-gray-400">Select filters and click <strong>Generate Report</strong> to view facility usage.</p>
+                                        <p class="text-sm text-gray-400">Select filters and click <strong>Generate
+                                                Report</strong> to view facility usage.</p>
                                     </div>
                                 </div>
 
                                 <!-- ===== SECTION: FACILITY ISSUES REPORT ===== -->
                                 <div class="flex items-center gap-3 mb-4 mt-10">
                                     <div class="w-1 h-7 bg-primary-blue rounded-full"></div>
-                                    <h2 class="text-base font-bold text-primary-blue tracking-tight">Facility Issues Report</h2>
+                                    <h2 class="text-base font-bold text-primary-blue tracking-tight">Facility Issues
+                                        Report</h2>
                                 </div>
 
                                 <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">Date Range</h3>
+                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">
+                                        Date Range</h3>
 
                                     <!-- Date Range -->
                                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Month</label>
                                             <div class="relative">
-                                                <select id="issue-report-month" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                <select id="issue-report-month"
+                                                    class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Months</option>
-                                                    <option value="1">January</option><option value="2">February</option><option value="3">March</option>
-                                                    <option value="4">April</option><option value="5">May</option><option value="6">June</option>
-                                                    <option value="7">July</option><option value="8">August</option><option value="9">September</option>
-                                                    <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                                                    <option value="1">January</option>
+                                                    <option value="2">February</option>
+                                                    <option value="3">March</option>
+                                                    <option value="4">April</option>
+                                                    <option value="5">May</option>
+                                                    <option value="6">June</option>
+                                                    <option value="7">July</option>
+                                                    <option value="8">August</option>
+                                                    <option value="9">September</option>
+                                                    <option value="10">October</option>
+                                                    <option value="11">November</option>
+                                                    <option value="12">December</option>
                                                 </select>
-                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                                                <div
+                                                    class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <i data-lucide="chevron-down" class="w-4 h-4"></i></div>
                                             </div>
                                         </div>
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Year</label>
                                             <div class="relative">
-                                                <select id="issue-report-year" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                <select id="issue-report-year"
+                                                    class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Years</option>
                                                 </select>
-                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                                                <div
+                                                    class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <i data-lucide="chevron-down" class="w-4 h-4"></i></div>
                                             </div>
                                         </div>
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Specific Date</label>
-                                            <input id="issue-report-date" type="date" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2 outline-none focus:border-primary-teal transition-all">
-                                            <span class="text-[10px] text-gray-400 mt-0.5">Overrides month/year if set</span>
+                                            <input id="issue-report-date" type="date"
+                                                class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2 outline-none focus:border-primary-teal transition-all">
+                                            <span class="text-[10px] text-gray-400 mt-0.5">Overrides month/year if
+                                                set</span>
                                         </div>
                                     </div>
 
                                     <!-- Advanced Filters -->
-                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">Advanced Filters</h3>
+                                    <h3 class="text-sm font-bold text-primary-teal mb-4 border-b border-gray-100 pb-2">
+                                        Advanced Filters</h3>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Facility Name</label>
                                             <div class="relative">
-                                                <select id="issue-report-facility" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                <select id="issue-report-facility"
+                                                    class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Facilities</option>
                                                 </select>
-                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                                                <div
+                                                    class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <i data-lucide="chevron-down" class="w-4 h-4"></i></div>
                                             </div>
                                         </div>
                                         <div class="flex flex-col gap-1.5">
                                             <label class="text-[11px] font-bold text-primary-blue">Issue Status</label>
                                             <div class="relative">
-                                                <select id="issue-report-status" class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                <select id="issue-report-status"
+                                                    class="h-[38px] w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                     <option value="">All Statuses</option>
                                                     <option value="Pending">Pending</option>
                                                     <option value="Resolved">Resolved</option>
                                                 </select>
-                                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                                                <div
+                                                    class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <i data-lucide="chevron-down" class="w-4 h-4"></i></div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- Chart Type + Generate Row -->
-                                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-gray-100 pt-6 gap-4">
+                                    <div
+                                        class="flex flex-col sm:flex-row items-center justify-between border-t border-gray-100 pt-6 gap-4">
                                         <div class="flex items-center gap-4 w-full sm:w-auto">
                                             <div class="flex flex-col gap-1.5">
-                                                <label class="text-[10px] font-bold text-primary-blue">Chart Type</label>
+                                                <label class="text-[10px] font-bold text-primary-blue">Chart
+                                                    Type</label>
                                                 <div class="relative">
-                                                    <select id="issue-report-chart-type" class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
+                                                    <select id="issue-report-chart-type"
+                                                        class="bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-3 pr-10 py-2 outline-none focus:border-primary-teal transition-all appearance-none cursor-pointer">
                                                         <option value="bar">Bar Chart</option>
                                                         <option value="pie">Pie Chart</option>
                                                     </select>
-                                                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                                                    <div
+                                                        class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                        <i data-lucide="chevron-down" class="w-4 h-4"></i></div>
                                                 </div>
                                             </div>
                                             <div class="flex items-center gap-2 mt-5">
-                                                <input type="checkbox" id="issue-report-include-chart" checked class="w-4 h-4 text-primary-teal rounded border-gray-300 focus:ring-primary-teal">
-                                                <label for="issue-report-include-chart" class="text-sm text-gray-600">Include chart in PDF</label>
+                                                <input type="checkbox" id="issue-report-include-chart" checked
+                                                    class="w-4 h-4 text-primary-teal rounded border-gray-300 focus:ring-primary-teal">
+                                                <label for="issue-report-include-chart"
+                                                    class="text-sm text-gray-600">Include chart in PDF</label>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3 w-full sm:w-auto">
-                                            <button id="btn-print-issues" onclick="printIssuesReport()" disabled class="px-4 py-2 border border-gray-200 rounded-md text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <button id="btn-print-issues" onclick="printIssuesReport()" disabled
+                                                class="px-4 py-2 border border-gray-200 rounded-md text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                                 <i data-lucide="printer" class="w-4 h-4"></i> Print
                                             </button>
                                             <div class="flex flex-col items-center relative">
-                                                <button id="btn-generate-issues" onclick="generateIssuesReport()" disabled class="bg-primary-blue hover:bg-blue-900 text-white px-6 py-2 rounded-md font-bold text-sm transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                <button id="btn-generate-issues" onclick="generateIssuesReport()"
+                                                    disabled
+                                                    class="bg-primary-blue hover:bg-blue-900 text-white px-6 py-2 rounded-md font-bold text-sm transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                                     <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Generate Report
                                                 </button>
-                                                <span id="issue-report-helper" class="text-[10px] text-gray-400 absolute -bottom-5 w-max">Select at least 1 filter</span>
+                                                <span id="issue-report-helper"
+                                                    class="text-[10px] text-gray-400 absolute -bottom-5 w-max">Select at
+                                                    least 1 filter</span>
                                             </div>
                                         </div>
                                     </div>
@@ -926,126 +1024,190 @@
 
                                 <!-- Issues Results Area -->
                                 <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 mt-6 relative">
-                                    <div id="issue-report-active-filters" class="flex flex-wrap gap-2 mb-6 hidden"></div>
+                                    <div id="issue-report-active-filters" class="flex flex-wrap gap-2 mb-6 hidden">
+                                    </div>
                                     <div id="issue-report-chart-container" class="hidden">
-                                        <h3 id="issue-report-chart-title" class="text-lg font-bold text-primary-blue mb-4 text-center"></h3>
-                                        <div class="relative w-full mb-8" style="height: 400px;"><canvas id="issuesChart"></canvas></div>
+                                        <h3 id="issue-report-chart-title"
+                                            class="text-lg font-bold text-primary-blue mb-4 text-center"></h3>
+                                        <div class="relative w-full mb-8" style="height: 400px;"><canvas
+                                                id="issuesChart"></canvas></div>
                                         <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white mb-4">
                                             <table class="w-full text-xs sm:text-sm text-left">
-                                                <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-gray-50/50">
+                                                <thead
+                                                    class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-gray-50/50">
                                                     <tr>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Facility</th>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Total Issues</th>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Pending</th>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">Resolved</th>
-                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Most Recent Report</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">
+                                                            Facility</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">
+                                                            Total Issues</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">
+                                                            Pending</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-center">
+                                                            Resolved</th>
+                                                        <th class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-left">Most
+                                                            Recent Report</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="issue-report-table-body" class="divide-y divide-gray-50"></tbody>
+                                                <tbody id="issue-report-table-body" class="divide-y divide-gray-50">
+                                                </tbody>
                                             </table>
                                         </div>
                                         <p id="issue-report-summary" class="text-sm text-gray-500 mt-4 text-center"></p>
                                     </div>
                                     <div id="issue-report-empty" class="text-center py-16">
                                         <i data-lucide="bar-chart-3" class="w-12 h-12 text-gray-200 mx-auto mb-3"></i>
-                                        <p class="text-sm text-gray-400">Select filters and click <strong>Generate Report</strong> to view facility issues.</p>
+                                        <p class="text-sm text-gray-400">Select filters and click <strong>Generate
+                                                Report</strong> to view facility issues.</p>
                                     </div>
                                 </div>
 
                                 <!-- Hidden PDF Template for Issues -->
-                                <div id="pdf-issues-template" class="hidden bg-white text-black p-6" style="width:210mm;min-height:297mm;box-sizing:border-box;">
+                                <div id="pdf-issues-template" class="hidden bg-white text-black p-6"
+                                    style="width:210mm;min-height:297mm;box-sizing:border-box;">
                                     <style>
                                         @media print {
-                                            @page { margin: 0; }
-                                            body { padding: 10mm; }
+                                            @page {
+                                                margin: 0;
+                                            }
+
+                                            body {
+                                                padding: 10mm;
+                                            }
                                         }
                                     </style>
-                                    <div class="border-b-2 border-primary-blue pb-3 mb-4 flex justify-between items-start">
+                                    <div
+                                        class="border-b-2 border-primary-blue pb-3 mb-4 flex justify-between items-start">
                                         <div>
-                                            <h1 class="text-xl font-bold text-primary-blue mb-1" style="font-family:Arial,sans-serif;">UMPSA Pekan Sport Facility Booking System</h1>
+                                            <h1 class="text-xl font-bold text-primary-blue mb-1"
+                                                style="font-family:Arial,sans-serif;">UMPSA Pekan Sport Facility Booking
+                                                System</h1>
                                             <h2 class="text-lg font-bold text-gray-800">Facility Issues Report</h2>
                                         </div>
-                                        <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo" style="height:50px;object-fit:contain;">
+                                        <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo"
+                                            style="height:50px;object-fit:contain;">
                                     </div>
                                     <div class="flex justify-between items-start mb-4 text-xs text-gray-700">
-                                        <div><p class="font-bold mb-1">Filters Applied:</p><ul id="pdf-issue-filter-list" class="list-disc pl-5 space-y-0.5"></ul></div>
+                                        <div>
+                                            <p class="font-bold mb-1">Filters Applied:</p>
+                                            <ul id="pdf-issue-filter-list" class="list-disc pl-5 space-y-0.5"></ul>
+                                        </div>
                                         <div class="text-right">
-                                            <p><span class="font-bold">Generated By:</span> <span id="pdf-issue-admin-email"></span></p>
-                                            <p><span class="font-bold">Date Generated:</span> <span id="pdf-issue-timestamp"></span></p>
+                                            <p><span class="font-bold">Generated By:</span> <span
+                                                    id="pdf-issue-admin-email"></span></p>
+                                            <p><span class="font-bold">Date Generated:</span> <span
+                                                    id="pdf-issue-timestamp"></span></p>
                                         </div>
                                     </div>
                                     <div id="pdf-issue-chart-section" class="mb-4 text-center hidden">
-                                        <h3 id="pdf-issue-chart-title" class="text-base font-bold text-primary-blue mb-2"></h3>
-                                        <img id="pdf-issue-chart-image" src="" alt="Chart" style="max-height:250px;width:auto;margin:0 auto;">
+                                        <h3 id="pdf-issue-chart-title"
+                                            class="text-base font-bold text-primary-blue mb-2"></h3>
+                                        <img id="pdf-issue-chart-image" src="" alt="Chart"
+                                            style="max-height:250px;width:auto;margin:0 auto;">
                                     </div>
                                     <div>
-                                        <h3 class="text-base font-bold text-primary-blue mb-2 border-b border-gray-200 pb-1">Issues Summary</h3>
+                                        <h3
+                                            class="text-base font-bold text-primary-blue mb-2 border-b border-gray-200 pb-1">
+                                            Issues Summary</h3>
                                         <table class="w-full text-left text-xs mb-4" style="border-collapse:collapse;">
                                             <thead class="bg-gray-100 text-gray-700 font-bold uppercase text-[10px]">
                                                 <tr>
                                                     <th class="border border-gray-300 px-2 py-1.5">Facility</th>
-                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Total Issues</th>
-                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Pending</th>
-                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Resolved</th>
-                                                    <th class="border border-gray-300 px-2 py-1.5">Most Recent Report</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Total
+                                                        Issues</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Pending
+                                                    </th>
+                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Resolved
+                                                    </th>
+                                                    <th class="border border-gray-300 px-2 py-1.5">Most Recent Report
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody id="pdf-issue-table-body" class="text-gray-800"></tbody>
                                         </table>
-                                        <div class="flex justify-between items-center text-xs font-bold text-gray-800 bg-gray-50 p-3 border border-gray-200 rounded">
+                                        <div
+                                            class="flex justify-between items-center text-xs font-bold text-gray-800 bg-gray-50 p-3 border border-gray-200 rounded">
                                             <span id="pdf-issue-total"></span>
                                         </div>
                                     </div>
                                     <div class="mt-12 pt-4 border-t border-gray-200 text-center text-xs text-gray-500">
-                                        UMPSA Pekan - Sport Facility Booking System &copy; <span id="pdf-issue-copyright-year"></span>
+                                        UMPSA Pekan - Sport Facility Booking System &copy; <span
+                                            id="pdf-issue-copyright-year"></span>
                                     </div>
                                 </div>
 
                                 <!-- Hidden PDF Template -->
-                                <div id="pdf-report-template" class="hidden bg-white text-black p-6" style="width:210mm;min-height:297mm;box-sizing:border-box;">
+                                <div id="pdf-report-template" class="hidden bg-white text-black p-6"
+                                    style="width:210mm;min-height:297mm;box-sizing:border-box;">
                                     <style>
                                         @media print {
-                                            @page { margin: 0; }
-                                            body { padding: 10mm; }
+                                            @page {
+                                                margin: 0;
+                                            }
+
+                                            body {
+                                                padding: 10mm;
+                                            }
                                         }
                                     </style>
-                                    <div class="border-b-2 border-primary-blue pb-3 mb-4 flex justify-between items-start">
+                                    <div
+                                        class="border-b-2 border-primary-blue pb-3 mb-4 flex justify-between items-start">
                                         <div>
-                                            <h1 class="text-xl font-bold text-primary-blue mb-1" style="font-family:Arial,sans-serif;">UMPSA Pekan Sport Facility Booking System</h1>
+                                            <h1 class="text-xl font-bold text-primary-blue mb-1"
+                                                style="font-family:Arial,sans-serif;">UMPSA Pekan Sport Facility Booking
+                                                System</h1>
                                             <h2 class="text-lg font-bold text-gray-800">Facility Usage Report</h2>
                                         </div>
-                                        <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo" style="height:50px;object-fit:contain;">
+                                        <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo"
+                                            style="height:50px;object-fit:contain;">
                                     </div>
                                     <div class="flex justify-between items-start mb-4 text-xs text-gray-700">
-                                        <div><p class="font-bold mb-1">Filters Applied:</p><ul id="pdf-filter-list" class="list-disc pl-5 space-y-0.5"></ul></div>
+                                        <div>
+                                            <p class="font-bold mb-1">Filters Applied:</p>
+                                            <ul id="pdf-filter-list" class="list-disc pl-5 space-y-0.5"></ul>
+                                        </div>
                                         <div class="text-right">
-                                            <p><span class="font-bold">Generated By:</span> <span id="pdf-admin-email"></span></p>
-                                            <p><span class="font-bold">Date Generated:</span> <span id="pdf-timestamp"></span></p>
+                                            <p><span class="font-bold">Generated By:</span> <span
+                                                    id="pdf-admin-email"></span></p>
+                                            <p><span class="font-bold">Date Generated:</span> <span
+                                                    id="pdf-timestamp"></span></p>
                                         </div>
                                     </div>
                                     <div id="pdf-chart-section" class="mb-4 text-center hidden">
-                                        <h3 id="pdf-chart-title" class="text-base font-bold text-primary-blue mb-2"></h3>
-                                        <img id="pdf-chart-image" src="" alt="Chart" style="max-height:250px;width:auto;margin:0 auto;">
+                                        <h3 id="pdf-chart-title" class="text-base font-bold text-primary-blue mb-2">
+                                        </h3>
+                                        <img id="pdf-chart-image" src="" alt="Chart"
+                                            style="max-height:250px;width:auto;margin:0 auto;">
                                     </div>
                                     <div>
-                                        <h3 class="text-base font-bold text-primary-blue mb-2 border-b border-gray-200 pb-1">Booking Summary</h3>
+                                        <h3
+                                            class="text-base font-bold text-primary-blue mb-2 border-b border-gray-200 pb-1">
+                                            Booking Summary</h3>
                                         <table class="w-full text-left text-xs mb-4" style="border-collapse:collapse;">
                                             <thead class="bg-gray-100 text-gray-700 font-bold uppercase text-[10px]">
                                                 <tr>
-                                                    <th class="border border-gray-300 px-2 py-1.5">Facility</th><th class="border border-gray-300 px-2 py-1.5">Type</th>
-                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Bookings</th><th class="border border-gray-300 px-2 py-1.5 text-center">Participants</th>
-                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Users</th><th class="border border-gray-300 px-2 py-1.5">Top Slot</th><th class="border border-gray-300 px-2 py-1.5">Peak Day</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5">Facility</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5">Type</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Bookings
+                                                    </th>
+                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">
+                                                        Participants</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5 text-center">Users
+                                                    </th>
+                                                    <th class="border border-gray-300 px-2 py-1.5">Top Slot</th>
+                                                    <th class="border border-gray-300 px-2 py-1.5">Peak Day</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="pdf-table-body" class="text-gray-800"></tbody>
                                         </table>
-                                        <div class="flex justify-between items-center text-xs font-bold text-gray-800 bg-gray-50 p-3 border border-gray-200 rounded">
+                                        <div
+                                            class="flex justify-between items-center text-xs font-bold text-gray-800 bg-gray-50 p-3 border border-gray-200 rounded">
                                             <span id="pdf-total-bookings">Total Bookings: 0</span>
                                             <span id="pdf-total-participants">Total Participants: 0</span>
                                         </div>
                                     </div>
                                     <div class="mt-12 pt-4 border-t border-gray-200 text-center text-xs text-gray-500">
-                                        UMPSA Pekan - Sport Facility Booking System &copy; <span id="pdf-copyright-year"></span>
+                                        UMPSA Pekan - Sport Facility Booking System &copy; <span
+                                            id="pdf-copyright-year"></span>
                                     </div>
                                 </div>
                             </div>
@@ -1502,19 +1664,22 @@
         </div>
     </div>
     <!-- Reusable Confirm Modal -->
-    <div id="confirm-modal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[99] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-[24px] shadow-xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300 p-6">
-            <div class="flex items-start gap-4">
-                <div id="confirm-modal-icon-wrap" class="w-12 h-12 flex items-center justify-center flex-shrink-0">
-                    <i id="confirm-modal-icon" data-lucide="trash-2" class="w-8 h-8 text-red-500"></i>
+    <div id="confirm-modal"
+        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[99] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="p-6 text-center">
+                <div id="confirm-modal-icon-wrap"
+                    class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i id="confirm-modal-icon" data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
                 </div>
-                <div class="flex-1">
-                    <h3 id="confirm-modal-title" class="text-lg font-bold text-gray-900 mb-1 leading-tight">Are you sure?</h3>
-                    <p id="confirm-modal-text" class="text-[15px] text-gray-700 mb-6 leading-snug">This action cannot be undone.</p>
-                    <div class="flex gap-3 justify-end">
-                        <button onclick="closeConfirmModal()" class="px-4 py-2 text-gray-900 hover:bg-gray-100 rounded-lg font-semibold transition-colors">Cancel</button>
-                        <button onclick="executeConfirmAction()" id="confirm-modal-btn" class="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors">Delete</button>
-                    </div>
+                <h3 id="confirm-modal-title" class="text-xl font-bold text-gray-900 mb-2">Are you sure?</h3>
+                <p id="confirm-modal-text" class="text-sm text-gray-500 mb-6">This action cannot be undone.</p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="closeConfirmModal()"
+                        class="flex-1 px-4 py-2 bg-primary-blue hover:bg-blue-900 text-white rounded-lg font-medium transition-colors">Back</button>
+                    <button onclick="executeConfirmAction()" id="confirm-modal-btn"
+                        class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors">Confirm</button>
                 </div>
             </div>
         </div>
@@ -1667,11 +1832,11 @@
         let allDashboardBookings = [];
         let currentDashboardBookingPage = 1;
 
-        window.changeDashboardReportPage = function(delta) {
+        window.changeDashboardReportPage = function (delta) {
             currentDashboardReportPage += delta;
             renderRecentReports();
         };
-        window.changeDashboardBookingPage = function(delta) {
+        window.changeDashboardBookingPage = function (delta) {
             currentDashboardBookingPage += delta;
             renderRecentBookings();
         };
@@ -2090,11 +2255,11 @@
             currentAdminFacilityTab = tab;
             currentAdminFacilityPage = 1;
             document.querySelectorAll('#page-manage-facilities .sub-tab').forEach(el => el.classList.remove('active'));
-            
-            let tabId = tab === 'all' ? 'all-facilities' : 
-                        tab === 'Available' ? 'available-fac' : 'maintenance-fac';
+
+            let tabId = tab === 'all' ? 'all-facilities' :
+                tab === 'Available' ? 'available-fac' : 'maintenance-fac';
             document.getElementById('admin-subtab-' + tabId).classList.add('active');
-            
+
             renderAdminFacilities();
         }
 
@@ -2102,10 +2267,10 @@
             if (!slotStr) return false;
             const now = new Date();
             const currTotalMins = now.getHours() * 60 + now.getMinutes();
-        
+
             const parts = slotStr.split('-');
             if (parts.length !== 2) return false;
-            
+
             function parseTime(tStr) {
                 tStr = tStr.trim().toLowerCase();
                 let [time, period] = tStr.split(' ');
@@ -2115,10 +2280,10 @@
                 if (period === 'am' && h === 12) h = 0;
                 return h * 60 + m;
             }
-        
+
             const startMins = parseTime(parts[0]);
             const endMins = parseTime(parts[1]);
-        
+
             return currTotalMins >= startMins && currTotalMins <= endMins;
         }
 
@@ -2267,15 +2432,15 @@
         window.handleFacImageFile = function (input, previewId) {
             const preview = document.getElementById(previewId);
             const dropzone = preview.closest('label');
-            
+
             // Remove existing thumbnail if any
             const existingThumb = dropzone.querySelector('.img-preview-thumb');
             if (existingThumb) existingThumb.remove();
-            
+
             if (input.files && input.files[0]) {
                 const file = input.files[0];
                 preview.textContent = file.name;
-                
+
                 if (file.type.startsWith('image/')) {
                     const img = document.createElement('img');
                     img.src = URL.createObjectURL(file);
@@ -2835,15 +3000,15 @@
             document.querySelectorAll('#page-manage-report .sub-tab').forEach(el => el.classList.remove('active'));
 
             // Determine which sub-tab button to activate
-            let tabId = tab === 'Pending' ? 'pending-rep' : 
-                        tab === 'Resolved' ? 'resolved-rep' : 'generate-fac-rep';
+            let tabId = tab === 'Pending' ? 'pending-rep' :
+                tab === 'Resolved' ? 'resolved-rep' : 'generate-fac-rep';
             document.getElementById('admin-subtab-' + tabId).classList.add('active');
 
             // Force table and search to be visible
             const reportTableArea = document.querySelector('#page-manage-report .p-3.sm\\:p-6.flex-1.flex.flex-col.bg-gray-50\\/30');
             const searchBar = document.querySelector('#page-manage-report .px-3.sm\\:px-6.py-3.sm\\:py-4.border-b');
             const generatePanel = document.getElementById('generate-report-panel');
-            
+
             if (tab === 'Generate') {
                 if (reportTableArea) reportTableArea.style.display = 'none';
                 if (searchBar) searchBar.style.display = 'none';
@@ -2916,7 +3081,7 @@
             // Read last-seen timestamps (per admin account)
             const lastSeenConfirmed = new Date(localStorage.getItem(`admin_${aid}_last_seen_confirmed`) || 0);
             const lastSeenCancelled = new Date(localStorage.getItem(`admin_${aid}_last_seen_cancelled`) || 0);
-            const lastSeenReports   = new Date(localStorage.getItem(`admin_${aid}_last_seen_pending_reports`) || 0);
+            const lastSeenReports = new Date(localStorage.getItem(`admin_${aid}_last_seen_pending_reports`) || 0);
 
             // Count items created AFTER the last-seen timestamp
             const unseenConfirmed = allAdminBookings.filter(b =>
@@ -2992,8 +3157,8 @@
             // items are considered "seen". Only items created AFTER this moment
             // will show as new. This only runs once because logout no longer
             // clears localStorage, so the key persists across sessions.
-            if (!localStorage.getItem(`admin_${aid}_last_seen_confirmed`))       localStorage.setItem(`admin_${aid}_last_seen_confirmed`, now);
-            if (!localStorage.getItem(`admin_${aid}_last_seen_cancelled`))       localStorage.setItem(`admin_${aid}_last_seen_cancelled`, now);
+            if (!localStorage.getItem(`admin_${aid}_last_seen_confirmed`)) localStorage.setItem(`admin_${aid}_last_seen_confirmed`, now);
+            if (!localStorage.getItem(`admin_${aid}_last_seen_cancelled`)) localStorage.setItem(`admin_${aid}_last_seen_cancelled`, now);
             if (!localStorage.getItem(`admin_${aid}_last_seen_pending_reports`)) localStorage.setItem(`admin_${aid}_last_seen_pending_reports`, now);
 
             // Fetch lightweight booking data for badge counting (must include created_at)
@@ -3120,7 +3285,7 @@
         // ---- Generate Report Chart Logic ----
         let facilityUsageChartInstance = null;
 
-        window.populateReportFilters = async function() {
+        window.populateReportFilters = async function () {
             const yearSelect = document.getElementById('report-year');
             if (yearSelect && yearSelect.options.length <= 1) {
                 const currentYear = new Date().getFullYear();
@@ -3143,7 +3308,7 @@
                     users.forEach(u => { const opt = document.createElement('option'); opt.value = u.email; datalist.appendChild(opt); });
                 }
             }
-            const filters = ['report-month','report-year','report-specific-date','report-user-email','report-facility-type','report-facility-name','report-time-slot'];
+            const filters = ['report-month', 'report-year', 'report-specific-date', 'report-user-email', 'report-facility-type', 'report-facility-name', 'report-time-slot'];
             filters.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) { el.addEventListener('change', updateGenerateButtonState); el.addEventListener('input', updateGenerateButtonState); }
@@ -3155,7 +3320,7 @@
             populateIssueReportFilters();
         };
 
-        window.onFacilityTypeFilterChange = function() {
+        window.onFacilityTypeFilterChange = function () {
             const typeSelect = document.getElementById('report-facility-type');
             const nameSelect = document.getElementById('report-facility-name');
             if (!typeSelect || !nameSelect || !window.allFacilitiesData) return;
@@ -3174,7 +3339,7 @@
             updateGenerateButtonState();
         };
 
-        window.hasActiveFilters = function() {
+        window.hasActiveFilters = function () {
             const month = document.getElementById('report-month')?.value;
             const year = document.getElementById('report-year')?.value;
             const specificDate = document.getElementById('report-specific-date')?.value;
@@ -3185,7 +3350,7 @@
             return !!(month || year || specificDate || userEmail || facilityType || facilityName || timeSlot);
         };
 
-        window.updateGenerateButtonState = function() {
+        window.updateGenerateButtonState = function () {
             const btn = document.getElementById('btn-generate-report');
             const helperText = document.getElementById('report-filter-helper');
             if (!btn || !helperText) return;
@@ -3200,7 +3365,7 @@
             }
         };
 
-        window.clearReportFilter = function(filterId) {
+        window.clearReportFilter = function (filterId) {
             const el = document.getElementById(filterId);
             if (el) {
                 el.value = '';
@@ -3245,7 +3410,7 @@
             const facilityType = document.getElementById('report-facility-type').value;
             const facilityName = document.getElementById('report-facility-name').value;
             const timeSlot = document.getElementById('report-time-slot').value;
-            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             let parts = [];
             if (userEmail) parts.push(`User: ${userEmail}`);
             if (facilityName) parts.push(`Facility: ${facilityName}`);
@@ -3283,9 +3448,9 @@
                 chip.innerHTML = `<span>${label}</span><button onclick="clearReportFilter('${id}')" class="hover:bg-blue-100 rounded-full p-0.5 transition-colors"><i data-lucide="x" class="w-3 h-3"></i></button>`;
                 activeFiltersContainer.appendChild(chip);
             };
-            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             if (specificDate) addChip(`Date: ${new Date(specificDate).toLocaleDateString()}`, 'report-specific-date');
-            else { if (month) addChip(`Month: ${monthNames[parseInt(month)-1]}`, 'report-month'); if (year) addChip(`Year: ${year}`, 'report-year'); }
+            else { if (month) addChip(`Month: ${monthNames[parseInt(month) - 1]}`, 'report-month'); if (year) addChip(`Year: ${year}`, 'report-year'); }
             if (userEmail) addChip(`User: ${userEmail}`, 'report-user-email');
             if (facilityType) addChip(`Type: ${facilityType}`, 'report-facility-type');
             if (facilityName) addChip(`Facility: ${facilityName}`, 'report-facility-name');
@@ -3297,18 +3462,18 @@
                 query = query.eq('date', specificDate);
             } else {
                 if (year && month) {
-                    const start = `${year}-${String(month).padStart(2,'0')}-01`;
+                    const start = `${year}-${String(month).padStart(2, '0')}-01`;
                     const endMonth = parseInt(month) === 12 ? 1 : parseInt(month) + 1;
                     const endYear = parseInt(month) === 12 ? parseInt(year) + 1 : parseInt(year);
-                    query = query.gte('date', start).lt('date', `${endYear}-${String(endMonth).padStart(2,'0')}-01`);
+                    query = query.gte('date', start).lt('date', `${endYear}-${String(endMonth).padStart(2, '0')}-01`);
                 } else if (year) {
-                    query = query.gte('date', `${year}-01-01`).lt('date', `${parseInt(year)+1}-01-01`);
+                    query = query.gte('date', `${year}-01-01`).lt('date', `${parseInt(year) + 1}-01-01`);
                 } else if (month) {
                     const currYear = new Date().getFullYear();
-                    const start = `${currYear}-${String(month).padStart(2,'0')}-01`;
+                    const start = `${currYear}-${String(month).padStart(2, '0')}-01`;
                     const endMonth = parseInt(month) === 12 ? 1 : parseInt(month) + 1;
                     const endYear = parseInt(month) === 12 ? currYear + 1 : currYear;
-                    query = query.gte('date', start).lt('date', `${endYear}-${String(endMonth).padStart(2,'0')}-01`);
+                    query = query.gte('date', start).lt('date', `${endYear}-${String(endMonth).padStart(2, '0')}-01`);
                 }
             }
 
@@ -3399,9 +3564,9 @@
             const xAxisLabel = groupBySlot ? 'Time Slot' : 'Facility';
 
             if (chartType === 'pie') {
-                facilityUsageChartInstance = new Chart(ctx, { type: 'pie', data: { labels, datasets: [{ data: values, backgroundColor: accessiblePalette.slice(0, labels.length), borderColor: accessibleBorders.slice(0, labels.length), borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12, weight: '600' }, color: '#183e87', padding: 16, usePointStyle: true, pointStyle: 'circle', pointStyleWidth: 12 } }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { const pct = ((context.parsed / totalBookingsAll) * 100).toFixed(1); return ` ${context.label}: ${context.parsed} booking${context.parsed !== 1 ? 's' : ''} (${pct}%)`; } } } } } });
+                facilityUsageChartInstance = new Chart(ctx, { type: 'pie', data: { labels, datasets: [{ data: values, backgroundColor: accessiblePalette.slice(0, labels.length), borderColor: accessibleBorders.slice(0, labels.length), borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12, weight: '600' }, color: '#183e87', padding: 16, usePointStyle: true, pointStyle: 'circle', pointStyleWidth: 12 } }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function (context) { const pct = ((context.parsed / totalBookingsAll) * 100).toFixed(1); return ` ${context.label}: ${context.parsed} booking${context.parsed !== 1 ? 's' : ''} (${pct}%)`; } } } } } });
             } else {
-                facilityUsageChartInstance = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Total Bookings', data: values, backgroundColor: accessiblePalette.slice(0, labels.length), borderColor: accessibleBorders.slice(0, labels.length), borderWidth: 2, borderRadius: 8, barPercentage: 0.6, categoryPercentage: 0.7 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { return ` ${context.parsed.y} booking${context.parsed.y !== 1 ? 's' : ''}`; } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 12 }, color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: 'Number of Bookings', font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } }, x: { ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#183e87' }, grid: { display: false }, title: { display: true, text: xAxisLabel, font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } } } } });
+                facilityUsageChartInstance = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Total Bookings', data: values, backgroundColor: accessiblePalette.slice(0, labels.length), borderColor: accessibleBorders.slice(0, labels.length), borderWidth: 2, borderRadius: 8, barPercentage: 0.6, categoryPercentage: 0.7 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function (context) { return ` ${context.parsed.y} booking${context.parsed.y !== 1 ? 's' : ''}`; } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 12 }, color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: 'Number of Bookings', font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } }, x: { ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#183e87' }, grid: { display: false }, title: { display: true, text: xAxisLabel, font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } } } } });
             }
 
             const btnPrint = document.getElementById('btn-print-report');
@@ -3411,7 +3576,7 @@
         // ---- Issues Report Logic ----
         let issuesChartInstance = null;
 
-        window.populateIssueReportFilters = async function() {
+        window.populateIssueReportFilters = async function () {
             const yearSel = document.getElementById('issue-report-year');
             if (yearSel && yearSel.options.length <= 1) {
                 const cy = new Date().getFullYear();
@@ -3429,7 +3594,7 @@
                     facSel.appendChild(o);
                 });
             }
-            const issueFilters = ['issue-report-month','issue-report-year','issue-report-date','issue-report-facility','issue-report-status'];
+            const issueFilters = ['issue-report-month', 'issue-report-year', 'issue-report-date', 'issue-report-facility', 'issue-report-status'];
             issueFilters.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) { el.addEventListener('change', updateIssueButtonState); el.addEventListener('input', updateIssueButtonState); }
@@ -3437,7 +3602,7 @@
             updateIssueButtonState();
         };
 
-        window.updateIssueButtonState = function() {
+        window.updateIssueButtonState = function () {
             const btn = document.getElementById('btn-generate-issues');
             const helper = document.getElementById('issue-report-helper');
             const hasFilter = !!(document.getElementById('issue-report-month')?.value ||
@@ -3449,13 +3614,13 @@
             if (helper) { helper.classList.toggle('hidden', hasFilter); }
         };
 
-        window.generateIssuesReport = async function() {
-            const month        = document.getElementById('issue-report-month').value;
-            const year         = document.getElementById('issue-report-year').value;
+        window.generateIssuesReport = async function () {
+            const month = document.getElementById('issue-report-month').value;
+            const year = document.getElementById('issue-report-year').value;
             const specificDate = document.getElementById('issue-report-date').value;
             const facilityName = document.getElementById('issue-report-facility').value;
-            const status       = document.getElementById('issue-report-status').value;
-            const chartType    = document.getElementById('issue-report-chart-type').value;
+            const status = document.getElementById('issue-report-status').value;
+            const chartType = document.getElementById('issue-report-chart-type').value;
 
             const btn = document.getElementById('btn-generate-issues');
             btn.disabled = true;
@@ -3477,13 +3642,13 @@
                         const d = new Date(specificDate + 'T00:00:00');
                         return date.toDateString() === d.toDateString();
                     }
-                    if (year  && date.getFullYear() !== parseInt(year))          return false;
-                    if (month && (date.getMonth() + 1) !== parseInt(month))      return false;
+                    if (year && date.getFullYear() !== parseInt(year)) return false;
+                    if (month && (date.getMonth() + 1) !== parseInt(month)) return false;
                     return true;
                 });
 
                 const containerDiv = document.getElementById('issue-report-chart-container');
-                const emptyDiv     = document.getElementById('issue-report-empty');
+                const emptyDiv = document.getElementById('issue-report-empty');
 
                 if (!filtered.length) {
                     containerDiv.classList.add('hidden');
@@ -3499,7 +3664,7 @@
                     const fName = r.Facility?.name || 'Unknown';
                     if (!grouped[fName]) grouped[fName] = { total: 0, pending: 0, resolved: 0, latestDate: null };
                     grouped[fName].total++;
-                    if (r.status === 'Pending')  grouped[fName].pending++;
+                    if (r.status === 'Pending') grouped[fName].pending++;
                     if (r.status === 'Resolved') grouped[fName].resolved++;
                     const d = new Date(r.created_at);
                     if (!grouped[fName].latestDate || d > grouped[fName].latestDate) grouped[fName].latestDate = d;
@@ -3513,7 +3678,7 @@
                 const issueChipsContainer = document.getElementById('issue-report-active-filters');
                 issueChipsContainer.innerHTML = '';
                 issueChipsContainer.classList.remove('hidden');
-                const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
                 const addIssueChip = (label, id) => {
                     const chip = document.createElement('div');
                     chip.className = 'inline-flex items-center gap-1.5 bg-blue-50 text-primary-blue px-3 py-1 rounded-full text-xs font-medium border border-blue-100';
@@ -3522,19 +3687,19 @@
                 };
                 if (specificDate) addIssueChip(`Date: ${new Date(specificDate).toLocaleDateString()}`, 'issue-report-date');
                 else {
-                    if (month) addIssueChip(`Month: ${monthNames[parseInt(month)-1]}`, 'issue-report-month');
-                    if (year)  addIssueChip(`Year: ${year}`, 'issue-report-year');
+                    if (month) addIssueChip(`Month: ${monthNames[parseInt(month) - 1]}`, 'issue-report-month');
+                    if (year) addIssueChip(`Year: ${year}`, 'issue-report-year');
                 }
                 if (facilityName) addIssueChip(`Facility: ${facilityName}`, 'issue-report-facility');
-                if (status)       addIssueChip(`Status: ${status}`, 'issue-report-status');
+                if (status) addIssueChip(`Status: ${status}`, 'issue-report-status');
                 lucide.createIcons();
 
                 // Build chart title
                 const parts = [];
                 if (specificDate) { parts.push(new Date(specificDate).toLocaleDateString()); }
                 else {
-                    if (month) parts.push(monthNames[parseInt(month)-1]);
-                    if (year)  parts.push(year);
+                    if (month) parts.push(monthNames[parseInt(month) - 1]);
+                    if (year) parts.push(year);
                 }
                 if (facilityName) parts.push(facilityName);
                 if (status) parts.push(status);
@@ -3543,9 +3708,9 @@
 
                 // Accessible palette (same as usage report)
                 const issuePalette = [
-                    'rgba(0,119,187,0.88)','rgba(238,119,51,0.88)','rgba(51,187,238,0.88)',
-                    'rgba(238,51,119,0.88)','rgba(187,187,187,0.88)','rgba(0,153,136,0.88)',
-                    'rgba(204,121,167,0.88)','rgba(255,193,7,0.88)','rgba(102,153,204,0.88)','rgba(153,0,0,0.88)'
+                    'rgba(0,119,187,0.88)', 'rgba(238,119,51,0.88)', 'rgba(51,187,238,0.88)',
+                    'rgba(238,51,119,0.88)', 'rgba(187,187,187,0.88)', 'rgba(0,153,136,0.88)',
+                    'rgba(204,121,167,0.88)', 'rgba(255,193,7,0.88)', 'rgba(102,153,204,0.88)', 'rgba(153,0,0,0.88)'
                 ];
                 const issueBorders = issuePalette.map(c => c.replace(/0\.[0-9]+\)/, '1)'));
 
@@ -3553,9 +3718,9 @@
                 const ctx2 = document.getElementById('issuesChart').getContext('2d');
 
                 if (chartType === 'pie') {
-                    issuesChartInstance = new Chart(ctx2, { type: 'pie', data: { labels, datasets: [{ data: values, backgroundColor: issuePalette.slice(0, labels.length), borderColor: issueBorders.slice(0, labels.length), borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12, weight: '600' }, color: '#183e87', padding: 16, usePointStyle: true, pointStyle: 'circle', pointStyleWidth: 12 } }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { const pct = ((context.parsed / totalIssues) * 100).toFixed(1); return ` ${context.label}: ${context.parsed} issue${context.parsed !== 1 ? 's' : ''} (${pct}%)`; } } } } } });
+                    issuesChartInstance = new Chart(ctx2, { type: 'pie', data: { labels, datasets: [{ data: values, backgroundColor: issuePalette.slice(0, labels.length), borderColor: issueBorders.slice(0, labels.length), borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12, weight: '600' }, color: '#183e87', padding: 16, usePointStyle: true, pointStyle: 'circle', pointStyleWidth: 12 } }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function (context) { const pct = ((context.parsed / totalIssues) * 100).toFixed(1); return ` ${context.label}: ${context.parsed} issue${context.parsed !== 1 ? 's' : ''} (${pct}%)`; } } } } } });
                 } else {
-                    issuesChartInstance = new Chart(ctx2, { type: 'bar', data: { labels, datasets: [{ label: 'Issues Reported', data: values, backgroundColor: issuePalette.slice(0, labels.length), borderColor: issueBorders.slice(0, labels.length), borderWidth: 2, borderRadius: 8, barPercentage: 0.6, categoryPercentage: 0.7 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { return ` ${context.parsed.y} issue${context.parsed.y !== 1 ? 's' : ''}`; } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 12 }, color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: 'Number of Issues', font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } }, x: { ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#183e87' }, grid: { display: false }, title: { display: true, text: 'Facility', font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } } } } });
+                    issuesChartInstance = new Chart(ctx2, { type: 'bar', data: { labels, datasets: [{ label: 'Issues Reported', data: values, backgroundColor: issuePalette.slice(0, labels.length), borderColor: issueBorders.slice(0, labels.length), borderWidth: 2, borderRadius: 8, barPercentage: 0.6, categoryPercentage: 0.7 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function (context) { return ` ${context.parsed.y} issue${context.parsed.y !== 1 ? 's' : ''}`; } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 12 }, color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: 'Number of Issues', font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } }, x: { ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#183e87' }, grid: { display: false }, title: { display: true, text: 'Facility', font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } } } } });
                 }
 
                 // Render table (plain — no badges or emoji)
@@ -3563,7 +3728,7 @@
                 tbody.innerHTML = '';
                 sorted.forEach(([fName, s]) => {
                     const dateStr = s.latestDate
-                        ? s.latestDate.toLocaleDateString('en-MY', { day:'2-digit', month:'short', year:'numeric' })
+                        ? s.latestDate.toLocaleDateString('en-MY', { day: '2-digit', month: 'short', year: 'numeric' })
                         : '-';
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-gray-900">${fName}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-bold text-primary-teal">${s.total}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${s.pending}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${s.resolved}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-xs">${dateStr}</td>`;
@@ -3579,7 +3744,7 @@
                 const btnPrint = document.getElementById('btn-print-issues');
                 if (btnPrint) { btnPrint.disabled = false; btnPrint.classList.remove('opacity-50', 'cursor-not-allowed'); }
 
-            } catch(err) {
+            } catch (err) {
                 console.error(err);
                 showToast('Failed to generate issues report: ' + err.message, 'error');
             } finally {
@@ -3589,21 +3754,21 @@
             }
         };
 
-        window.populateIssuesPDFTemplate = function() {
+        window.populateIssuesPDFTemplate = function () {
             const adminEmailEl = document.getElementById('admin-email-display');
             document.getElementById('pdf-issue-admin-email').textContent = adminEmailEl ? adminEmailEl.textContent.trim() : 'Admin';
             const now = new Date();
-            document.getElementById('pdf-issue-timestamp').textContent = now.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) + ', ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            document.getElementById('pdf-issue-timestamp').textContent = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             document.getElementById('pdf-issue-copyright-year').textContent = now.getFullYear();
             // Filters
             const filterList = document.getElementById('pdf-issue-filter-list');
             filterList.innerHTML = '';
             const addFilter = (label, val) => { if (val) { const li = document.createElement('li'); li.textContent = label + ': ' + val; filterList.appendChild(li); } };
-            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             const mVal = document.getElementById('issue-report-month')?.value;
-            addFilter('Month', mVal ? monthNames[parseInt(mVal)-1] : '');
-            addFilter('Year',  document.getElementById('issue-report-year')?.value);
-            addFilter('Date',  document.getElementById('issue-report-date')?.value);
+            addFilter('Month', mVal ? monthNames[parseInt(mVal) - 1] : '');
+            addFilter('Year', document.getElementById('issue-report-year')?.value);
+            addFilter('Date', document.getElementById('issue-report-date')?.value);
             addFilter('Facility', document.getElementById('issue-report-facility')?.value);
             addFilter('Status', document.getElementById('issue-report-status')?.value);
             if (!filterList.children.length) { const li = document.createElement('li'); li.textContent = 'None (All Issues)'; filterList.appendChild(li); }
@@ -3633,15 +3798,15 @@
             document.getElementById('pdf-issue-total').textContent = `Total Issues: ${total}`;
         };
 
-        window.printIssuesReport = function() {
+        window.printIssuesReport = function () {
             populateIssuesPDFTemplate();
             const element = document.getElementById('pdf-issues-template');
             const styleLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.outerHTML).join('\n');
-            const styleTags  = Array.from(document.querySelectorAll('style')).map(s => `<style>${s.innerHTML}</style>`).join('\n');
+            const styleTags = Array.from(document.querySelectorAll('style')).map(s => `<style>${s.innerHTML}</style>`).join('\n');
             const bodyHtml = element.innerHTML;
             const w = 900, h = 700;
-            const left = Math.max(0, Math.round((screen.width  - w) / 2));
-            const top  = Math.max(0, Math.round((screen.height - h) / 2));
+            const left = Math.max(0, Math.round((screen.width - w) / 2));
+            const top = Math.max(0, Math.round((screen.height - h) / 2));
             const printWindow = window.open('', '_blank',
                 `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no`);
             if (!printWindow) { showToast('Pop-up blocked. Please allow pop-ups and try again.', 'warning'); return; }
@@ -3649,7 +3814,7 @@
             printWindow.document.close();
         };
 
-        window.clearIssueReportFilter = function(filterId) {
+        window.clearIssueReportFilter = function (filterId) {
             const el = document.getElementById(filterId);
             if (el) el.value = '';
             updateIssueButtonState();
@@ -3672,11 +3837,11 @@
             }
         };
 
-        window.populatePDFTemplate = function() {
+        window.populatePDFTemplate = function () {
             const adminEmailEl = document.getElementById('admin-email-display');
             document.getElementById('pdf-admin-email').textContent = adminEmailEl ? adminEmailEl.textContent.trim() : 'Admin';
             const now = new Date();
-            document.getElementById('pdf-timestamp').textContent = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            document.getElementById('pdf-timestamp').textContent = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             document.getElementById('pdf-copyright-year').textContent = now.getFullYear();
             const filterList = document.getElementById('pdf-filter-list');
             filterList.innerHTML = '';
@@ -3709,7 +3874,7 @@
             document.getElementById('pdf-total-participants').textContent = `Total Participants: ${totalParticipants}`;
         };
 
-        window.generatePDFReport = function() {
+        window.generatePDFReport = function () {
             populatePDFTemplate();
             const element = document.getElementById('pdf-report-template');
 
@@ -3755,15 +3920,15 @@
             printWindow.document.close();
         };
 
-        window.printReport = function() {
+        window.printReport = function () {
             populatePDFTemplate();
             const element = document.getElementById('pdf-report-template');
             const styleLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.outerHTML).join('\n');
-            const styleTags  = Array.from(document.querySelectorAll('style')).map(s => `<style>${s.innerHTML}</style>`).join('\n');
-            const bodyHtml   = element.innerHTML;
+            const styleTags = Array.from(document.querySelectorAll('style')).map(s => `<style>${s.innerHTML}</style>`).join('\n');
+            const bodyHtml = element.innerHTML;
             const w = 900, h = 700;
-            const left = Math.max(0, Math.round((screen.width  - w) / 2));
-            const top  = Math.max(0, Math.round((screen.height - h) / 2));
+            const left = Math.max(0, Math.round((screen.width - w) / 2));
+            const top = Math.max(0, Math.round((screen.height - h) / 2));
             const printWindow = window.open('', '_blank',
                 `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no`);
             if (!printWindow) { showToast('Pop-up blocked. Please allow pop-ups and try again.', 'warning'); return; }
@@ -3992,22 +4157,22 @@
         // ---- Confirm Modal Logic ----
         let confirmActionCallback = null;
 
-        window.showConfirmModal = function(title, text, confirmBtnText, confirmBtnColor, callback, iconName, iconBg, iconColor) {
+        window.showConfirmModal = function (title, text, confirmBtnText, confirmBtnColor, callback, iconName, iconBg, iconColor) {
             document.getElementById('confirm-modal-title').textContent = title;
             document.getElementById('confirm-modal-text').textContent = text;
-            
+
             const btn = document.getElementById('confirm-modal-btn');
-            btn.textContent = confirmBtnText || 'Delete';
-            btn.className = `px-5 py-2 text-white rounded-lg font-semibold transition-colors ${confirmBtnColor || 'bg-red-500 hover:bg-red-600'}`;
+            btn.textContent = confirmBtnText;
+            btn.className = `flex-1 px-4 py-2 text-white rounded-lg font-medium transition-colors ${confirmBtnColor}`;
 
             // Update icon dynamically (Lucide replaces <i> with <svg>, so rebuild innerHTML each time)
             const iconWrap = document.getElementById('confirm-modal-icon-wrap');
-            iconWrap.className = `w-12 h-12 flex items-center justify-center flex-shrink-0 ${iconBg || ''}`;
-            iconWrap.innerHTML = `<i data-lucide="${iconName || 'trash-2'}" class="w-8 h-8 ${iconColor || 'text-red-500'}"></i>`;
+            iconWrap.className = `w-16 h-16 ${iconBg || 'bg-red-100'} rounded-full flex items-center justify-center mx-auto mb-4`;
+            iconWrap.innerHTML = `<i data-lucide="${iconName || 'alert-triangle'}" class="w-8 h-8 ${iconColor || 'text-red-500'}"></i>`;
             lucide.createIcons();
-            
+
             confirmActionCallback = callback;
-            
+
             const modal = document.getElementById('confirm-modal');
             modal.classList.remove('hidden');
             setTimeout(() => {
@@ -4016,7 +4181,7 @@
             }, 10);
         }
 
-        window.closeConfirmModal = function() {
+        window.closeConfirmModal = function () {
             const modal = document.getElementById('confirm-modal');
             modal.classList.add('opacity-0');
             modal.children[0].classList.add('scale-95');
@@ -4026,7 +4191,7 @@
             }, 300);
         }
 
-        window.executeConfirmAction = function() {
+        window.executeConfirmAction = function () {
             if (confirmActionCallback) confirmActionCallback();
             closeConfirmModal();
         }
@@ -4040,12 +4205,13 @@
     <!-- PWA Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
+            window.addEventListener('load', function () {
                 navigator.serviceWorker.register('../service-worker.js')
                     .then(reg => console.log('SW registered:', reg.scope))
                     .catch(err => console.warn('SW registration failed:', err));
             });
         }
-    </script></body>
+    </script>
+</body>
 
 </html>
