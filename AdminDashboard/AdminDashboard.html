@@ -2434,27 +2434,33 @@
 
             const nowMidnight = new Date();
             nowMidnight.setHours(0, 0, 0, 0);
+            const todayStr = toLocalDateStrAdmin(nowMidnight);
+
+            // Current time in minutes (Malaysia Time UTC+8)
+            const nowMalaysia = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kuala_Lumpur' }));
+            const currentTimeMins = nowMalaysia.getHours() * 60 + nowMalaysia.getMinutes();
+
+            // Helper: parse a time string like "07:00 am" into total minutes
+            function parseTimeMinsAdmin(t) {
+                const parts = t.trim().split(' ');
+                let [hours, minutes] = parts[0].split(':');
+                hours = parseInt(hours, 10);
+                if (hours === 12) hours = 0;
+                if (parts[1] && parts[1].toLowerCase() === 'pm') hours += 12;
+                return hours * 60 + parseInt(minutes, 10);
+            }
 
             gridBody.innerHTML = '';
 
             // Helper function to check if slot is booked by user
             function isSlotBooked(cellDateStr, cellSlot, b) {
-                const parseTimeMins = (t) => {
-                    const parts = t.trim().split(' ');
-                    let [hours, minutes] = parts[0].split(':');
-                    hours = parseInt(hours, 10);
-                    if (hours === 12) hours = 0;
-                    if (parts[1] && parts[1].toLowerCase() === 'pm') hours += 12;
-                    return hours * 60 + parseInt(minutes, 10);
-                };
-
                 const [cStart] = cellSlot.split(' - ');
-                const cellStartTime = parseTimeMins(cStart);
+                const cellStartTime = parseTimeMinsAdmin(cStart);
 
                 const bEndDateStr = b.end_date || b.date;
                 const [bStart, bEnd] = b.time_slot.split(' - ');
-                const bookingStartTime = parseTimeMins(bStart);
-                const bookingEndTime = parseTimeMins(bEnd);
+                const bookingStartTime = parseTimeMinsAdmin(bStart);
+                const bookingEndTime = parseTimeMinsAdmin(bEnd);
 
                 if (cellDateStr < b.date || cellDateStr > bEndDateStr) return false;
                 if (cellDateStr > b.date && cellDateStr < bEndDateStr) return true;
@@ -2475,6 +2481,10 @@
                 row.className = 'grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 items-center';
                 const slotShort = slot.replace(' am', 'am').replace(' pm', 'pm').replace(' - ', '-');
 
+                // Parse this slot's start time for the today-elapsed check
+                const [slotStartStr] = slot.split(' - ');
+                const slotStartMins = parseTimeMinsAdmin(slotStartStr);
+
                 let cellsHtml = `<div class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">${slotShort}</div>`;
 
                 for (let day = 0; day < 7; day++) {
@@ -2487,7 +2497,8 @@
                     let isAlreadyBooked = false;
                     let isPassed = false;
 
-                    if (cellDate < nowMidnight) {
+                    // Past days OR today's slots whose start time has already passed
+                    if (cellDate < nowMidnight || (dateStr === todayStr && slotStartMins <= currentTimeMins)) {
                         isPassed = true;
                         bgClass = 'bg-gray-100 text-gray-400 cursor-not-allowed cursor-default';
                         text = 'Passed';
@@ -3184,14 +3195,27 @@
 
             if (facilityUsageChartInstance) facilityUsageChartInstance.destroy();
             const ctx = document.getElementById('facilityUsageChart').getContext('2d');
-            const tealPalette = ['rgba(0,156,166,0.9)','rgba(0,128,136,0.85)','rgba(20,184,166,0.85)','rgba(6,182,212,0.85)','rgba(8,145,178,0.85)','rgba(13,148,136,0.85)','rgba(45,212,191,0.8)','rgba(94,234,212,0.8)','rgba(0,188,212,0.8)','rgba(38,166,154,0.8)'];
-            const tealBorders = tealPalette.map(c => c.replace(/0\.[0-9]+\)/, '1)'));
+            // Colorblind-safe palette (Paul Tol's vibrant set)
+            // Distinguishable for deuteranopia, protanopia & tritanopia
+            const accessiblePalette = [
+                'rgba(0,119,187,0.88)',    // blue
+                'rgba(238,119,51,0.88)',   // orange
+                'rgba(51,187,238,0.88)',   // cyan
+                'rgba(238,51,119,0.88)',   // magenta
+                'rgba(187,187,187,0.88)',  // grey
+                'rgba(0,153,136,0.88)',    // teal-green (safe)
+                'rgba(204,121,167,0.88)', // rose
+                'rgba(255,193,7,0.88)',   // amber
+                'rgba(102,153,204,0.88)', // light blue
+                'rgba(153,0,0,0.88)'      // dark red
+            ];
+            const accessibleBorders = accessiblePalette.map(c => c.replace(/0\.[0-9]+\)/, '1)'));
             const xAxisLabel = groupBySlot ? 'Time Slot' : 'Facility';
 
             if (chartType === 'pie') {
-                facilityUsageChartInstance = new Chart(ctx, { type: 'pie', data: { labels, datasets: [{ data: values, backgroundColor: tealPalette.slice(0, labels.length), borderColor: tealBorders.slice(0, labels.length), borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12, weight: '600' }, color: '#183e87', padding: 16, usePointStyle: true, pointStyleWidth: 12 } }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { const pct = ((context.parsed / totalBookingsAll) * 100).toFixed(1); return ` ${context.label}: ${context.parsed} booking${context.parsed !== 1 ? 's' : ''} (${pct}%)`; } } } } } });
+                facilityUsageChartInstance = new Chart(ctx, { type: 'pie', data: { labels, datasets: [{ data: values, backgroundColor: accessiblePalette.slice(0, labels.length), borderColor: accessibleBorders.slice(0, labels.length), borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12, weight: '600' }, color: '#183e87', padding: 16, usePointStyle: true, pointStyleWidth: 12 } }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { const pct = ((context.parsed / totalBookingsAll) * 100).toFixed(1); return ` ${context.label}: ${context.parsed} booking${context.parsed !== 1 ? 's' : ''} (${pct}%)`; } } } } } });
             } else {
-                facilityUsageChartInstance = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Total Bookings', data: values, backgroundColor: 'rgba(0,156,166,0.85)', borderColor: 'rgba(0,156,166,1)', borderWidth: 2, borderRadius: 8, barPercentage: 0.6, categoryPercentage: 0.7 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { return ` ${context.parsed.y} booking${context.parsed.y !== 1 ? 's' : ''}`; } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 12 }, color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: 'Number of Bookings', font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } }, x: { ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#183e87' }, grid: { display: false }, title: { display: true, text: xAxisLabel, font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } } } } });
+                facilityUsageChartInstance = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Total Bookings', data: values, backgroundColor: accessiblePalette.slice(0, labels.length), borderColor: accessibleBorders.slice(0, labels.length), borderWidth: 2, borderRadius: 8, barPercentage: 0.6, categoryPercentage: 0.7 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#183e87', titleFont: { family: 'Inter', weight: 'bold', size: 13 }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { return ` ${context.parsed.y} booking${context.parsed.y !== 1 ? 's' : ''}`; } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 12 }, color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.04)' }, title: { display: true, text: 'Number of Bookings', font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } }, x: { ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#183e87' }, grid: { display: false }, title: { display: true, text: xAxisLabel, font: { family: 'Inter', size: 12, weight: 'bold' }, color: '#183e87' } } } } });
             }
 
             const btnPrint = document.getElementById('btn-print-report');
