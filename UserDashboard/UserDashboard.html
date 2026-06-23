@@ -836,16 +836,18 @@
     </div>
     <!-- Reusable Confirm Modal -->
     <div id="confirm-modal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[99] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300">
-            <div class="p-6 text-center">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+        <div class="bg-white rounded-[24px] shadow-xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300 p-6">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="trash-2" class="w-8 h-8 text-red-500"></i>
                 </div>
-                <h3 id="confirm-modal-title" class="text-xl font-bold text-gray-900 mb-2">Are you sure?</h3>
-                <p id="confirm-modal-text" class="text-sm text-gray-500 mb-6">This action cannot be undone.</p>
-                <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                    <button onclick="closeConfirmModal()" class="flex-1 px-4 py-2 bg-primary-blue hover:bg-blue-900 text-white rounded-lg font-medium transition-colors">Back</button>
-                    <button onclick="executeConfirmAction()" id="confirm-modal-btn" class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors">Confirm</button>
+                <div class="flex-1">
+                    <h3 id="confirm-modal-title" class="text-lg font-bold text-gray-900 mb-1 leading-tight">Are you sure?</h3>
+                    <p id="confirm-modal-text" class="text-[15px] text-gray-700 mb-6 leading-snug">This action cannot be undone.</p>
+                    <div class="flex gap-3 justify-end">
+                        <button onclick="closeConfirmModal()" class="px-4 py-2 text-gray-900 hover:bg-gray-100 rounded-lg font-semibold transition-colors">Cancel</button>
+                        <button onclick="executeConfirmAction()" id="confirm-modal-btn" class="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1548,8 +1550,8 @@
             document.getElementById('confirm-modal-text').textContent = text;
             
             const btn = document.getElementById('confirm-modal-btn');
-            btn.textContent = confirmBtnText;
-            btn.className = `flex-1 px-4 py-2 text-white rounded-lg font-medium transition-colors ${confirmBtnColor}`;
+            btn.textContent = confirmBtnText || 'Delete';
+            btn.className = `px-5 py-2 text-white rounded-lg font-semibold transition-colors ${confirmBtnColor || 'bg-red-500 hover:bg-red-600'}`;
             
             confirmActionCallback = callback;
             
