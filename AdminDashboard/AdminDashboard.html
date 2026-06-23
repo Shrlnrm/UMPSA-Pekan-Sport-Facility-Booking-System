@@ -2209,6 +2209,14 @@
             return date;
         }
 
+        // ---- Date helper: avoids UTC timezone rollback from toISOString() ----
+        function toLocalDateStrAdmin(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
         window.handleAdminStatusChange = function () {
             const status = document.getElementById('edit-fac-status').value;
             const overlay = document.getElementById('admin-grid-overlay');
@@ -2378,14 +2386,14 @@
                 .select('*')
                 .eq('facility_id', facilityId)
                 .neq('status', 'Cancelled')
-                .gte('date', monday.toISOString())
-                .lte('date', sunday.toISOString());
+                .gte('date', toLocalDateStrAdmin(monday))
+                .lte('date', toLocalDateStrAdmin(sunday));
 
             const { data: closures } = await db.from('Facility_Closure')
                 .select('*')
                 .eq('facility_id', facilityId)
-                .gte('date', monday.toISOString())
-                .lte('date', sunday.toISOString());
+                .gte('date', toLocalDateStrAdmin(monday))
+                .lte('date', toLocalDateStrAdmin(sunday));
 
             const timeSlots = [
                 '07:00 am - 08:00 am', '08:00 am - 10:00 am', '10:00 am - 12:00 pm',
@@ -2471,7 +2479,7 @@
 
                 for (let day = 0; day < 7; day++) {
                     const cellDate = weekDates[day];
-                    const dateStr = cellDate.toISOString().split('T')[0];
+                    const dateStr = toLocalDateStrAdmin(cellDate);
 
                     let bgClass = 'bg-white hover:bg-blue-50 cursor-pointer text-blue-400';
                     let text = 'Available';

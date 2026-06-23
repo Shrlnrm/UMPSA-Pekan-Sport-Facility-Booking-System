@@ -193,8 +193,30 @@
             <div class="p-4 border-t border-gray-100 flex flex-col gap-4 pb-16">
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">MAX CAPACITY</label>
-                    <input id="filter-max-capacity" type="number" placeholder="Enter capacity"
-                        class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
+                    <div class="flex items-center gap-4 mt-0.5">
+                        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                            <input type="radio" name="filter-cap-mode" value="" checked
+                                onchange="document.getElementById('filter-cap-limit-wrapper').classList.add('hidden'); document.getElementById('filter-max-capacity').value = '';" 
+                                class="accent-[#009ca6] w-4 h-4">
+                            All
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                            <input type="radio" name="filter-cap-mode" value="no-limit"
+                                onchange="document.getElementById('filter-cap-limit-wrapper').classList.add('hidden'); document.getElementById('filter-max-capacity').value = '';"
+                                class="accent-[#009ca6] w-4 h-4">
+                            No Limit
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                            <input type="radio" name="filter-cap-mode" value="set-limit"
+                                onchange="document.getElementById('filter-cap-limit-wrapper').classList.remove('hidden');"
+                                class="accent-[#009ca6] w-4 h-4">
+                            Set Limit
+                        </label>
+                    </div>
+                    <div id="filter-cap-limit-wrapper" class="hidden mt-1">
+                        <input id="filter-max-capacity" type="number" min="1" placeholder="Enter max capacity"
+                            class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
+                    </div>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">STATUS</label>
@@ -1651,12 +1673,28 @@
             const filterMaxCapacity = document.getElementById('filter-max-capacity').value;
             const filterStatus = document.getElementById('filter-status').value;
 
+            // Read the capacity mode radio
+            const filterCapMode = (document.querySelector('input[name="filter-cap-mode"]:checked') || {}).value || '';
+
             filteredFacilitiesCache = allFacilities.filter(f => {
                 const matchesSearch = f.name.toLowerCase().includes(query) || 
                                     f.location.toLowerCase().includes(query);
                 const matchesCategory = !filterCategory || f.type === filterCategory;
-                const matchesCapacity = !filterMaxCapacity || f.max_capacity >= parseInt(filterMaxCapacity);
                 const matchesStatus = !filterStatus || f.status === filterStatus;
+
+                let matchesCapacity = true;
+                if (filterCapMode === 'no-limit') {
+                    // Only facilities with no defined capacity limit
+                    matchesCapacity = f.max_capacity === null;
+                } else if (filterCapMode === 'set-limit') {
+                    // Only facilities with a defined max capacity; optionally filter by entered number
+                    if (filterMaxCapacity) {
+                        matchesCapacity = f.max_capacity !== null && f.max_capacity <= parseInt(filterMaxCapacity);
+                    } else {
+                        matchesCapacity = f.max_capacity !== null;
+                    }
+                }
+                // filterCapMode === '' → all facilities pass
                 
                 return matchesSearch && matchesCategory && matchesCapacity && matchesStatus;
             });
