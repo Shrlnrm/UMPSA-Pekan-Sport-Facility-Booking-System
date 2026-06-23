@@ -32,14 +32,35 @@
         }
     </script>
     <style>
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
 
         /* Sidebar nav states */
-        .nav-link { transition: color 0.15s, background 0.15s; color: #6b7280; }
-        .nav-link:hover  { color: #009ca6; background: #f0fdfe; }
-        .nav-link.active { color: #009ca6; background: #f0fdfe; }
+        .nav-link {
+            transition: color 0.15s, background 0.15s;
+            color: #6b7280;
+        }
+
+        .nav-link:hover {
+            color: #009ca6;
+            background: #f0fdfe;
+        }
+
+        .nav-link.active {
+            color: #009ca6;
+            background: #f0fdfe;
+        }
+
         .nav-link .nav-bar {
             position: absolute;
             left: 0;
@@ -51,18 +72,47 @@
             transition: opacity 0.15s;
             background: #009ca6;
         }
-        .nav-link:hover  .nav-bar, .nav-link.active .nav-bar { opacity: 1; }
-        .nav-link:hover  i, .nav-link.active i { color: #009ca6; }
+
+        .nav-link:hover .nav-bar,
+        .nav-link.active .nav-bar {
+            opacity: 1;
+        }
+
+        .nav-link:hover i,
+        .nav-link.active i {
+            color: #009ca6;
+        }
 
         /* Main tabs (dark blue for bookings and search) */
-        .main-tab { transition: background 0.15s, color 0.15s; }
-        .main-tab:hover  { background: #183e87; color: #fff; }
-        .main-tab.active { background: #183e87; color: #fff; }
+        .main-tab {
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .main-tab:hover {
+            background: #183e87;
+            color: #fff;
+        }
+
+        .main-tab.active {
+            background: #183e87;
+            color: #fff;
+        }
 
         /* Sub tabs */
-        .sub-tab { border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; }
-        .sub-tab:hover  { color: #009ca6; border-bottom-color: #009ca6; }
-        .sub-tab.active { color: #009ca6; border-bottom-color: #009ca6; }
+        .sub-tab {
+            border-bottom: 2px solid transparent;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .sub-tab:hover {
+            color: #009ca6;
+            border-bottom-color: #009ca6;
+        }
+
+        .sub-tab.active {
+            color: #009ca6;
+            border-bottom-color: #009ca6;
+        }
 
         /* Custom date input styling (matches landing page) */
         input[type="date"]::-webkit-calendar-picker-indicator {
@@ -75,34 +125,51 @@
         #sidebar {
             transition: transform 0.3s ease;
             position: fixed;
-            top: 64px; /* header height */
+            top: 64px;
+            /* header height */
             left: 0;
             bottom: 0;
             z-index: 40;
             width: 260px;
             transform: translateX(-100%);
         }
-        #sidebar.open { transform: translateX(0); }
+
+        #sidebar.open {
+            transform: translateX(0);
+        }
+
         #sidebar-overlay {
             display: none;
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.4);
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
             z-index: 39;
             top: 64px;
         }
-        #sidebar-overlay.open { display: block; }
+
+        #sidebar-overlay.open {
+            display: block;
+        }
 
         /* On large screens, sidebar is always visible as part of flex layout */
         @media (min-width: 1024px) {
             #sidebar {
                 position: relative;
-                top: auto; left: auto; bottom: auto;
+                top: auto;
+                left: auto;
+                bottom: auto;
                 transform: translateX(0) !important;
                 z-index: auto;
                 flex-shrink: 0;
             }
-            #sidebar-overlay { display: none !important; }
-            #hamburger-btn { display: none !important; }
+
+            #sidebar-overlay {
+                display: none !important;
+            }
+
+            #hamburger-btn {
+                display: none !important;
+            }
         }
     </style>
     <!-- PWA -->
@@ -112,709 +179,911 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="UMPSA Pekan Sport"></head>
+    <meta name="apple-mobile-web-app-title" content="UMPSA Pekan Sport">
+</head>
 
 <body class="font-sans antialiased text-gray-900 bg-white">
     <div class="fixed inset-0 flex flex-col overflow-hidden">
 
-    <!-- Toast Container -->
-    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2" style="pointer-events:none;"></div>
-    <style>
-        .toast-msg { pointer-events:auto; display:flex; align-items:center; gap:8px; padding:12px 20px; border-radius:8px; font-size:13px; font-weight:500; color:#fff; box-shadow:0 4px 12px rgba(0,0,0,.15); animation:toastIn .3s ease; min-width:280px; max-width:420px; }
-        .toast-msg.success { background:#059669; }
-        .toast-msg.error   { background:#dc2626; }
-        .toast-msg.info    { background:#183e87; }
-        .toast-msg.warning { background:#d97706; }
-        @keyframes toastIn  { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
-        @keyframes toastOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(40px)} }
-    </style>
+        <!-- Toast Container -->
+        <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2" style="pointer-events:none;">
+        </div>
+        <style>
+            .toast-msg {
+                pointer-events: auto;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 13px;
+                font-weight: 500;
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+                animation: toastIn .3s ease;
+                min-width: 280px;
+                max-width: 420px;
+            }
 
-    <!-- ===== ROW 1: UMPSA Header (matches landing page) ===== -->
-    <header class="bg-white shadow-sm flex-shrink-0 h-16 px-4 sm:px-6 flex items-center gap-3 z-50 relative text-nowrap overflow-hidden">
-        <a href="UserDashboard.html" class="flex items-center gap-3 flex-1 min-w-0">
-            <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo" class="h-9 w-auto object-contain flex-shrink-0">
-            <div class="h-8 w-px bg-gray-200 flex-shrink-0"></div>
-            <div class="flex flex-col justify-center min-w-0">
-                <span class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide truncate">UNIVERSITI MALAYSIA PAHANG</span>
-                <span class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide truncate">AL-SULTAN ABDULLAH</span>
-            </div>
-        </a>
-    </header>
-    <!-- Sidebar overlay (mobile) -->
-    <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+            .toast-msg.success {
+                background: #059669;
+            }
 
-    <!-- ===== ROW 2: Sidebar + Right Column ===== -->
-    <div class="flex flex-1 overflow-hidden">
+            .toast-msg.error {
+                background: #dc2626;
+            }
 
-        <!-- ===== LEFT SIDEBAR ===== -->
-        <aside id="sidebar" class="flex flex-col bg-white border-r border-gray-100 overflow-hidden" style="width:260px;">
+            .toast-msg.info {
+                background: #183e87;
+            }
 
-            <!-- Quick Search -->
-            <div class="px-4 flex items-center border-b border-gray-100 flex-shrink-0" style="height:56px; background:#f9fafb;">
-                <div class="relative w-full">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                        <i data-lucide="search" class="w-4 h-4"></i>
-                    </div>
-                    <input type="text" id="sidebar-search" placeholder="Quick Search" oninput="filterSidebar()"
-                        class="w-full bg-white border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
+            .toast-msg.warning {
+                background: #d97706;
+            }
+
+            @keyframes toastIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(40px)
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateX(0)
+                }
+            }
+
+            @keyframes toastOut {
+                from {
+                    opacity: 1;
+                    transform: translateX(0)
+                }
+
+                to {
+                    opacity: 0;
+                    transform: translateX(40px)
+                }
+            }
+        </style>
+
+        <!-- ===== ROW 1: UMPSA Header (matches landing page) ===== -->
+        <header
+            class="bg-white shadow-sm flex-shrink-0 h-16 px-4 sm:px-6 flex items-center gap-3 z-50 relative text-nowrap overflow-hidden">
+            <a href="UserDashboard.html" class="flex items-center gap-3 flex-1 min-w-0">
+                <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo"
+                    class="h-9 w-auto object-contain flex-shrink-0">
+                <div class="h-8 w-px bg-gray-200 flex-shrink-0"></div>
+                <div class="flex flex-col justify-center min-w-0">
+                    <span
+                        class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide truncate">UNIVERSITI
+                        MALAYSIA PAHANG</span>
+                    <span
+                        class="font-bold text-primary-blue text-[10px] sm:text-xs leading-tight tracking-wide truncate">AL-SULTAN
+                        ABDULLAH</span>
                 </div>
-            </div>
+            </a>
+        </header>
+        <!-- Sidebar overlay (mobile) -->
+        <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-            <!-- Navigation Links -->
-            <nav class="py-4 px-3 flex flex-col gap-1 flex-shrink-0">
-                <a href="#" data-nav="dashboard" class="nav-link active relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden" onclick="showPage('dashboard', this)">
-                    <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
-                    <i data-lucide="home" class="w-4 h-4 flex-shrink-0"></i>
-                    <span class="text-sm font-medium">My Dashboard</span>
-                    <span id="badge-user-cancelled" class="hidden ml-auto min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none"></span>
-                </a>
-                <a href="#" data-nav="search" class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden" onclick="showPage('search', this)">
-                    <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
-                    <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0"></i>
-                    <span class="text-sm font-medium">Book a Facility</span>
-                </a>
-                <a href="#" data-nav="report" class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden" onclick="showPage('report', this)">
-                    <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
-                    <i data-lucide="file-text" class="w-4 h-4 flex-shrink-0"></i>
-                    <span class="text-sm font-medium">Report</span>
-                    <span id="badge-user-report" class="hidden ml-auto min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none"></span>
-                </a>
-                <a href="#" data-nav="announcement" class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden" onclick="showPage('announcement', this)">
-                    <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
-                    <i data-lucide="megaphone" class="w-4 h-4 flex-shrink-0"></i>
-                    <span class="text-sm font-medium">Announcement</span>
-                    <span id="badge-announcement" class="hidden ml-auto min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none"></span>
-                </a>
-            </nav>
+        <!-- ===== ROW 2: Sidebar + Right Column ===== -->
+        <div class="flex flex-1 overflow-hidden">
 
-            <div class="flex-1"></div>
+            <!-- ===== LEFT SIDEBAR ===== -->
+            <aside id="sidebar" class="flex flex-col bg-white border-r border-gray-100 overflow-hidden"
+                style="width:260px;">
 
-            <!-- Filter Box -->
-            <div class="p-4 border-t border-gray-100 flex flex-col gap-4 pb-16">
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">MAX CAPACITY</label>
-                    <div class="flex items-center gap-4 mt-0.5">
-                        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
-                            <input type="radio" name="filter-cap-mode" value="" checked
-                                onchange="document.getElementById('filter-cap-limit-wrapper').classList.add('hidden'); document.getElementById('filter-max-capacity').value = '';" 
-                                class="accent-[#009ca6] w-4 h-4">
-                            All
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
-                            <input type="radio" name="filter-cap-mode" value="no-limit"
-                                onchange="document.getElementById('filter-cap-limit-wrapper').classList.add('hidden'); document.getElementById('filter-max-capacity').value = '';"
-                                class="accent-[#009ca6] w-4 h-4">
-                            No Limit
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
-                            <input type="radio" name="filter-cap-mode" value="set-limit"
-                                onchange="document.getElementById('filter-cap-limit-wrapper').classList.remove('hidden');"
-                                class="accent-[#009ca6] w-4 h-4">
-                            Set Limit
-                        </label>
-                    </div>
-                    <div id="filter-cap-limit-wrapper" class="hidden mt-1">
-                        <input id="filter-max-capacity" type="number" min="1" placeholder="Enter max capacity"
-                            class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
-                    </div>
-                </div>
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">STATUS</label>
-                    <div class="relative">
-                        <select id="filter-status" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 pr-8 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all appearance-none cursor-pointer">
-                            <option value="" selected hidden></option>
-                            <option value="">All Status</option>
-                            <option value="Available">Available</option>
-                            <option value="In Maintenance">In Maintenance</option>
-                        </select>
-                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                <!-- Quick Search -->
+                <div class="px-4 flex items-center border-b border-gray-100 flex-shrink-0"
+                    style="height:56px; background:#f9fafb;">
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i data-lucide="search" class="w-4 h-4"></i>
                         </div>
+                        <input type="text" id="sidebar-search" placeholder="Quick Search" oninput="filterSidebar()"
+                            class="w-full bg-white border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
                     </div>
                 </div>
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">FACILITY CATEGORY</label>
-                    <div class="relative">
-                        <select id="filter-category" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 pr-8 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all appearance-none cursor-pointer">
-                            <option value="" selected hidden></option>
-                            <option value="">All Facilities</option>
-                            <option value="Indoor">Indoor</option>
-                            <option value="Outdoor">Outdoor</option>
-                        </select>
-                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" onclick="showPage('search', document.querySelector('[data-nav=search]')); applyFilters();"
-                    class="w-full bg-primary-blue hover:bg-blue-900 text-white font-semibold text-sm py-2 rounded-md transition-colors">
-                    Search
-                </button>
-            </div>
-        </aside>
 
-        <!-- ===== RIGHT COLUMN ===== -->
-        <div class="flex flex-col flex-1 overflow-hidden">
+                <!-- Navigation Links -->
+                <nav class="py-4 px-3 flex flex-col gap-1 flex-shrink-0">
+                    <a href="#" data-nav="dashboard"
+                        class="nav-link active relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden"
+                        onclick="showPage('dashboard', this)">
+                        <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
+                        <i data-lucide="home" class="w-4 h-4 flex-shrink-0"></i>
+                        <span class="text-sm font-medium">My Dashboard</span>
+                        <span id="badge-user-cancelled"
+                            class="hidden ml-auto min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none"></span>
+                    </a>
+                    <a href="#" data-nav="search"
+                        class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden"
+                        onclick="showPage('search', this)">
+                        <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
+                        <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0"></i>
+                        <span class="text-sm font-medium">Book a Facility</span>
+                    </a>
+                    <a href="#" data-nav="report"
+                        class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden"
+                        onclick="showPage('report', this)">
+                        <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
+                        <i data-lucide="file-text" class="w-4 h-4 flex-shrink-0"></i>
+                        <span class="text-sm font-medium">Report</span>
+                        <span id="badge-user-report"
+                            class="hidden ml-auto min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none"></span>
+                    </a>
+                    <a href="#" data-nav="announcement"
+                        class="nav-link relative flex items-center gap-3 px-4 py-2.5 rounded-md overflow-hidden"
+                        onclick="showPage('announcement', this)">
+                        <div class="nav-bar absolute left-0 top-0 bottom-0 w-1 rounded-r"></div>
+                        <i data-lucide="megaphone" class="w-4 h-4 flex-shrink-0"></i>
+                        <span class="text-sm font-medium">Announcement</span>
+                        <span id="badge-announcement"
+                            class="hidden ml-auto min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none"></span>
+                    </a>
+                </nav>
 
-            <!-- Gradient Topbar -->
-            <div class="flex items-center px-3 sm:px-8 flex-shrink-0 gap-3" style="height:56px; background: linear-gradient(90deg, #183e87 0%, #009ca6 100%);">
-                <!-- Hamburger (mobile only) -->
-                <button id="hamburger-btn" onclick="toggleSidebar()" class="lg:hidden flex items-center justify-center w-9 h-9 rounded-md text-white hover:bg-white/10 transition-colors flex-shrink-0" aria-label="Toggle navigation">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
-                <span class="text-white font-semibold text-[12px] sm:text-[15px] truncate mr-auto">UMPSA Pekan - SFBS </span>
-                <div class="relative group flex items-center gap-3 cursor-pointer">
-                    <span class="text-white/90 text-sm font-medium hidden sm:block">studentuser@adab.umpsa.edu.my</span>
-                    <div class="w-8 h-8 rounded-full bg-green-500 border-2 border-white/30 flex items-center justify-center text-white text-sm font-bold shadow">S</div>
-                    <div class="absolute right-0 top-full h-3 w-48"></div>
-                    <div class="absolute right-0 top-[calc(100%+8px)] w-40 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 origin-top scale-95 group-hover:scale-100 z-50">
-                        <button onclick="handleLogout()" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 flex items-center gap-2 transition-colors">
-                            <i data-lucide="log-out" class="w-4 h-4"></i>
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
+                <div class="flex-1"></div>
 
-            <!-- Main Scrollable Area -->
-            <main class="flex-1 overflow-y-auto bg-gray-50 pb-16">
-
-                <div id="page-dashboard" class="p-3 sm:p-6">
-                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
-                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
-                        <span class="cursor-default">Home</span>
-                        <span>/</span>
-                        <span class="text-primary-blue font-medium">Dashboard</span>
-                    </div>
-
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
-                        <!-- Bookings Tab -->
-                        <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden">
-                            <button id="tab-bookings" class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl" onclick="setMainTab('bookings')">
-                                Bookings
-                            </button>
-                        </div>
-                        <!-- Sub Tabs -->
-                        <div class="flex px-3 sm:px-6 gap-4 sm:gap-8 border-b border-gray-100 overflow-x-auto">
-                            <button id="subtab-all" class="sub-tab active py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap" onclick="setSubTab('all')">
+                <!-- Filter Box -->
+                <div class="p-4 border-t border-gray-100 flex flex-col gap-4 pb-16">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">MAX
+                            CAPACITY</label>
+                        <div class="flex items-center gap-4 mt-0.5">
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                                <input type="radio" name="filter-cap-mode" value="" checked
+                                    onchange="document.getElementById('filter-cap-limit-wrapper').classList.add('hidden'); document.getElementById('filter-max-capacity').value = '';"
+                                    class="accent-[#009ca6] w-4 h-4">
                                 All
-                            </button>
-                            <button id="subtab-confirmed" class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap" onclick="setSubTab('confirmed')">
-                                Confirmed
-                            </button>
-                            <button id="subtab-cancelled" class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap flex items-center gap-1.5" onclick="setSubTab('cancelled')">
-                                Cancelled
-                                <span id="badge-tab-cancelled" class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
-                            </button>
-                            <button id="subtab-passed" class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap" onclick="setSubTab('passed')">
-                                Passed
-                            </button>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                                <input type="radio" name="filter-cap-mode" value="no-limit"
+                                    onchange="document.getElementById('filter-cap-limit-wrapper').classList.add('hidden'); document.getElementById('filter-max-capacity').value = '';"
+                                    class="accent-[#009ca6] w-4 h-4">
+                                No Limit
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                                <input type="radio" name="filter-cap-mode" value="set-limit"
+                                    onchange="document.getElementById('filter-cap-limit-wrapper').classList.remove('hidden');"
+                                    class="accent-[#009ca6] w-4 h-4">
+                                Set Limit
+                            </label>
                         </div>
-                        <!-- Search Bar -->
-                        <div class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0 relative bg-white z-0">
-                            <div class="relative w-full">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                    <i data-lucide="search" class="w-4 h-4"></i>
-                                </div>
-                                <input id="user-booking-search" type="text"
-                                    placeholder="Search invoices or facility..." oninput="renderBookings()"
-                                    class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                        <div id="filter-cap-limit-wrapper" class="hidden mt-1">
+                            <input id="filter-max-capacity" type="number" min="1" placeholder="Enter max capacity"
+                                class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">STATUS</label>
+                        <div class="relative">
+                            <select id="filter-status"
+                                class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 pr-8 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all appearance-none cursor-pointer">
+                                <option value="" selected hidden></option>
+                                <option value="">All Status</option>
+                                <option value="Available">Available</option>
+                                <option value="In Maintenance">In Maintenance</option>
+                            </select>
+                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
                             </div>
                         </div>
-                        <!-- Table -->
-                        <div class="p-3 sm:p-6 flex-1 flex flex-col">
-                            <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white">
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">FACILITY
+                            CATEGORY</label>
+                        <div class="relative">
+                            <select id="filter-category"
+                                class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-3 py-2 pr-8 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all appearance-none cursor-pointer">
+                                <option value="" selected hidden></option>
+                                <option value="">All Facilities</option>
+                                <option value="Indoor">Indoor</option>
+                                <option value="Outdoor">Outdoor</option>
+                            </select>
+                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button"
+                        onclick="showPage('search', document.querySelector('[data-nav=search]')); applyFilters();"
+                        class="w-full bg-primary-blue hover:bg-blue-900 text-white font-semibold text-sm py-2 rounded-md transition-colors">
+                        Search
+                    </button>
+                </div>
+            </aside>
+
+            <!-- ===== RIGHT COLUMN ===== -->
+            <div class="flex flex-col flex-1 overflow-hidden">
+
+                <!-- Gradient Topbar -->
+                <div class="flex items-center px-3 sm:px-8 flex-shrink-0 gap-3"
+                    style="height:56px; background: linear-gradient(90deg, #183e87 0%, #009ca6 100%);">
+                    <!-- Hamburger (mobile only) -->
+                    <button id="hamburger-btn" onclick="toggleSidebar()"
+                        class="lg:hidden flex items-center justify-center w-9 h-9 rounded-md text-white hover:bg-white/10 transition-colors flex-shrink-0"
+                        aria-label="Toggle navigation">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                    <span class="text-white font-semibold text-[12px] sm:text-[15px] truncate mr-auto">UMPSA Pekan -
+                        SFBS </span>
+                    <div class="relative group flex items-center gap-3 cursor-pointer">
+                        <span
+                            class="text-white/90 text-sm font-medium hidden sm:block">studentuser@adab.umpsa.edu.my</span>
+                        <div
+                            class="w-8 h-8 rounded-full bg-green-500 border-2 border-white/30 flex items-center justify-center text-white text-sm font-bold shadow">
+                            S</div>
+                        <div class="absolute right-0 top-full h-3 w-48"></div>
+                        <div
+                            class="absolute right-0 top-[calc(100%+8px)] w-40 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 origin-top scale-95 group-hover:scale-100 z-50">
+                            <button onclick="handleLogout()"
+                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 flex items-center gap-2 transition-colors">
+                                <i data-lucide="log-out" class="w-4 h-4"></i>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Scrollable Area -->
+                <main class="flex-1 overflow-y-auto bg-gray-50 pb-16">
+
+                    <div id="page-dashboard" class="p-3 sm:p-6">
+                        <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                            <span class="cursor-default">Home</span>
+                            <span>/</span>
+                            <span class="text-primary-blue font-medium">Dashboard</span>
+                        </div>
+
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
+                            <!-- Bookings Tab -->
+                            <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden">
+                                <button id="tab-bookings"
+                                    class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl"
+                                    onclick="setMainTab('bookings')">
+                                    Bookings
+                                </button>
+                            </div>
+                            <!-- Sub Tabs -->
+                            <div class="flex px-3 sm:px-6 gap-4 sm:gap-8 border-b border-gray-100 overflow-x-auto">
+                                <button id="subtab-all"
+                                    class="sub-tab active py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap"
+                                    onclick="setSubTab('all')">
+                                    All
+                                </button>
+                                <button id="subtab-confirmed"
+                                    class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap"
+                                    onclick="setSubTab('confirmed')">
+                                    Confirmed
+                                </button>
+                                <button id="subtab-cancelled"
+                                    class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap flex items-center gap-1.5"
+                                    onclick="setSubTab('cancelled')">
+                                    Cancelled
+                                    <span id="badge-tab-cancelled"
+                                        class="hidden min-w-[16px] h-[16px] bg-red-500 text-white text-[9px] font-bold rounded-full inline-flex items-center justify-center px-1 leading-none"></span>
+                                </button>
+                                <button id="subtab-passed"
+                                    class="sub-tab py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap"
+                                    onclick="setSubTab('passed')">
+                                    Passed
+                                </button>
+                            </div>
+                            <!-- Search Bar -->
+                            <div
+                                class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0 relative bg-white z-0">
+                                <div class="relative w-full">
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                    </div>
+                                    <input id="user-booking-search" type="text"
+                                        placeholder="Search invoices or facility..." oninput="renderBookings()"
+                                        class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                                </div>
+                            </div>
+                            <!-- Table -->
+                            <div class="p-3 sm:p-6 flex-1 flex flex-col">
+                                <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white">
+                                    <table class="w-full text-xs sm:text-sm text-left">
+                                        <thead
+                                            class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-white">
+                                            <tr id="booking-list-header">
+                                                <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Invoice No</th>
+                                                <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Participant
+                                                </th>
+                                                <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Facility/Event
+                                                </th>
+                                                <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Booking Date
+                                                </th>
+                                                <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Event Date</th>
+                                                <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Status</th>
+                                                <th id="booking-action-col"
+                                                    class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="booking-list-rows" class="divide-y divide-gray-50">
+                                            <!-- Empty State -->
+                                            <tr id="booking-empty">
+                                                <td colspan="7"
+                                                    class="py-10 text-center text-sm text-gray-400 border-none">No
+                                                    record.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Pagination Controls -->
+                                <div id="booking-pagination" class="flex items-center justify-end gap-2 mt-4 hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== PAGE: SEARCH (Book a Facility) ===================== -->
+                    <div id="page-search" class="p-3 sm:p-6 hidden">
+                        <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                            <span class="cursor-default">Home</span>
+                            <span>/</span>
+                            <span class="text-primary-blue font-medium">Search</span>
+                        </div>
+
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
+                            <!-- Facilities Tab (Matches Bookings Tab Color) -->
+                            <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden">
+                                <button
+                                    class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl">
+                                    Facilities
+                                </button>
+                            </div>
+
+                            <!-- Search Bar inside card -->
+                            <div class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
+                                <div class="relative w-full">
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                    </div>
+                                    <input id="facility-search-input" type="text" placeholder="Search facilities..."
+                                        oninput="renderFacilities()"
+                                        class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
+                                </div>
+                            </div>
+
+                            <!-- Results info row -->
+                            <div class="px-6 py-3 flex items-center justify-between border-b border-gray-50">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="map-pin" class="w-4 h-4 text-primary-blue"></i>
+                                    <span id="facility-count" class="text-sm text-primary-blue font-medium">Found 0
+                                        facilities in UMPSA Pekan</span>
+                                </div>
+                            </div>
+
+                            <!-- Facility Cards Area -->
+                            <div id="facility-cards" class="p-3 sm:p-6 flex flex-col gap-3 sm:gap-4 flex-1">
+                                <!-- Empty State (shown when no facilities) -->
+                                <div id="facility-empty" class="flex-1 flex items-center justify-center py-12">
+                                    <div class="text-center">
+                                        <i data-lucide="building-2" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
+                                        <p class="text-sm text-gray-400">No facilities available.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div id="fac-pagination-container"
+                                class="px-6 pb-5 flex items-center justify-end gap-2 border-t border-gray-100 pt-4 hidden">
+                                <!-- Dynamic UI from JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== PAGE: BOOKING FORM ===================== -->
+                    <div id="page-booking-form" class="p-3 sm:p-6 hidden">
+                        <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                            <span class="cursor-default">Home</span>
+                            <span>/</span>
+                            <span class="text-primary-blue font-medium">Booking</span>
+                        </div>
+
+                        <!-- Main Booking Form Card -->
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-4 sm:p-8 mb-4 sm:mb-6">
+                            <h2 id="booking-title"
+                                class="text-primary-blue font-bold text-base sm:text-lg mb-4 sm:mb-8">Reserve Facility
+                            </h2>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                                <!-- Left Column -->
+                                <div class="flex flex-col gap-6">
+                                    <div>
+                                        <label
+                                            class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Start
+                                            Date*</label>
+                                        <input id="booking-start-date" type="date" required
+                                            class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Start
+                                            Time*</label>
+                                        <select id="booking-start-time" required
+                                            class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
+                                            <option value="" disabled selected>Select start time</option>
+                                            <option value="07:00 am">07:00 am</option>
+                                            <option value="08:30 am">08:30 am</option>
+                                            <option value="10:00 am">10:00 am</option>
+                                            <option value="11:30 am">11:30 am</option>
+                                            <option value="01:00 pm">01:00 pm</option>
+                                            <option value="02:30 pm">02:30 pm</option>
+                                            <option value="04:00 pm">04:00 pm</option>
+                                            <option value="05:30 pm">05:30 pm</option>
+                                            <option value="07:00 pm">07:00 pm</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Event*</label>
+                                        <textarea id="booking-event" rows="4" required
+                                            class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all resize-none"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column -->
+                                <div class="flex flex-col gap-6">
+                                    <div>
+                                        <label
+                                            class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">End
+                                            Date*</label>
+                                        <input id="booking-end-date" type="date" required
+                                            class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">End
+                                            Time*</label>
+                                        <select id="booking-end-time" required
+                                            class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
+                                            <option value="" disabled selected>Select end time</option>
+                                            <option value="07:00 am">07:00 am</option>
+                                            <option value="08:30 am">08:30 am</option>
+                                            <option value="10:00 am">10:00 am</option>
+                                            <option value="11:30 am">11:30 am</option>
+                                            <option value="01:00 pm">01:00 pm</option>
+                                            <option value="02:30 pm">02:30 pm</option>
+                                            <option value="04:00 pm">04:00 pm</option>
+                                            <option value="05:30 pm">05:30 pm</option>
+                                            <option value="07:00 pm">07:00 pm</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Num.
+                                            of Participant*</label>
+                                        <input id="booking-participants" type="number" required placeholder="Max 60"
+                                            class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Warning Banner -->
+                            <div
+                                class="mt-4 sm:mt-8 bg-orange-500 text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded text-[10px] sm:text-[11px] font-bold leading-relaxed tracking-wide">
+                                ADMINS MAY CANCEL CONFIRMED BOOKINGS. ANY CANCELLED BOOKING WILL INCLUDE AN EXPLANATORY
+                                REASON.
+                            </div>
+
+                            <div
+                                class="mt-6 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
+                                <button onclick="showPage('search')"
+                                    class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
+                                    Cancel
+                                </button>
+                                <button onclick="proceedToSummary()"
+                                    class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-md">
+                                    Continue
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Weekly Availability Grid Card -->
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-3 sm:p-8">
+                            <div class="flex items-center justify-between mb-3 sm:mb-6 flex-wrap gap-2">
+                                <h3 class="text-primary-blue font-bold text-sm">Weekly Availability</h3>
+                                <div class="flex items-end gap-3">
+                                    <div class="flex flex-col gap-1">
+                                        <label
+                                            class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">Month</label>
+                                        <select id="month-selector" onchange="onMonthSelectorChange(this.value)"
+                                            class="bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-xs font-medium text-primary-blue outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all cursor-pointer">
+                                        </select>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <label
+                                            class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">Year</label>
+                                        <select id="year-selector" onchange="onYearSelectorChange(this.value)"
+                                            class="bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-xs font-medium text-primary-blue outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all cursor-pointer">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-100 rounded-lg overflow-x-auto">
+                                <div style="min-width:380px">
+                                    <div id="grid-header"
+                                        class="grid grid-cols-8 divide-x divide-gray-100 text-center text-[7px] sm:text-[10px] font-bold uppercase text-white">
+                                        <div class="bg-primary-blue py-1.5 sm:py-3">Time</div>
+                                        <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Mon<br><span
+                                                class="opacity-70 font-normal date-label"></span></div>
+                                        <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Tue<br><span
+                                                class="opacity-70 font-normal date-label"></span></div>
+                                        <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Wed<br><span
+                                                class="opacity-70 font-normal date-label"></span></div>
+                                        <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Thu<br><span
+                                                class="opacity-70 font-normal date-label"></span></div>
+                                        <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Fri<br><span
+                                                class="opacity-70 font-normal date-label"></span></div>
+                                        <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Sat<br><span
+                                                class="opacity-70 font-normal date-label"></span></div>
+                                        <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Sun<br><span
+                                                class="opacity-70 font-normal date-label"></span></div>
+                                    </div>
+
+                                    <!-- Sample Rows -->
+                                    <div id="availability-grid" class="flex flex-col divide-y divide-gray-100">
+                                        <!-- Row template -->
+                                        <div
+                                            class="grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 sm:h-12 items-center">
+                                            <div
+                                                class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">
+                                                07:00am-08:30am</div>
+                                            <div class="text-blue-400">Free</div>
+                                            <div class="text-blue-400">Free</div>
+                                            <div class="text-blue-400">Free</div>
+                                            <div class="text-blue-400">Free</div>
+                                            <div class="text-blue-400">Free</div>
+                                            <div class="bg-red-900 text-white h-full flex items-center justify-center">
+                                                Close</div>
+                                            <div class="bg-red-900 text-white h-full flex items-center justify-center">
+                                                Close</div>
+                                        </div>
+                                        <!-- More sample rows to match PNG layout -->
+                                        <div
+                                            class="grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 sm:h-12 items-center">
+                                            <div
+                                                class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">
+                                                08:30am-10:00am</div>
+                                            <div class="text-blue-400">Free</div>
+                                            <div class="text-blue-400">Free</div>
+                                            <div
+                                                class="bg-primary-teal text-white h-full flex items-center justify-center">
+                                                Booked</div>
+                                            <div class="text-blue-400">Free</div>
+                                            <div class="text-blue-400">Free</div>
+                                            <div class="bg-red-900 text-white h-full flex items-center justify-center">
+                                                Close</div>
+                                            <div class="bg-red-900 text-white h-full flex items-center justify-center">
+                                                Close</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Legend -->
+                            <div
+                                class="mt-3 sm:mt-6 flex flex-wrap items-center justify-between gap-3 text-[9px] sm:text-[10px] text-gray-400 font-medium">
+                                <div class="flex items-center gap-3 sm:gap-6 flex-wrap">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-4 h-4 bg-gray-50 border border-gray-100 rounded-sm"></div>
+                                        <span>Available</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-4 h-4 bg-gray-200 rounded-sm"></div>
+                                        <span>Passed</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-4 h-4 bg-primary-teal rounded-sm"></div>
+                                        <span>Booked</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-4 h-4 bg-red-900 rounded-sm"></div>
+                                        <span>Closed</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 sm:gap-1.5" id="weekly-nav-controls">
+                                    <!-- Navigation buttons rendered by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== PAGE: BOOK NOW SUMMARY ===================== -->
+                    <div id="page-book-now-summary" class="p-3 sm:p-6 hidden">
+                        <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                            <span class="cursor-default">Home</span>
+                            <span>/</span>
+                            <span class="text-primary-blue font-medium">Booking</span>
+                        </div>
+
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+                            <div class="p-4 sm:p-8">
+                                <h2 id="summary-facility-name"
+                                    class="text-primary-blue font-bold text-base sm:text-lg mb-4 sm:mb-8">Reserve
+                                    Facility</h2>
+
+                                <div class="space-y-8">
+                                    <!-- Booking Details -->
+                                    <div>
+                                        <h3 class="text-primary-blue font-bold text-sm mb-3">Booking Details</h3>
+                                        <div class="space-y-2">
+                                            <p class="text-sm text-gray-600"><span
+                                                    class="font-semibold text-primary-blue">Event Name:</span> <span
+                                                    id="summary-event" class="text-gray-500"></span></p>
+                                            <p class="text-sm text-gray-600"><span
+                                                    class="font-semibold text-primary-blue">Booking Date & Time:</span>
+                                                <span id="summary-datetime" class="text-gray-500"></span></p>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Remark -->
+                                    <div>
+                                        <h3 class="text-primary-blue font-bold text-sm mb-3">Remark</h3>
+                                        <p class="text-xs text-gray-500 leading-relaxed">
+                                            <span class="font-bold text-primary-blue">UMPSA Student & Staff :</span>
+                                            Since this is booked by a university email user, only students & staff of
+                                            UMPSA are allowed to use the facilities. Strict action/fines will be imposed
+                                            if outsiders are involved.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="mt-6 sm:mt-12 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
+                                    <button onclick="showPage('booking-form')"
+                                        class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
+                                        Back
+                                    </button>
+                                    <button onclick="proceedToConfirmation()"
+                                        class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
+                                        BOOK NOW
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== PAGE: CONFIRM BOOKING ===================== -->
+                    <div id="page-confirm-booking" class="p-3 sm:p-6 hidden">
+                        <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                            <span class="cursor-default">Home</span>
+                            <span>/</span>
+                            <span class="text-primary-blue font-medium">Confirmation</span>
+                        </div>
+
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-4 sm:p-8">
+                            <div class="flex items-center justify-between mb-4 sm:mb-8 gap-2">
+                                <h2 class="text-primary-blue font-bold text-lg">Order</h2>
+                                <span class="text-sm text-gray-400" id="confirm-order-date">Date: </span>
+                            </div>
+
+                            <div class="border border-gray-100 rounded-lg overflow-x-auto">
                                 <table class="w-full text-xs sm:text-sm text-left">
-                                    <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100 bg-white">
-                                        <tr id="booking-list-header">
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Invoice No</th>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Participant</th>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Facility/Event</th>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Booking Date</th>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Event Date</th>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Status</th>
-                                            <th id="booking-action-col" class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Action</th>
+                                    <thead
+                                        class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100">
+                                        <tr>
+                                            <th class="px-3 sm:px-6 pb-2 pt-3 sm:pt-4 font-medium text-left">Date</th>
+                                            <th class="px-3 sm:px-6 pb-2 pt-3 sm:pt-4 font-medium text-left">Item</th>
+                                            <th class="px-3 sm:px-6 pb-2 pt-3 sm:pt-4 font-medium text-left">Qty</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="booking-list-rows" class="divide-y divide-gray-50">
-                                        <!-- Empty State -->
-                                        <tr id="booking-empty">
-                                            <td colspan="7" class="py-10 text-center text-sm text-gray-400 border-none">No record.</td>
-                                        </tr>
+                                    <tbody id="confirm-table-body" class="divide-y divide-gray-50">
+                                        <!-- Dynamic rows -->
                                     </tbody>
                                 </table>
                             </div>
-                            
-                            <!-- Pagination Controls -->
-                            <div id="booking-pagination" class="flex items-center justify-end gap-2 mt-4 hidden"></div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- ===================== PAGE: SEARCH (Book a Facility) ===================== -->
-                <div id="page-search" class="p-3 sm:p-6 hidden">
-                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
-                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
-                        <span class="cursor-default">Home</span>
-                        <span>/</span>
-                        <span class="text-primary-blue font-medium">Search</span>
-                    </div>
-
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
-                        <!-- Facilities Tab (Matches Bookings Tab Color) -->
-                        <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden">
-                            <button class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl">
-                                Facilities
-                            </button>
-                        </div>
-
-                        <!-- Search Bar inside card -->
-                        <div class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
-                            <div class="relative w-full">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                    <i data-lucide="search" class="w-4 h-4"></i>
-                                </div>
-                                <input id="facility-search-input" type="text" placeholder="Search facilities..."
-                                    oninput="renderFacilities()"
-                                    class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-[#009ca6] focus:ring-1 focus:ring-[#009ca6] transition-all placeholder:text-gray-400">
-                            </div>
-                        </div>
-
-                        <!-- Results info row -->
-                        <div class="px-6 py-3 flex items-center justify-between border-b border-gray-50">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="map-pin" class="w-4 h-4 text-primary-blue"></i>
-                                <span id="facility-count" class="text-sm text-primary-blue font-medium">Found 0 facilities in UMPSA Pekan</span>
-                            </div>
-                        </div>
-
-                        <!-- Facility Cards Area -->
-                        <div id="facility-cards" class="p-3 sm:p-6 flex flex-col gap-3 sm:gap-4 flex-1">
-                            <!-- Empty State (shown when no facilities) -->
-                            <div id="facility-empty" class="flex-1 flex items-center justify-center py-12">
-                                <div class="text-center">
-                                    <i data-lucide="building-2" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
-                                    <p class="text-sm text-gray-400">No facilities available.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pagination -->
-                        <div id="fac-pagination-container" class="px-6 pb-5 flex items-center justify-end gap-2 border-t border-gray-100 pt-4 hidden">
-                            <!-- Dynamic UI from JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===================== PAGE: BOOKING FORM ===================== -->
-                <div id="page-booking-form" class="p-3 sm:p-6 hidden">
-                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
-                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
-                        <span class="cursor-default">Home</span>
-                        <span>/</span>
-                        <span class="text-primary-blue font-medium">Booking</span>
-                    </div>
-
-                    <!-- Main Booking Form Card -->
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-4 sm:p-8 mb-4 sm:mb-6">
-                        <h2 id="booking-title" class="text-primary-blue font-bold text-base sm:text-lg mb-4 sm:mb-8">Reserve Facility</h2>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                            <!-- Left Column -->
-                            <div class="flex flex-col gap-6">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Start Date*</label>
-                                    <input id="booking-start-date" type="date" required class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Start Time*</label>
-                                    <select id="booking-start-time" required class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
-                                        <option value="" disabled selected>Select start time</option>
-                                        <option value="07:00 am">07:00 am</option>
-                                        <option value="08:30 am">08:30 am</option>
-                                        <option value="10:00 am">10:00 am</option>
-                                        <option value="11:30 am">11:30 am</option>
-                                        <option value="01:00 pm">01:00 pm</option>
-                                        <option value="02:30 pm">02:30 pm</option>
-                                        <option value="04:00 pm">04:00 pm</option>
-                                        <option value="05:30 pm">05:30 pm</option>
-                                        <option value="07:00 pm">07:00 pm</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Event*</label>
-                                    <textarea id="booking-event" rows="4" required class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all resize-none"></textarea>
-                                </div>
-                            </div>
-
-                            <!-- Right Column -->
-                            <div class="flex flex-col gap-6">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">End Date*</label>
-                                    <input id="booking-end-date" type="date" required class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">End Time*</label>
-                                    <select id="booking-end-time" required class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
-                                        <option value="" disabled selected>Select end time</option>
-                                        <option value="07:00 am">07:00 am</option>
-                                        <option value="08:30 am">08:30 am</option>
-                                        <option value="10:00 am">10:00 am</option>
-                                        <option value="11:30 am">11:30 am</option>
-                                        <option value="01:00 pm">01:00 pm</option>
-                                        <option value="02:30 pm">02:30 pm</option>
-                                        <option value="04:00 pm">04:00 pm</option>
-                                        <option value="05:30 pm">05:30 pm</option>
-                                        <option value="07:00 pm">07:00 pm</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-primary-blue mb-1.5 uppercase">Num. of Participant*</label>
-                                    <input id="booking-participants" type="number" required placeholder="Max 60" class="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:bg-white focus:border-primary-teal transition-all">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Warning Banner -->
-                        <div class="mt-4 sm:mt-8 bg-orange-500 text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded text-[10px] sm:text-[11px] font-bold leading-relaxed tracking-wide">
-                            ADMINS MAY CANCEL CONFIRMED BOOKINGS. ANY CANCELLED BOOKING WILL INCLUDE AN EXPLANATORY REASON.
-                        </div>
-
-                        <div class="mt-6 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
-                            <button onclick="showPage('search')" class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
-                                Cancel
-                            </button>
-                            <button onclick="proceedToSummary()" class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-md">
-                                Continue
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Weekly Availability Grid Card -->
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-3 sm:p-8">
-                        <div class="flex items-center justify-between mb-3 sm:mb-6 flex-wrap gap-2">
-                            <h3 class="text-primary-blue font-bold text-sm">Weekly Availability</h3>
-                            <div class="flex items-end gap-3">
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">Month</label>
-                                    <select id="month-selector" onchange="onMonthSelectorChange(this.value)" class="bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-xs font-medium text-primary-blue outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all cursor-pointer">
-                                    </select>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">Year</label>
-                                    <select id="year-selector" onchange="onYearSelectorChange(this.value)" class="bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-xs font-medium text-primary-blue outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all cursor-pointer">
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="border border-gray-100 rounded-lg overflow-x-auto">
-                            <div style="min-width:380px">
-                            <div id="grid-header" class="grid grid-cols-8 divide-x divide-gray-100 text-center text-[7px] sm:text-[10px] font-bold uppercase text-white">
-                                <div class="bg-primary-blue py-1.5 sm:py-3">Time</div>
-                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Mon<br><span class="opacity-70 font-normal date-label"></span></div>
-                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Tue<br><span class="opacity-70 font-normal date-label"></span></div>
-                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Wed<br><span class="opacity-70 font-normal date-label"></span></div>
-                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Thu<br><span class="opacity-70 font-normal date-label"></span></div>
-                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Fri<br><span class="opacity-70 font-normal date-label"></span></div>
-                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Sat<br><span class="opacity-70 font-normal date-label"></span></div>
-                                <div class="bg-primary-blue py-1.5 sm:py-3 leading-tight">Sun<br><span class="opacity-70 font-normal date-label"></span></div>
-                            </div>
-                            
-                            <!-- Sample Rows -->
-                            <div id="availability-grid" class="flex flex-col divide-y divide-gray-100">
-                                <!-- Row template -->
-                                <div class="grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 sm:h-12 items-center">
-                                    <div class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">07:00am-08:30am</div>
-                                    <div class="text-blue-400">Free</div>
-                                    <div class="text-blue-400">Free</div>
-                                    <div class="text-blue-400">Free</div>
-                                    <div class="text-blue-400">Free</div>
-                                    <div class="text-blue-400">Free</div>
-                                    <div class="bg-red-900 text-white h-full flex items-center justify-center">Close</div>
-                                    <div class="bg-red-900 text-white h-full flex items-center justify-center">Close</div>
-                                </div>
-                                <!-- More sample rows to match PNG layout -->
-                                <div class="grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 sm:h-12 items-center">
-                                    <div class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">08:30am-10:00am</div>
-                                    <div class="text-blue-400">Free</div>
-                                    <div class="text-blue-400">Free</div>
-                                    <div class="bg-primary-teal text-white h-full flex items-center justify-center">Booked</div>
-                                    <div class="text-blue-400">Free</div>
-                                    <div class="text-blue-400">Free</div>
-                                    <div class="bg-red-900 text-white h-full flex items-center justify-center">Close</div>
-                                    <div class="bg-red-900 text-white h-full flex items-center justify-center">Close</div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-
-                        <!-- Legend -->
-                        <div class="mt-3 sm:mt-6 flex flex-wrap items-center justify-between gap-3 text-[9px] sm:text-[10px] text-gray-400 font-medium">
-                            <div class="flex items-center gap-3 sm:gap-6 flex-wrap">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-4 h-4 bg-gray-50 border border-gray-100 rounded-sm"></div>
-                                    <span>Available</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-4 h-4 bg-gray-200 rounded-sm"></div>
-                                    <span>Passed</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-4 h-4 bg-primary-teal rounded-sm"></div>
-                                    <span>Booked</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-4 h-4 bg-red-900 rounded-sm"></div>
-                                    <span>Closed</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-1 sm:gap-1.5" id="weekly-nav-controls">
-                                <!-- Navigation buttons rendered by JS -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===================== PAGE: BOOK NOW SUMMARY ===================== -->
-                <div id="page-book-now-summary" class="p-3 sm:p-6 hidden">
-                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
-                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
-                        <span class="cursor-default">Home</span>
-                        <span>/</span>
-                        <span class="text-primary-blue font-medium">Booking</span>
-                    </div>
-
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-                        <div class="p-4 sm:p-8">
-                            <h2 id="summary-facility-name" class="text-primary-blue font-bold text-base sm:text-lg mb-4 sm:mb-8">Reserve Facility</h2>
-                            
-                            <div class="space-y-8">
-                                <!-- Booking Details -->
-                                <div>
-                                    <h3 class="text-primary-blue font-bold text-sm mb-3">Booking Details</h3>
-                                    <div class="space-y-2">
-                                        <p class="text-sm text-gray-600"><span class="font-semibold text-primary-blue">Event Name:</span> <span id="summary-event" class="text-gray-500"></span></p>
-                                        <p class="text-sm text-gray-600"><span class="font-semibold text-primary-blue">Booking Date & Time:</span> <span id="summary-datetime" class="text-gray-500"></span></p>
-                                    </div>
-                                </div>
-
-
-                                <!-- Remark -->
-                                <div>
-                                    <h3 class="text-primary-blue font-bold text-sm mb-3">Remark</h3>
-                                    <p class="text-xs text-gray-500 leading-relaxed">
-                                        <span class="font-bold text-primary-blue">UMPSA Student & Staff :</span> Since this is booked by a university email user, only students & staff of UMPSA are allowed to use the facilities. Strict action/fines will be imposed if outsiders are involved.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="mt-6 sm:mt-12 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
-                                <button onclick="showPage('booking-form')" class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
-                                    Back
-                                </button>
-                                <button onclick="proceedToConfirmation()" class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
-                                    BOOK NOW
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===================== PAGE: CONFIRM BOOKING ===================== -->
-                <div id="page-confirm-booking" class="p-3 sm:p-6 hidden">
-                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
-                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
-                        <span class="cursor-default">Home</span>
-                        <span>/</span>
-                        <span class="text-primary-blue font-medium">Confirmation</span>
-                    </div>
-
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-4 sm:p-8">
-                        <div class="flex items-center justify-between mb-4 sm:mb-8 gap-2">
-                            <h2 class="text-primary-blue font-bold text-lg">Order</h2>
-                            <span class="text-sm text-gray-400" id="confirm-order-date">Date: </span>
-                        </div>
-
-                        <div class="border border-gray-100 rounded-lg overflow-x-auto">
-                            <table class="w-full text-xs sm:text-sm text-left">
-                                <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100">
-                                    <tr>
-                                        <th class="px-3 sm:px-6 pb-2 pt-3 sm:pt-4 font-medium text-left">Date</th>
-                                        <th class="px-3 sm:px-6 pb-2 pt-3 sm:pt-4 font-medium text-left">Item</th>
-                                        <th class="px-3 sm:px-6 pb-2 pt-3 sm:pt-4 font-medium text-left">Qty</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="confirm-table-body" class="divide-y divide-gray-50">
-                                    <!-- Dynamic rows -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="mt-6 sm:mt-12 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
-                            <button onclick="showPage('book-now-summary')" class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
-                                CANCEL
-                            </button>
-                            <button id="btn-submit-booking" onclick="submitBooking()" class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm flex items-center justify-center gap-2">
-                                CONFIRM BOOKING
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===================== PAGE: REPORT ===================== -->
-                <div id="page-report" class="p-3 sm:p-6 hidden">
-                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
-                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
-                        <span class="cursor-default">Home</span>
-                        <span>/</span>
-                        <span class="text-primary-blue font-medium">Report</span>
-                    </div>
-
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
-                        
-                        <!-- Report Main Tab -->
-                        <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden">
-                            <button class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl cursor-default">
-                                Report
-                            </button>
-                        </div>
-                        
-                        <!-- Sub Tabs -->
-                        <div class="flex px-6 gap-8 border-b border-gray-100">
-                            <button class="sub-tab active py-3 text-sm font-medium text-gray-500 cursor-default">
-                                Report Facility Issue
-                            </button>
-                        </div>
-
-                        <div class="p-3 sm:p-6 flex-1 flex flex-col">
-                            <!-- Form -->
-                            <form class="flex flex-col gap-6 w-full">
-                            <!-- Facility -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">FACILITY*</label>
-                                <div class="relative">
-                                    <select id="report-facility" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2.5 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all appearance-none cursor-pointer">
-                                        <option value="" disabled selected hidden>Select Facility to Report</option>
-                                    </select>
-                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Issue Description -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">ISSUE DESCRIPTION*</label>
-                                <textarea id="report-desc" placeholder="Describe the issue or broken equipment..." class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-3 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all h-28 resize-none placeholder:text-gray-400"></textarea>
-                            </div>
-
-                            <!-- Upload Photo -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">UPLOAD PHOTO PROOF*</label>
-                                <input type="file" id="report-image" accept="image/*" class="hidden" onchange="handleReportImagePreview(this)">
-                                <label for="report-image" id="report-image-dropzone" class="w-full border-2 border-dashed border-gray-200 rounded-md bg-gray-50 flex flex-col items-center justify-center py-4 cursor-pointer hover:bg-gray-100 hover:border-primary-teal transition-colors">
-                                    <i data-lucide="upload-cloud" class="w-5 h-5 text-gray-400 mb-1"></i>
-                                    <span id="report-image-name" class="text-primary-teal text-xs font-medium">Click to upload image or drag and drop</span>
-                                </label>
-                            </div>
-
-                             <div class="mt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
-                                <button type="button" onclick="clearReportForm()" class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
+                            <div
+                                class="mt-6 sm:mt-12 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
+                                <button onclick="showPage('book-now-summary')"
+                                    class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
                                     CANCEL
                                 </button>
-                                <button type="button" onclick="submitReport(this)" class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm flex items-center justify-center gap-2">
-                                    SUBMIT REPORT
+                                <button id="btn-submit-booking" onclick="submitBooking()"
+                                    class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm flex items-center justify-center gap-2">
+                                    CONFIRM BOOKING
                                 </button>
                             </div>
-                        </form>
+                        </div>
+                    </div>
 
-                        <!-- Divider -->
-                        <div class="w-full h-px bg-gray-100 my-10"></div>
+                    <!-- ===================== PAGE: REPORT ===================== -->
+                    <div id="page-report" class="p-3 sm:p-6 hidden">
+                        <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                            <span class="cursor-default">Home</span>
+                            <span>/</span>
+                            <span class="text-primary-blue font-medium">Report</span>
+                        </div>
 
-                        <!-- My Submitted Reports -->
-                        <div>
-                            <h3 class="text-sm font-semibold text-primary-blue mb-4">My Submitted Reports</h3>
-                            
-                            <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white">
-                                <table class="w-full text-xs sm:text-sm text-left">
-                                    <thead class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100">
-                                        <tr>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Report ID</th>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Facility</th>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Date</th>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Issue</th>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Proof</th>
-                                            <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="report-list-rows" class="divide-y divide-gray-50">
-                                        <!-- Empty State Table Body -->
-                                        <tr>
-                                            <td colspan="6" class="py-10 text-center text-sm text-gray-400 border-none">No record.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
+
+                            <!-- Report Main Tab -->
+                            <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden">
+                                <button
+                                    class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl cursor-default">
+                                    Report
+                                </button>
                             </div>
-                            <!-- Report Pagination -->
-                            <div id="user-report-pagination" class="flex items-center justify-end gap-2 mt-4 hidden"></div>
-                        </div>
-                        </div>
 
-                    </div>
-                </div>
+                            <!-- Sub Tabs -->
+                            <div class="flex px-6 gap-8 border-b border-gray-100">
+                                <button class="sub-tab active py-3 text-sm font-medium text-gray-500 cursor-default">
+                                    Report Facility Issue
+                                </button>
+                            </div>
 
-                <!-- ===================== PAGE: ANNOUNCEMENT ===================== -->
-                <div id="page-announcement" class="p-3 sm:p-6 hidden">
-                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
-                        <i data-lucide="home" class="w-3.5 h-3.5"></i>
-                        <span class="cursor-default">Home</span>
-                        <span>/</span>
-                        <span class="text-primary-blue font-medium">Announcement</span>
-                    </div>
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
-                        
-                        <!-- Announcement Main Tab -->
-                        <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden shadow-sm z-10">
-                            <button class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl cursor-default">
-                                Announcements
-                            </button>
-                        </div>
-                        
-                        <!-- Sub-tab Row (Teal Underline style) -->
-                        <div class="flex px-6 gap-8 border-b border-gray-100 z-10 bg-white shadow-sm relative">
-                            <button class="sub-tab active py-3 text-sm font-medium text-gray-500 cursor-default border-b-2 border-primary-teal">
-                                All Announcements
-                            </button>
-                        </div>
+                            <div class="p-3 sm:p-6 flex-1 flex flex-col">
+                                <!-- Form -->
+                                <form class="flex flex-col gap-6 w-full">
+                                    <!-- Facility -->
+                                    <div class="flex flex-col gap-2">
+                                        <label
+                                            class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">FACILITY*</label>
+                                        <div class="relative">
+                                            <select id="report-facility"
+                                                class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-2.5 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all appearance-none cursor-pointer">
+                                                <option value="" disabled selected hidden>Select Facility to Report
+                                                </option>
+                                            </select>
+                                            <div
+                                                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                        <!-- Search Bar Row (Full Width) -->
-                        <div class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0 relative bg-white z-0">
-                            <div class="relative w-full">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                    <i data-lucide="search" class="w-4 h-4"></i>
+                                    <!-- Issue Description -->
+                                    <div class="flex flex-col gap-2">
+                                        <label
+                                            class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">ISSUE
+                                            DESCRIPTION*</label>
+                                        <textarea id="report-desc"
+                                            placeholder="Describe the issue or broken equipment..."
+                                            class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md px-4 py-3 outline-none focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all h-28 resize-none placeholder:text-gray-400"></textarea>
+                                    </div>
+
+                                    <!-- Upload Photo -->
+                                    <div class="flex flex-col gap-2">
+                                        <label
+                                            class="text-[10px] font-bold text-primary-blue uppercase tracking-wide">UPLOAD
+                                            PHOTO PROOF*</label>
+                                        <input type="file" id="report-image" accept="image/*" class="hidden"
+                                            onchange="handleReportImagePreview(this)">
+                                        <label for="report-image" id="report-image-dropzone"
+                                            class="w-full border-2 border-dashed border-gray-200 rounded-md bg-gray-50 flex flex-col items-center justify-center py-4 cursor-pointer hover:bg-gray-100 hover:border-primary-teal transition-colors">
+                                            <i data-lucide="upload-cloud" class="w-5 h-5 text-gray-400 mb-1"></i>
+                                            <span id="report-image-name"
+                                                class="text-primary-teal text-xs font-medium">Click to upload image or
+                                                drag and drop</span>
+                                        </label>
+                                    </div>
+
+                                    <div
+                                        class="mt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-between">
+                                        <button type="button" onclick="clearReportForm()"
+                                            class="bg-[#e53e3e] hover:bg-red-600 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm">
+                                            CANCEL
+                                        </button>
+                                        <button type="button" onclick="submitReport(this)"
+                                            class="bg-[#183e87] hover:bg-blue-900 text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 rounded text-[12px] sm:text-[13px] font-bold transition-all uppercase shadow-sm flex items-center justify-center gap-2">
+                                            SUBMIT REPORT
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <!-- Divider -->
+                                <div class="w-full h-px bg-gray-100 my-10"></div>
+
+                                <!-- My Submitted Reports -->
+                                <div>
+                                    <h3 class="text-sm font-semibold text-primary-blue mb-4">My Submitted Reports</h3>
+
+                                    <div class="border border-gray-100 rounded-lg overflow-x-auto bg-white">
+                                        <table class="w-full text-xs sm:text-sm text-left">
+                                            <thead
+                                                class="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide uppercase border-b border-gray-100">
+                                                <tr>
+                                                    <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Report ID
+                                                    </th>
+                                                    <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Facility
+                                                    </th>
+                                                    <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Date</th>
+                                                    <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Issue</th>
+                                                    <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Proof</th>
+                                                    <th class="px-2 sm:px-6 pb-2 pt-3 font-medium text-left">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="report-list-rows" class="divide-y divide-gray-50">
+                                                <!-- Empty State Table Body -->
+                                                <tr>
+                                                    <td colspan="6"
+                                                        class="py-10 text-center text-sm text-gray-400 border-none">No
+                                                        record.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- Report Pagination -->
+                                    <div id="user-report-pagination"
+                                        class="flex items-center justify-end gap-2 mt-4 hidden"></div>
                                 </div>
-                                <input id="announcement-search-input" type="text" placeholder="Search announcements..."
-                                    oninput="fetchAnnouncements()"
-                                    class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
                             </div>
-                        </div>
 
-                        <!-- Card List -->
-                        <div id="announcement-list" class="p-6 flex-1 flex flex-col gap-4 bg-gray-50/30">
-                            <!-- Populated by JS -->
                         </div>
                     </div>
-                </div>
 
-            </main>
+                    <!-- ===================== PAGE: ANNOUNCEMENT ===================== -->
+                    <div id="page-announcement" class="p-3 sm:p-6 hidden">
+                        <div class="flex items-center gap-2 text-xs text-gray-400 mb-5">
+                            <i data-lucide="home" class="w-3.5 h-3.5"></i>
+                            <span class="cursor-default">Home</span>
+                            <span>/</span>
+                            <span class="text-primary-blue font-medium">Announcement</span>
+                        </div>
+                        <div class="bg-white border border-gray-100 rounded-xl shadow-sm flex flex-col">
+
+                            <!-- Announcement Main Tab -->
+                            <div class="flex border-b border-gray-100 rounded-t-xl overflow-hidden shadow-sm z-10">
+                                <button
+                                    class="main-tab active px-4 sm:px-8 py-3 sm:py-3.5 text-sm font-medium text-gray-500 rounded-tl-xl cursor-default">
+                                    Announcements
+                                </button>
+                            </div>
+
+                            <!-- Sub-tab Row (Teal Underline style) -->
+                            <div class="flex px-6 gap-8 border-b border-gray-100 z-10 bg-white shadow-sm relative">
+                                <button
+                                    class="sub-tab active py-3 text-sm font-medium text-gray-500 cursor-default border-b-2 border-primary-teal">
+                                    All Announcements
+                                </button>
+                            </div>
+
+                            <!-- Search Bar Row (Full Width) -->
+                            <div
+                                class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0 relative bg-white z-0">
+                                <div class="relative w-full">
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                    </div>
+                                    <input id="announcement-search-input" type="text"
+                                        placeholder="Search announcements..." oninput="fetchAnnouncements()"
+                                        class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-md pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-primary-teal focus:ring-1 focus:ring-primary-teal transition-all placeholder:text-gray-400">
+                                </div>
+                            </div>
+
+                            <!-- Card List -->
+                            <div id="announcement-list" class="p-6 flex-1 flex flex-col gap-4 bg-gray-50/30">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
         </div>
-    </div>
 
-    <!-- Fixed Global Footer -->
-    <footer class="w-full bg-[#183e87] text-left text-white/70 text-[10px] sm:text-xs px-6 py-3 mt-auto flex-shrink-0 border-t border-teal-900/50 z-50 relative">
-        <div class="text-left w-full">UMPSA Pekan - Sport Facility Booking System © 2026</div>
-    </footer>
+        <!-- Fixed Global Footer -->
+        <footer
+            class="w-full bg-[#183e87] text-left text-white/70 text-[10px] sm:text-xs px-6 py-3 mt-auto flex-shrink-0 border-t border-teal-900/50 z-50 relative">
+            <div class="text-left w-full">UMPSA Pekan - Sport Facility Booking System © 2026</div>
+        </footer>
     </div>
 
     <!-- View Reason Modal -->
@@ -825,29 +1094,33 @@
                     <i data-lucide="info" class="w-6 h-6"></i>
                     <h3 class="font-bold text-[15px] text-gray-800">Cancellation Reason</h3>
                 </div>
-                <p class="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-md border border-gray-100" id="view-reason-text">
+                <p class="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-md border border-gray-100"
+                    id="view-reason-text">
                     <!-- Reason text will go here -->
                 </p>
                 <div class="mt-6 flex justify-end">
-                    <button onclick="document.getElementById('view-reason-modal').classList.add('hidden')" class="px-5 py-2 text-sm font-medium text-white bg-primary-blue hover:bg-blue-900 rounded-md transition-colors shadow-sm">Close</button>
+                    <button onclick="document.getElementById('view-reason-modal').classList.add('hidden')"
+                        class="px-5 py-2 text-sm font-medium text-white bg-primary-blue hover:bg-blue-900 rounded-md transition-colors shadow-sm">Close</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- Reusable Confirm Modal -->
-    <div id="confirm-modal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[99] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-[24px] shadow-xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300 p-6">
-            <div class="flex items-start gap-4">
-                <div class="w-12 h-12 flex items-center justify-center flex-shrink-0">
-                    <i data-lucide="trash-2" class="w-8 h-8 text-red-500"></i>
+    <div id="confirm-modal"
+        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[99] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
                 </div>
-                <div class="flex-1">
-                    <h3 id="confirm-modal-title" class="text-lg font-bold text-gray-900 mb-1 leading-tight">Are you sure?</h3>
-                    <p id="confirm-modal-text" class="text-[15px] text-gray-700 mb-6 leading-snug">This action cannot be undone.</p>
-                    <div class="flex gap-3 justify-end">
-                        <button onclick="closeConfirmModal()" class="px-4 py-2 text-gray-900 hover:bg-gray-100 rounded-lg font-semibold transition-colors">Cancel</button>
-                        <button onclick="executeConfirmAction()" id="confirm-modal-btn" class="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors">Delete</button>
-                    </div>
+                <h3 id="confirm-modal-title" class="text-xl font-bold text-gray-900 mb-2">Are you sure?</h3>
+                <p id="confirm-modal-text" class="text-sm text-gray-500 mb-6">This action cannot be undone.</p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="closeConfirmModal()"
+                        class="flex-1 px-4 py-2 bg-primary-blue hover:bg-blue-900 text-white rounded-lg font-medium transition-colors">Back</button>
+                    <button onclick="executeConfirmAction()" id="confirm-modal-btn"
+                        class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors">Confirm</button>
                 </div>
             </div>
         </div>
@@ -963,13 +1236,13 @@
                 localStorage.setItem('user_seen_resolved_count_' + currentUser.id, resolvedCount);
                 updateUserBadges();
             }
-            
+
             if (pageId === 'booking-form' && extra) {
                 const facility = allFacilities.find(f => f.facility_id == extra);
                 if (facility) {
                     selectedFacility = facility;
                     document.getElementById('booking-title').textContent = `Reserve ${facility.name}`;
-                    
+
                     // --- Full form reset ---
                     selectionStart = null;
                     selectionEnd = null;
@@ -988,14 +1261,14 @@
                     if (startTimeEl) startTimeEl.selectedIndex = 0;
                     const endTimeEl = document.getElementById('booking-end-time');
                     if (endTimeEl) endTimeEl.selectedIndex = 0;
-                    
+
                     // Set default dates to today
                     const today = new Date().toLocaleDateString('en-CA');
                     document.querySelectorAll('#page-booking-form input[type="date"]').forEach(input => {
                         input.value = today;
                         input.min = today;
                     });
-                    
+
                     // Set max participants placeholder
                     if (participantsInput) {
                         participantsInput.placeholder = facility.max_capacity != null ? `Max ${facility.max_capacity}` : 'No limit';
@@ -1021,7 +1294,7 @@
         function isSlotBooked(cellDateStr, cellSlot, b) {
             const [cStart] = cellSlot.split(' - ');
             const cellStartTime = parseTimeMins(cStart);
-            
+
             const bEndDateStr = b.end_date || b.date;
             const [bStart, bEnd] = b.time_slot.split(' - ');
             const bookingStartTime = parseTimeMins(bStart);
@@ -1037,7 +1310,7 @@
 
             if (cellDateStr === b.date) return cellStartTime >= bookingStartTime;
             if (cellDateStr === bEndDateStr) return cellStartTime < bookingEndTime;
-            
+
             return false;
         }
 
@@ -1079,7 +1352,7 @@
                 const date = new Date(monday);
                 date.setDate(monday.getDate() + i);
                 weekDates.push(date);
-                
+
                 const dayStr = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                 if (dateLabels[i]) dateLabels[i].textContent = dayStr;
             }
@@ -1107,8 +1380,8 @@
             grid.innerHTML = ''; // Clear loading message
 
             const timeSlots = [
-                '07:00 am - 08:30 am', '08:30 am - 10:00 am', '10:00 am - 11:30 am', 
-                '11:30 am - 01:00 pm', '01:00 pm - 02:30 pm', '02:30 pm - 04:00 pm', 
+                '07:00 am - 08:30 am', '08:30 am - 10:00 am', '10:00 am - 11:30 am',
+                '11:30 am - 01:00 pm', '01:00 pm - 02:30 pm', '02:30 pm - 04:00 pm',
                 '04:00 pm - 05:30 pm', '05:30 pm - 07:00 pm'
             ];
 
@@ -1137,9 +1410,9 @@
                 if (canGoBack) {
                     navHtml += `<button onclick="changeWeek(-1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&lt;</button>`;
                 }
-                
+
                 navHtml += `<button class="w-7 h-7 flex items-center justify-center bg-[#183e87] hover:bg-blue-900 transition-colors rounded text-xs text-white font-semibold shadow-sm">${weekNum}</button>`;
-                
+
                 if (canGoForward) {
                     navHtml += `<button onclick="changeWeek(1)" class="w-7 h-7 flex items-center justify-center border border-gray-200 rounded text-xs text-gray-500 hover:bg-gray-50 transition-colors shadow-sm bg-white">&gt;</button>`;
                 }
@@ -1159,7 +1432,7 @@
                 row.className = 'grid grid-cols-8 divide-x divide-gray-100 text-[7px] sm:text-[9px] text-center h-9 sm:h-12 items-center';
                 const slotShort = slot.replace(' am', 'am').replace(' pm', 'pm').replace(' - ', '-');
                 let cellsHtml = `<div class="bg-primary-blue text-white h-full flex items-center justify-center font-medium px-0.5">${slotShort}</div>`;
-                
+
                 // Parse slot start time for today's past-slot check
                 const [slotStartStr] = slot.split(' - ');
                 const slotStartMins = parseTimeMins(slotStartStr);
@@ -1167,7 +1440,7 @@
                 for (let day = 0; day < 7; day++) {
                     const cellDate = weekDates[day];
                     const dateStr = toLocalDateStr(cellDate);
-                    
+
                     let status = 'Available';
                     let statusClass = 'text-blue-400';
 
@@ -1179,7 +1452,7 @@
                         const isClosed = closures.some(c => {
                             if (c.date !== dateStr) return false;
                             if (c.time_slot === '07:00 am - 07:00 pm' || c.time_slot === slot) return true;
-                            
+
                             // Check overlap for different hour configurations
                             if (c.time_slot && c.time_slot.includes(' - ')) {
                                 const [cStart, cEnd] = c.time_slot.split(' - ');
@@ -1221,7 +1494,7 @@
 
                     cellsHtml += `<div class="${statusClass}">${status}</div>`;
                 }
-                
+
                 row.innerHTML = cellsHtml;
                 grid.appendChild(row);
             });
@@ -1354,8 +1627,8 @@
 
             // Count newly resolved reports (total resolved vs last seen count)
             const currentResolvedCount = allMyReports.filter(r => r.status === 'Resolved').length;
-            const seenResolvedCount    = parseInt(localStorage.getItem('user_seen_resolved_count_' + currentUser.id) || '0', 10);
-            const unseenResolved       = Math.max(0, currentResolvedCount - seenResolvedCount);
+            const seenResolvedCount = parseInt(localStorage.getItem('user_seen_resolved_count_' + currentUser.id) || '0', 10);
+            const unseenResolved = Math.max(0, currentResolvedCount - seenResolvedCount);
 
             const badgeReport = document.getElementById('badge-user-report');
             if (badgeReport) {
@@ -1371,7 +1644,7 @@
         function renderBookings() {
             const container = document.getElementById('booking-list-rows');
             const emptyEl = document.getElementById('booking-empty');
-            
+
             // Filter by subtab (Confirmed/Cancelled)
             const statusMap = {
                 'confirmed': 'Confirmed',
@@ -1452,7 +1725,7 @@
 
             const groupedList = Object.values(grouped).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             const totalPages = Math.ceil(groupedList.length / BOOKINGS_PER_PAGE) || 1;
-            
+
             if (currentBookingPage < 1) currentBookingPage = 1;
             if (currentBookingPage > totalPages) currentBookingPage = totalPages;
 
@@ -1465,8 +1738,8 @@
                 const bookingDate = new Date(g.created_at).toLocaleDateString();
                 // Format event date
                 g.dateRange.sort();
-                const eventDateDisplay = g.dateRange.length > 1 
-                    ? `${g.dateRange[0]} - ${g.dateRange[g.dateRange.length-1]}`
+                const eventDateDisplay = g.dateRange.length > 1
+                    ? `${g.dateRange[0]} - ${g.dateRange[g.dateRange.length - 1]}`
                     : g.dateRange[0];
 
                 let actionHtml = '';
@@ -1488,7 +1761,7 @@
                     actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"><button onclick="cancelBooking('${g.invoice}')" class="border border-red-200 hover:bg-[#e53e3e] hover:text-white hover:border-[#e53e3e] text-red-500 px-3 py-1 rounded text-[10px] font-bold transition-all uppercase">CANCEL</button></td>`;
                 } else if (g.status === 'Cancelled') {
                     statusHtml = `<div class="flex flex-col gap-1 items-start"><span class="${baseStyle} text-red-500">CANCELLED</span></div>`;
-                    
+
                     if (g.cancel_reason && g.cancel_reason !== 'null' && g.cancel_reason !== 'undefined' && g.cancel_reason.trim() !== '') {
                         const safeReason = g.cancel_reason.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                         actionHtml = `<td class="px-2 sm:px-6 py-2 sm:py-4"><button onclick="viewCancelReason('${safeReason}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-[10px] font-bold transition-all uppercase shadow-sm">REASON</button></td>`;
@@ -1515,7 +1788,7 @@
             });
         }
 
-        window.changeBookingPage = function(delta) {
+        window.changeBookingPage = function (delta) {
             currentBookingPage += delta;
             renderBookings();
         }
@@ -1548,13 +1821,13 @@
         function showConfirmModal(title, text, confirmBtnText, confirmBtnColor, callback) {
             document.getElementById('confirm-modal-title').textContent = title;
             document.getElementById('confirm-modal-text').textContent = text;
-            
+
             const btn = document.getElementById('confirm-modal-btn');
-            btn.textContent = confirmBtnText || 'Delete';
-            btn.className = `px-5 py-2 text-white rounded-lg font-semibold transition-colors ${confirmBtnColor || 'bg-red-500 hover:bg-red-600'}`;
-            
+            btn.textContent = confirmBtnText;
+            btn.className = `flex-1 px-4 py-2 text-white rounded-lg font-medium transition-colors ${confirmBtnColor}`;
+
             confirmActionCallback = callback;
-            
+
             const modal = document.getElementById('confirm-modal');
             modal.classList.remove('hidden');
             setTimeout(() => {
@@ -1590,7 +1863,7 @@
             currentFacilityPage += offset;
             if (currentFacilityPage < 1) currentFacilityPage = 1;
             if (currentFacilityPage > maxPage) currentFacilityPage = maxPage;
-            
+
             renderFacilitiesPage();
         }
 
@@ -1598,10 +1871,10 @@
             if (!slotStr) return false;
             const now = new Date();
             const currTotalMins = now.getHours() * 60 + now.getMinutes();
-        
+
             const parts = slotStr.split('-');
             if (parts.length !== 2) return false;
-            
+
             function parseTime(tStr) {
                 tStr = tStr.trim().toLowerCase();
                 let [time, period] = tStr.split(' ');
@@ -1611,10 +1884,10 @@
                 if (period === 'am' && h === 12) h = 0;
                 return h * 60 + m;
             }
-        
+
             const startMins = parseTime(parts[0]);
             const endMins = parseTime(parts[1]);
-        
+
             return currTotalMins >= startMins && currTotalMins <= endMins;
         }
 
@@ -1669,7 +1942,7 @@
 
             // Internal search text
             const query = (document.getElementById('facility-search-input')?.value || '').toLowerCase();
-            
+
             // Sidebar filters
             const filterCategory = document.getElementById('filter-category').value;
             const filterMaxCapacity = document.getElementById('filter-max-capacity').value;
@@ -1679,8 +1952,8 @@
             const filterCapMode = (document.querySelector('input[name="filter-cap-mode"]:checked') || {}).value || '';
 
             filteredFacilitiesCache = allFacilities.filter(f => {
-                const matchesSearch = f.name.toLowerCase().includes(query) || 
-                                    f.location.toLowerCase().includes(query);
+                const matchesSearch = f.name.toLowerCase().includes(query) ||
+                    f.location.toLowerCase().includes(query);
                 const matchesCategory = !filterCategory || f.type === filterCategory;
                 const matchesStatus = !filterStatus || f.status === filterStatus;
 
@@ -1697,10 +1970,10 @@
                     }
                 }
                 // filterCapMode === '' → all facilities pass
-                
+
                 return matchesSearch && matchesCategory && matchesCapacity && matchesStatus;
             });
-            
+
             // Reset to page 1 on search
             currentFacilityPage = 1;
             renderFacilitiesPage();
@@ -1710,12 +1983,12 @@
             const container = document.getElementById('facility-cards');
             const emptyEl = document.getElementById('facility-empty');
             const countEl = document.getElementById('facility-count');
-            
+
             countEl.textContent = `Found ${filteredFacilitiesCache.length} facilit${filteredFacilitiesCache.length !== 1 ? 'ies' : 'y'} in UMPSA Pekan`;
 
             // Max page calc
             const maxPage = Math.ceil(filteredFacilitiesCache.length / FACILITIES_PER_PAGE) || 1;
-            
+
             const paginationContainer = document.getElementById('fac-pagination-container');
             if (paginationContainer) {
                 if (filteredFacilitiesCache.length <= FACILITIES_PER_PAGE) {
@@ -1723,7 +1996,7 @@
                 } else {
                     paginationContainer.classList.remove('hidden');
                     paginationContainer.innerHTML = '';
-                    
+
                     if (currentFacilityPage > 1) {
                         const prevBtn = document.createElement('button');
                         prevBtn.onclick = () => changeFacilityPage(-1);
@@ -1731,12 +2004,12 @@
                         prevBtn.innerHTML = '<';
                         paginationContainer.appendChild(prevBtn);
                     }
-                    
+
                     const pageBtn = document.createElement('div');
                     pageBtn.className = "w-8 h-8 flex items-center justify-center bg-primary-blue text-white rounded-lg font-bold text-sm shadow-sm cursor-default";
                     pageBtn.textContent = currentFacilityPage;
                     paginationContainer.appendChild(pageBtn);
-                    
+
                     if (currentFacilityPage < maxPage) {
                         const nextBtn = document.createElement('button');
                         nextBtn.onclick = () => changeFacilityPage(1);
@@ -1756,20 +2029,20 @@
             }
 
             emptyEl.classList.add('hidden');
-            
+
             const startIdx = (currentFacilityPage - 1) * FACILITIES_PER_PAGE;
             const paginated = filteredFacilitiesCache.slice(startIdx, startIdx + FACILITIES_PER_PAGE);
 
             paginated.forEach(f => {
                 const card = document.createElement('div');
                 card.className = 'facility-card bg-white border border-gray-100 rounded-xl p-6 flex flex-col md:flex-row items-center gap-8 hover:shadow-md transition-all';
-                
+
                 const statusConfig = {
                     'Available': { color: 'text-primary-teal', icon: 'check-circle' },
                     'In Maintenance': { color: 'text-yellow-600', icon: 'alert-triangle' }
                 };
                 const status = statusConfig[f.status] || { color: 'text-gray-500', icon: 'help-circle' };
-                
+
                 card.innerHTML = `
                     <!-- Left: Image -->
                     <div class="w-full md:w-64 h-40 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden relative border border-gray-100">
@@ -1817,15 +2090,15 @@
 
                     <!-- Right: Button -->
                     <div class="w-full md:w-auto flex-shrink-0">
-                        ${f.status === 'In Maintenance' 
-                            ? `<button disabled class="w-full md:w-auto bg-gray-300 text-gray-500 cursor-not-allowed px-8 py-3 rounded-md font-medium text-sm transition-all shadow-sm">
+                        ${f.status === 'In Maintenance'
+                        ? `<button disabled class="w-full md:w-auto bg-gray-300 text-gray-500 cursor-not-allowed px-8 py-3 rounded-md font-medium text-sm transition-all shadow-sm">
                                 Under Maintenance
                                </button>`
-                            : `<button onclick="showPage('booking-form', ${f.facility_id})" 
+                        : `<button onclick="showPage('booking-form', ${f.facility_id})" 
                                 class="w-full md:w-auto bg-[#183e87] hover:bg-blue-900 text-white px-8 py-3 rounded-md font-medium text-sm transition-all shadow-sm">
                                 Book Now
                                </button>`
-                        }
+                    }
                     </div>
                 `;
                 container.appendChild(card);
@@ -1849,9 +2122,9 @@
         let selectedFacility = null;
         let bookingData = {};
         let selectionStart = null; // { date, index, day }
-        
+
         // View Reason Modal Function
-        window.viewCancelReason = function(reason) {
+        window.viewCancelReason = function (reason) {
             document.getElementById('view-reason-text').textContent = reason;
             document.getElementById('view-reason-modal').classList.remove('hidden');
         };
@@ -1966,7 +2239,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const startDateInput = document.getElementById('booking-start-date');
             if (startDateInput) {
-                startDateInput.addEventListener('change', function() {
+                startDateInput.addEventListener('change', function () {
                     if (!this.value || !selectedFacility) return;
                     const picked = new Date(this.value + 'T00:00:00');
                     currentWeekMonday = getMondayOfWeek(picked);
@@ -1996,7 +2269,7 @@
 
             // Visual feedback
             highlightSelectionRange();
-            
+
             // Scroll to form nicely if selection is complete
             if (selectionEnd) {
                 document.getElementById('booking-title').scrollIntoView({ behavior: 'smooth' });
@@ -2030,9 +2303,9 @@
                 let end = selectionEnd;
 
                 // Sort by date then index
-                if (new Date(start.date) > new Date(end.date) || 
-                   (start.date === end.date && start.index > end.index)) {
-                     [start, end] = [end, start];
+                if (new Date(start.date) > new Date(end.date) ||
+                    (start.date === end.date && start.index > end.index)) {
+                    [start, end] = [end, start];
                 }
 
                 document.getElementById('booking-start-date').value = start.date;
@@ -2051,20 +2324,20 @@
             if (!selectionStart) return;
 
             const cells = document.querySelectorAll('.slot-cell div[data-date]');
-            
+
             let start = selectionStart;
             let end = selectionEnd || selectionStart;
 
             // Sort for comparison
-            if (new Date(start.date) > new Date(end.date) || 
-               (start.date === end.date && start.index > end.index)) {
-                 [start, end] = [end, start];
+            if (new Date(start.date) > new Date(end.date) ||
+                (start.date === end.date && start.index > end.index)) {
+                [start, end] = [end, start];
             }
 
             cells.forEach(el => {
                 const date = el.getAttribute('data-date');
                 const index = parseInt(el.getAttribute('data-index'));
-                
+
                 const currDate = new Date(date);
                 const sDate = new Date(start.date);
                 const eDate = new Date(end.date);
@@ -2084,10 +2357,10 @@
                     const parent = el.parentElement;
                     parent.classList.add('bg-blue-100');
                     if (el.getAttribute('data-date') === selectionStart.date && parseInt(el.getAttribute('data-index')) === selectionStart.index) {
-                         parent.classList.add('ring-2', 'ring-primary-teal');
+                        parent.classList.add('ring-2', 'ring-primary-teal');
                     }
                     if (selectionEnd && el.getAttribute('data-date') === selectionEnd.date && parseInt(el.getAttribute('data-index')) === selectionEnd.index) {
-                         parent.classList.add('ring-2', 'ring-primary-teal');
+                        parent.classList.add('ring-2', 'ring-primary-teal');
                     }
                 }
             });
@@ -2121,7 +2394,7 @@
 
             // Past date validation
             const todayStr = new Date().toLocaleDateString('en-CA'); // Gets YYYY-MM-DD in local time
-            
+
             if (startDate < todayStr || endDate < todayStr) {
                 showToast('You cannot book past dates.', 'warning');
                 return;
@@ -2131,7 +2404,7 @@
                 showToast('End Date must be after or equal to Start Date.', 'warning');
                 return;
             }
-            
+
             if (startDate === endDate) {
                 // Check if end time is before start time
                 const sTimeIdx = slotTimes.findIndex(t => t.start === startTime);
@@ -2145,24 +2418,24 @@
 
             // Save data
             const slotsToBook = getSlotsInRange(startDate, endDate, startTime, endTime);
-            bookingData = { 
-                startDate, 
-                endDate, 
-                startTime, 
-                endTime, 
-                event, 
+            bookingData = {
+                startDate,
+                endDate,
+                startTime,
+                endTime,
+                event,
                 participants,
                 slots: slotsToBook
             };
-            
+
             // Update Summary UI
             document.getElementById('summary-facility-name').textContent = `Reserve ${selectedFacility.name}`;
             document.getElementById('summary-event').textContent = event;
-            document.getElementById('summary-datetime').textContent = 
-                startDate === endDate 
-                ? `${startDate} (${startTime} - ${endTime})`
-                : `${startDate} ${startTime} - ${endDate} ${endTime}`;
-            
+            document.getElementById('summary-datetime').textContent =
+                startDate === endDate
+                    ? `${startDate} (${startTime} - ${endTime})`
+                    : `${startDate} ${startTime} - ${endDate} ${endTime}`;
+
             showPage('book-now-summary');
         }
 
@@ -2170,15 +2443,15 @@
             // Update Confirmation UI
             const today = new Date().toLocaleDateString('en-GB');
             document.getElementById('confirm-order-date').textContent = `Date: ${today}`;
-            
+
             const tbody = document.getElementById('confirm-table-body');
             tbody.innerHTML = '';
-            
+
             // Revert to showing the entire range as ONE row per day or ONE row total
             // User requested 1 booking = 1 invoice, so we show it as a high-level summary here
             const row = document.createElement('tr');
             row.className = 'hover:bg-gray-50 transition-colors';
-            
+
             const dateSummary = bookingData.startDate === bookingData.endDate
                 ? `${bookingData.startDate} (${bookingData.startTime} - ${bookingData.endTime})`
                 : `${bookingData.startDate} ${bookingData.startTime} - ${bookingData.endDate} ${bookingData.endTime}`;
@@ -2194,7 +2467,7 @@
                 <td class="px-6 py-4 text-gray-500 text-[13px]">1</td>
             `;
             tbody.appendChild(row);
-            
+
             showPage('confirm-booking');
         }
 
@@ -2202,10 +2475,10 @@
             const slots = [];
             const start = new Date(sDate);
             const end = new Date(eDate);
-            
+
             const timeSlotLabels = [
-                '07:00 am - 08:30 am', '08:30 am - 10:00 am', '10:00 am - 11:30 am', 
-                '11:30 am - 01:00 pm', '01:00 pm - 02:30 pm', '02:30 pm - 04:00 pm', 
+                '07:00 am - 08:30 am', '08:30 am - 10:00 am', '10:00 am - 11:30 am',
+                '11:30 am - 01:00 pm', '01:00 pm - 02:30 pm', '02:30 pm - 04:00 pm',
                 '04:00 pm - 05:30 pm', '05:30 pm - 07:00 pm'
             ];
 
@@ -2217,7 +2490,7 @@
             let curr = new Date(start);
             while (curr <= end) {
                 const dateStr = toLocalDateStr(curr);
-                
+
                 let startIdx = 0;
                 let endIdx = timeSlotLabels.length - 1;
 
@@ -2227,7 +2500,7 @@
                 for (let i = startIdx; i <= endIdx; i++) {
                     slots.push({ date: dateStr, time_slot: timeSlotLabels[i] });
                 }
-                
+
                 curr.setDate(curr.getDate() + 1);
             }
             return slots;
@@ -2240,9 +2513,9 @@
 
             try {
                 const slotsToBook = getSlotsInRange(
-                    bookingData.startDate, 
-                    bookingData.endDate, 
-                    bookingData.startTime, 
+                    bookingData.startDate,
+                    bookingData.endDate,
+                    bookingData.startTime,
                     bookingData.endTime
                 );
 
@@ -2272,7 +2545,7 @@
                     .lte('date', bookingData.endDate);
 
                 if (closureError) throw closureError;
-                
+
                 const conflicts = slotsToBook.filter(slot => {
                     const isBooked = existing.some(e => isSlotBooked(slot.date, slot.time_slot, e));
                     const isClosed = closures.some(c => c.date === slot.date && c.time_slot === slot.time_slot);
@@ -2329,9 +2602,9 @@
 
         function populateReportFacilities() {
             const select = document.getElementById('report-facility');
-            if(!select) return;
+            if (!select) return;
             // Clear existing except first (placeholder)
-            while(select.options.length > 1) { select.remove(1); }
+            while (select.options.length > 1) { select.remove(1); }
             allFacilities.forEach(f => {
                 const opt = document.createElement('option');
                 opt.value = f.facility_id;
@@ -2342,7 +2615,7 @@
 
         async function submitReport(btn) {
             if (!currentUser.id) { showToast('Please login first.', 'warning'); return; }
-            
+
             const facilityId = document.getElementById('report-facility').value;
             const desc = document.getElementById('report-desc').value.trim();
             const fileInput = document.getElementById('report-image');
@@ -2386,7 +2659,7 @@
                 if (insertError) throw insertError;
 
                 showToast('Report submitted successfully!', 'success');
-                
+
                 // Clear form
                 document.getElementById('report-facility').value = '';
                 document.getElementById('report-desc').value = '';
@@ -2395,7 +2668,7 @@
 
                 // Refresh table
                 fetchMyReports();
-                
+
             } catch (err) {
                 console.error(err);
                 showToast('Failed to submit report: ' + err.message, 'error');
@@ -2460,11 +2733,11 @@
                 const reportDate = new Date(r.created_at).toLocaleDateString();
                 const facilityName = r.Facility ? r.Facility.name : 'Unknown';
                 const baseStyle = "font-bold uppercase inline-block text-[10px]";
-                
-                const statusHtml = r.status === 'Pending' 
-                    ? `<span class="${baseStyle} text-yellow-500">PENDING</span>` 
+
+                const statusHtml = r.status === 'Pending'
+                    ? `<span class="${baseStyle} text-yellow-500">PENDING</span>`
                     : `<span class="${baseStyle} text-primary-teal">RESOLVED</span>`;
-                
+
                 const reportIdStr = r.report_id ? `REP-${r.report_id.toString().padStart(3, '0')}` : '-';
 
                 const tr = document.createElement('tr');
@@ -2486,13 +2759,13 @@
             lucide.createIcons();
         }
 
-        window.changeReportPage = function(delta) {
+        window.changeReportPage = function (delta) {
             currentReportPage += delta;
             renderMyReports();
         };
 
         // ---- Report Image Preview Helper ----
-        window.handleReportImagePreview = function(input) {
+        window.handleReportImagePreview = function (input) {
             const preview = document.getElementById('report-image-name');
             const dropzone = document.getElementById('report-image-dropzone');
 
@@ -2514,7 +2787,7 @@
             }
         };
 
-        window.clearReportForm = function() {
+        window.clearReportForm = function () {
             document.getElementById('report-facility').value = '';
             document.getElementById('report-desc').value = '';
             document.getElementById('report-image').value = '';
@@ -2587,12 +2860,12 @@
 
         function renderAnnouncements(announcements) {
             const container = document.getElementById('announcement-list');
-            if(!container) return;
+            if (!container) return;
             container.innerHTML = '';
-            
+
             const query = (document.getElementById('announcement-search-input')?.value || '').toLowerCase();
-            const filtered = announcements.filter(a => 
-                a.title.toLowerCase().includes(query) || 
+            const filtered = announcements.filter(a =>
+                a.title.toLowerCase().includes(query) ||
                 a.content.toLowerCase().includes(query)
             );
 
@@ -2607,7 +2880,7 @@
 
             filtered.forEach(a => {
                 const datePosted = new Date(a.date_posted).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                
+
                 let imageHtml = '';
                 if (a.image_url) {
                     imageHtml = `
@@ -2646,11 +2919,13 @@
     <!-- PWA Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
+            window.addEventListener('load', function () {
                 navigator.serviceWorker.register('../service-worker.js')
                     .then(reg => console.log('SW registered:', reg.scope))
                     .catch(err => console.warn('SW registration failed:', err));
             });
         }
-    </script></body>
+    </script>
+</body>
+
 </html>
