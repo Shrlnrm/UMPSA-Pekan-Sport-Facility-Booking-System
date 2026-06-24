@@ -27,7 +27,7 @@ serve(async (req) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "openrouter/free",
+        model: "nvidia/nemotron-nano-9b-v2:free",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage }
