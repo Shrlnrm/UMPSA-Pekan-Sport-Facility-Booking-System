@@ -2975,7 +2975,7 @@
                     }).join('\n');
                 }
 
-                const systemPrompt = "You are an intelligent AI Assistant for UMPSA Sports Facilities. Predict the LEAST crowded timeslots based on data. Keep your response extremely brief, straight to the point, and only provide useful insights using the absolute minimum amount of words (max 1-2 short sentences). DO NOT use emojis or slang. Ensure perfect grammar, spelling, and spacing in your response (e.g. 'time is', not 'timeis') and pls don't use the em dash (—).";
+                const systemPrompt = "You are an intelligent AI Assistant for UMPSA Sports Facilities. Your task is to analyze historical booking data and recommend the LEAST crowded days and times. Formulate your answer as a clear, natural-sounding sentence so the user understands the context (e.g. 'Based on past bookings, the least crowded times are...'). Keep it concise (1-2 sentences maximum) but highly informative. Do not just list times without explanation. DO NOT use emojis or slang. Ensure perfect grammar, spelling, and spacing.";
                 const userMessage = `Recent booking data for ${facilityName}:\n${bookingStats}\n\nBased on this data, what are the best days and times to visit to avoid crowds?`;
 
                 // Call Supabase Edge Function
