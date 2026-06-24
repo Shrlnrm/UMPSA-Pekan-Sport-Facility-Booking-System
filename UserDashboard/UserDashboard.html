@@ -2954,10 +2954,10 @@
             try {
                 // Fetch recent approved bookings for this facility
                 const { data, error } = await db.from('Booking')
-                    .select('start_date, start_time, end_time, total_participants')
+                    .select('date, time_slot, num_of_participant')
                     .eq('facility_id', selectedFacilityId)
                     .eq('status', 'Approved')
-                    .order('start_date', { ascending: false })
+                    .order('date', { ascending: false })
                     .limit(30);
 
                 if (error) throw error;
@@ -2965,9 +2965,9 @@
                 let bookingStats = "No historical bookings found yet.";
                 if (data && data.length > 0) {
                     bookingStats = data.map(b => {
-                        const dateObj = new Date(b.start_date);
+                        const dateObj = new Date(b.date);
                         const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
-                        return `Day: ${dayOfWeek}, Time: ${b.start_time} to ${b.end_time}, Participants: ${b.total_participants}`;
+                        return `Day: ${dayOfWeek}, Time: ${b.time_slot}, Participants: ${b.num_of_participant}`;
                     }).join('\n');
                 }
 
