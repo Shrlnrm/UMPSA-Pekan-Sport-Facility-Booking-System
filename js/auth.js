@@ -96,7 +96,21 @@ async function handleRegister() {
         return setError('Passwords do not match.');
     }
 
+    const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]')?.value;
+    if (!turnstileResponse) {
+        return setError('Please complete the security check.');
+    }
+
     setButtonLoading(btnId, true);
+
+    // Verify Turnstile Token securely
+    const { data: turnstileData, error: turnstileError } = await db.functions.invoke('verify-turnstile', {
+        body: { token: turnstileResponse }
+    });
+
+    if (turnstileError || !turnstileData?.success) {
+        return setError('Security check failed. Please try again.');
+    }
 
     // Check if email already registered
     const { data: existing, error: checkError } = await db
@@ -150,7 +164,21 @@ async function handleLogin() {
         return setError('All fields are required.');
     }
 
+    const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]')?.value;
+    if (!turnstileResponse) {
+        return setError('Please complete the security check.');
+    }
+
     setButtonLoading(btnId, true);
+
+    // Verify Turnstile Token securely
+    const { data: turnstileData, error: turnstileError } = await db.functions.invoke('verify-turnstile', {
+        body: { token: turnstileResponse }
+    });
+
+    if (turnstileError || !turnstileData?.success) {
+        return setError('Security check failed. Please try again.');
+    }
 
     const hashedPass = await hashPassword(pass);
 

@@ -42,6 +42,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabaseClient.js"></script>
     <script src="../js/auth.js"></script>
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <!-- PWA -->
     <link rel="manifest" href="../manifest.json">
     <link rel="apple-touch-icon" href="../icons/icon-180x180.png">
@@ -140,6 +142,9 @@
                     <!-- Error / Success Messages -->
                     <div id="registerError" class="hidden text-[12.5px] font-medium text-red-500 text-center tracking-wide"></div>
                     <div id="registerSuccess" class="hidden text-[12.5px] font-medium text-primary-teal text-center tracking-wide"></div>
+
+                    <!-- Cloudflare Turnstile -->
+                    <div class="cf-turnstile flex justify-center mt-2" data-sitekey="0x4AAAAAADqRiSXRA1bq74d6"></div>
 
                     <!-- Register Button -->
                     <button id="registerBtn" type="submit"
