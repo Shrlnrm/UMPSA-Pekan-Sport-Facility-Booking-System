@@ -10,10 +10,9 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
-// ⚠️ IMPORTANT: You must replace this with your actual VAPID Public Key!
 const VAPID_PUBLIC_KEY = 'BPepxP16n-6Xg-0QhlliK-100XpAHoWFvOhikUdJpzCExh4Eja0qfxtKWuXAewsKXfs40RNjAI6GWh9O80FX6Oc';
 
-async function subscribeToPushNotifications() {
+async function togglePushNotifications() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
     alert('Push notifications are not supported by this browser.');
     return;
@@ -21,58 +20,84 @@ async function subscribeToPushNotifications() {
 
   try {
     const registration = await navigator.serviceWorker.ready;
-    let subscription = await registration.pushManager.getSubscription();
+    const subscription = await registration.pushManager.getSubscription();
 
-    if (!subscription) {
+    if (subscription) {
+      // UNSUBSCRIBE
+      await subscription.unsubscribe();
+      
+      // Delete from DB
+      await db.from('PushSubscriptions')
+        .delete()
+        .contains('subscription', { endpoint: subscription.endpoint });
+
+      alert('Notifications disabled successfully.');
+      updatePushButtonUI(false);
+
+    } else {
+      // SUBSCRIBE
       const publicVapidKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-      subscription = await registration.pushManager.subscribe({
+      const newSubscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: publicVapidKey
       });
+
+      // Determine who is logged in
+      const uId = localStorage.getItem('user_id') || sessionStorage.getItem('user_id');
+      const aId = localStorage.getItem('admin_id') || sessionStorage.getItem('admin_id');
+
+      if (!uId && !aId) {
+        console.warn("User not logged in, cannot save push subscription.");
+        return;
+      }
+
+      // Save to database
+      await db.from('PushSubscriptions').insert([{
+        user_id: uId || null,
+        admin_id: (!uId && aId) ? aId : null,
+        subscription: newSubscription
+      }]);
+
+      alert('Notifications enabled successfully!');
+      updatePushButtonUI(true);
     }
-
-    // Determine who is logged in
-    const uId = localStorage.getItem('user_id') || sessionStorage.getItem('user_id');
-    const aId = localStorage.getItem('admin_id') || sessionStorage.getItem('admin_id');
-
-    if (!uId && !aId) {
-      console.warn("User not logged in, cannot save push subscription.");
-      return;
-    }
-
-    // Save to database
-    const { error } = await db.from('PushSubscriptions').insert([{
-      user_id: uId || null,
-      admin_id: (!uId && aId) ? aId : null,
-      subscription: subscription
-    }]);
-
-    if (error) {
-      console.error('Error saving subscription to DB:', error);
-      // It might error if it already exists, which is fine, we just want to ensure it's there
-    }
-    
-    alert('Notifications enabled successfully!');
-    const btn = document.getElementById('enablePushBtn');
-    if (btn) btn.style.display = 'none';
-
   } catch (error) {
-    console.error('Error subscribing to push:', error);
-    alert('Failed to enable notifications. Please ensure you clicked Allow when prompted by your browser.');
+    console.error('Error toggling push:', error);
+    alert('Failed to update notifications. Please ensure you clicked Allow when prompted by your browser.');
   }
 }
 
-// Automatically check if already subscribed to hide the button
+// Update the UI button based on subscription state
+function updatePushButtonUI(isSubscribed) {
+  const btn = document.getElementById('enablePushBtn');
+  if (!btn) return;
+  
+  if (isSubscribed) {
+    btn.innerHTML = '<i data-lucide="bell-off" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Disable Notifications</span>';
+    btn.className = 'text-[11px] sm:text-xs bg-red-500 text-white px-3 py-1.5 rounded-full hover:bg-red-600 transition-colors font-medium shadow-sm flex items-center gap-1.5';
+  } else {
+    btn.innerHTML = '<i data-lucide="bell" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Enable Notifications</span>';
+    btn.className = 'text-[11px] sm:text-xs bg-primary-teal text-white px-3 py-1.5 rounded-full hover:bg-primary-teal-hover transition-colors font-medium shadow-sm flex items-center gap-1.5';
+  }
+  
+  // Re-initialize lucide icons inside the button
+  if (window.lucide) {
+    window.lucide.createIcons({ root: btn });
+  }
+}
+
+// Automatically check if already subscribed to set initial button state
 async function checkPushSubscription() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    const btn = document.getElementById('enablePushBtn');
+    if (btn) btn.style.display = 'none'; // Hide if not supported
+    return;
+  }
   
   try {
     const registration = await navigator.serviceWorker.ready;
     const subscription = await registration.pushManager.getSubscription();
-    if (subscription) {
-      const btn = document.getElementById('enablePushBtn');
-      if (btn) btn.style.display = 'none';
-    }
+    updatePushButtonUI(!!subscription);
   } catch(e) {}
 }
 
