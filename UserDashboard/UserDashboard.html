@@ -248,8 +248,8 @@
 
         <!-- ===== ROW 1: UMPSA Header (matches landing page) ===== -->
         <header
-            class="bg-white shadow-sm flex-shrink-0 h-16 px-4 sm:px-6 flex items-center gap-3 z-50 relative text-nowrap overflow-hidden">
-            <a href="UserDashboard.html" class="flex items-center gap-3 flex-1 min-w-0">
+            class="bg-white shadow-sm flex-shrink-0 h-16 px-4 sm:px-6 flex items-center justify-between gap-3 z-50 relative text-nowrap overflow-hidden">
+            <a href="UserDashboard.html" class="flex items-center gap-3 min-w-0">
                 <img src="../ImagesForHeaderandFooter/Logo UMPSA header.png" alt="UMPSA Logo"
                     class="h-9 w-auto object-contain flex-shrink-0">
                 <div class="h-8 w-px bg-gray-200 flex-shrink-0"></div>
@@ -262,6 +262,9 @@
                         ABDULLAH</span>
                 </div>
             </a>
+            <button id="enablePushBtn" onclick="subscribeToPushNotifications()" class="text-[11px] sm:text-xs bg-primary-teal text-white px-3 py-1.5 rounded-full hover:bg-primary-teal-hover transition-colors font-medium shadow-sm flex items-center gap-1.5">
+                <i data-lucide="bell" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Enable Notifications</span>
+            </button>
         </header>
         <!-- Sidebar overlay (mobile) -->
         <div id="sidebar-overlay" onclick="closeSidebar()"></div>
@@ -2581,6 +2584,11 @@
 
                 if (error) throw error;
 
+                // Notify all admins of new booking
+                db.functions.invoke('send-push-notification', {
+                    body: { target: 'all_admins', payload: { title: 'New Booking', body: 'A user has submitted a new facility booking.' } }
+                }).catch(e => console.error('Push error:', e));
+
                 showToast('Booking successful!', 'success');
 
                 // Full state reset so next booking starts clean
@@ -2657,6 +2665,11 @@
                 }]);
 
                 if (insertError) throw insertError;
+
+                // Notify all admins of new report
+                db.functions.invoke('send-push-notification', {
+                    body: { target: 'all_admins', payload: { title: 'New Facility Report', body: 'A user has submitted a new issue report.' } }
+                }).catch(e => console.error('Push error:', e));
 
                 showToast('Report submitted successfully!', 'success');
 
@@ -2925,7 +2938,7 @@
                     .catch(err => console.warn('SW registration failed:', err));
             });
         }
-    </script>
+    </script>    <script src="../js/push.js"></script>
 </body>
 
 </html>

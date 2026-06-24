@@ -155,8 +155,11 @@ async function handleLogin() {
     const role    = document.getElementById('roleSelect').value;
     const errorEl = 'loginError';
     const btnId   = 'loginBtn';
+    
+    // If PWA (standalone mode), always remember. Otherwise, respect the checkbox.
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     const rememberMe = document.getElementById('rememberMe')?.checked || false;
-    const store = rememberMe ? localStorage : sessionStorage;
+    const store = (rememberMe || isPWA) ? localStorage : sessionStorage;
 
     hideMessage(errorEl);
 
