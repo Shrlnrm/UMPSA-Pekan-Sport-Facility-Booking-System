@@ -607,7 +607,7 @@
                                 <div class="font-bold text-primary-blue mb-2 flex items-center gap-2">
                                     <i data-lucide="sparkles" class="w-4 h-4"></i> AI Prediction
                                 </div>
-                                <div id="ai-prediction-content" class="whitespace-pre-wrap">Analyzing historical booking data...</div>
+                                <div id="ai-prediction-content" class="whitespace-pre-wrap mt-3">Analyzing historical booking data...</div>
                                 <button type="button" onclick="document.getElementById('ai-prediction-box').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                                     <i data-lucide="x" class="w-4 h-4"></i>
                                 </button>
@@ -1261,6 +1261,10 @@
                     document.getElementById('booking-title').textContent = `Reserve ${facility.name}`;
 
                     // --- Full form reset ---
+                    document.getElementById('ai-prediction-box')?.classList.add('hidden');
+                    const predictionContent = document.getElementById('ai-prediction-content');
+                    if (predictionContent) predictionContent.innerHTML = 'Analyzing historical booking data...';
+
                     selectionStart = null;
                     selectionEnd = null;
                     currentWeekMonday = getMondayOfWeek(new Date());
@@ -2971,7 +2975,7 @@
                     }).join('\n');
                 }
 
-                const systemPrompt = "You are an intelligent, professional, and highly capable AI Assistant for UMPSA Sports Facilities. Your objective is to analyze historical booking data for a facility and predict the LEAST crowded timeslots and days. Use the provided data to make a data-driven recommendation. Keep your response very concise (maximum 3 short sentences), highly professional, and DO NOT use any emojis or slang.";
+                const systemPrompt = "You are an intelligent, professional, and highly capable AI Assistant for UMPSA Sports Facilities. Your objective is to analyze historical booking data for a facility and predict the LEAST crowded timeslots and days. Use the provided data to make a data-driven recommendation. Keep your response very concise (maximum 3 short sentences), highly professional, and DO NOT use any emojis or slang. Ensure perfect grammar, spelling, and spacing in your response (e.g. 'time is', not 'timeis').";
                 const userMessage = `Recent booking data for ${facilityName}:\n${bookingStats}\n\nBased on this data, what are the best days and times to visit to avoid crowds?`;
 
                 // Call Supabase Edge Function
