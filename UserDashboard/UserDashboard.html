@@ -2956,7 +2956,7 @@
                 const { data, error } = await db.from('Booking')
                     .select('date, time_slot, num_of_participant')
                     .eq('facility_id', selectedFacilityId)
-                    .eq('status', 'Approved')
+                    .in('status', ['Confirmed', 'Passed'])
                     .order('date', { ascending: false })
                     .limit(30);
 
