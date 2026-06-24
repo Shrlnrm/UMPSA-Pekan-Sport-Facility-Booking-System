@@ -121,9 +121,3 @@ A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sult
     └── config.toml             # Supabase CLI config
 ```
 
-## Contact
-
-- 📞 +60 176270664
-- 📧 umpsasportsbooking@gmail.com
-- 🌐 [UMPSA Sports Centre](https://sukan.umpsa.edu.my/)
-- 🌐 [Official UMPSA Site](https://umpsa.edu.my/en)
