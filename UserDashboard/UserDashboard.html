@@ -595,9 +595,23 @@
 
                         <!-- Main Booking Form Card -->
                         <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-4 sm:p-8 mb-4 sm:mb-6">
-                            <h2 id="booking-title"
-                                class="text-primary-blue font-bold text-base sm:text-lg mb-4 sm:mb-8">Reserve Facility
-                            </h2>
+                            <div class="flex items-center justify-between mb-4 sm:mb-8">
+                                <h2 id="booking-title" class="text-primary-blue font-bold text-base sm:text-lg">Reserve Facility</h2>
+                                <button type="button" onclick="predictCrowd()" class="text-xs text-primary-blue border border-primary-blue hover:bg-gray-50 px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors font-medium shadow-sm bg-white">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-primary-blue"></i> Predict Crowds
+                                </button>
+                            </div>
+
+                            <!-- AI Response Box (Hidden by default) -->
+                            <div id="ai-prediction-box" class="hidden mb-6 bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-gray-700 leading-relaxed relative shadow-sm">
+                                <div class="font-bold text-primary-blue mb-2 flex items-center gap-2">
+                                    <i data-lucide="sparkles" class="w-4 h-4"></i> AI Prediction
+                                </div>
+                                <div id="ai-prediction-content" class="whitespace-pre-wrap">Analyzing historical booking data...</div>
+                                <button type="button" onclick="document.getElementById('ai-prediction-box').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+                                    <i data-lucide="x" class="w-4 h-4"></i>
+                                </button>
+                            </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                                 <!-- Left Column -->
@@ -2922,12 +2936,71 @@
             lucide.createIcons();
         }
 
+        async function predictCrowd() {
+            if (!selectedFacilityId) {
+                alert("Please select a facility from the dropdown first to get accurate predictions.");
+                return;
+            }
+            
+            const facilityData = facilitiesCache.find(f => f.facility_id === selectedFacilityId);
+            const facilityName = facilityData ? facilityData.name : "this facility";
+
+            const box = document.getElementById('ai-prediction-box');
+            const content = document.getElementById('ai-prediction-content');
+            box.classList.remove('hidden');
+            content.innerHTML = '<span class="flex items-center gap-2 text-primary-blue"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Loading AI prediction...</span>';
+            lucide.createIcons();
+
+            try {
+                // Fetch recent approved bookings for this facility
+                const { data, error } = await db.from('Booking')
+                    .select('start_date, start_time, end_time, total_participants')
+                    .eq('facility_id', selectedFacilityId)
+                    .eq('status', 'Approved')
+                    .order('start_date', { ascending: false })
+                    .limit(30);
+
+                if (error) throw error;
+
+                let bookingStats = "No historical bookings found yet.";
+                if (data && data.length > 0) {
+                    bookingStats = data.map(b => {
+                        const dateObj = new Date(b.start_date);
+                        const dayOfWeek = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+                        return `Day: ${dayOfWeek}, Time: ${b.start_time} to ${b.end_time}, Participants: ${b.total_participants}`;
+                    }).join('\n');
+                }
+
+                const systemPrompt = "You are an intelligent, professional, and highly capable AI Assistant for UMPSA Sports Facilities. Your objective is to analyze historical booking data for a facility and predict the LEAST crowded timeslots and days. Use the provided data to make a data-driven recommendation. Keep your response very concise (maximum 3 short sentences), highly professional, and DO NOT use any emojis or slang.";
+                const userMessage = `Recent booking data for ${facilityName}:\n${bookingStats}\n\nBased on this data, what are the best days and times to visit to avoid crowds?`;
+
+                // Call Supabase Edge Function
+                const { data: result, error: fnError } = await db.functions.invoke('ai-assistant', {
+                    body: { systemPrompt, userMessage }
+                });
+
+                if (fnError) throw fnError;
+                
+                if (!result || !result.success) {
+                    throw new Error(result?.error || "Failed to get AI prediction");
+                }
+
+                // Format the text nicely
+                content.innerHTML = `<p class="font-medium text-gray-800">${result.reply.replace(/\n/g, '<br>')}</p>`;
+
+            } catch (err) {
+                console.error("AI Prediction error:", err);
+                content.innerHTML = '<span class="text-red-500 font-medium">Sorry, the AI prediction service is currently unavailable. Please try again later.</span>';
+            }
+        }
+
         // Init loads
         fetchBookings();
         fetchFacilities();
         fetchMyReports(); // Load user reports
         fetchAnnouncements(); // Load announcements
     </script>
+
 
     <!-- PWA Service Worker -->
     <script>
