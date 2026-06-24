@@ -8,6 +8,7 @@ A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sult
 - **User Dashboard**: View booking history (All, Confirmed, Cancelled, Passed), book facilities, submit issue reports, and read announcements.
 - **Admin Dashboard**: Manage facilities, approve/cancel bookings, post announcements, handle maintenance reports, and generate PDF reports.
 - **Weekly Availability Grid**: Visual slot calendar (Free / Booked / Closed) for each facility.
+- **AI Crowd Prediction**: Smart recommendations for the best times to book facilities to avoid crowds, analyzing historical booking data securely via AI.
 - **Real-time Data**: All bookings and facility status sync live via Supabase.
 - **PWA Support**: Installable as a Progressive Web App on mobile devices.
 
@@ -89,6 +90,7 @@ A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sult
 - **Icons**: Lucide Icons (CDN)
 - **Database & Auth**: Supabase (PostgreSQL + Supabase Auth)
 - **Storage**: Supabase Storage (facility images, report photo proofs)
+- **Edge Functions**: Deno + Supabase Edge Functions (OpenRouter AI via dynamically selected free models, Turnstile verification) securely managing API keys.
 - **PWA**: Web App Manifest + Service Worker
 - **Fonts**: Inter (Google Fonts)
 - **PDF Export**: Admin dashboard report export (client-side)
@@ -118,6 +120,8 @@ A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sult
 ├── manifest.json               # PWA manifest
 ├── service-worker.js           # PWA service worker
 └── supabase/
+    ├── functions/
+    │   ├── ai-assistant/       # Edge function handling OpenRouter AI requests
+    │   └── verify-turnstile/   # Edge function for Cloudflare Turnstile verification
     └── config.toml             # Supabase CLI config
 ```
-
