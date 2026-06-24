@@ -123,24 +123,29 @@ async function handleRegister() {
     if (existing)  return setError('This email is already registered.');
 
     const hashedPass = await hashPassword(pass);
+    const verificationToken = crypto.randomUUID();
 
     const { error: insertError } = await db
         .from('User')
-        .insert([{ email, password: hashedPass, role }]);
+        .insert([{ email, password: hashedPass, role, verification_token: verificationToken, is_verified: false }]);
 
     if (insertError) return setError('Registration failed. Please try again.');
 
-    showSuccess(successEl, 'Account created successfully!');
-    setButtonLoading(btnId, false, 'Redirecting...');
-    setTimeout(() => { 
-        const urlParams = new URLSearchParams(window.location.search);
-        const redirectFacility = urlParams.get('redirect_facility');
-        if (redirectFacility) {
-            window.location.href = `../LogInPage/LogInPage.html?redirect_facility=${redirectFacility}`;
-        } else {
-            window.location.href = '../LogInPage/LogInPage.html'; 
-        }
-    }, 2000);
+    // Generate the verification link (based on current URL path)
+    const baseUrl = window.location.href.split('?')[0].replace(/RegisterPage\/RegisterPage\.html/, 'VerifyEmailPage/VerifyEmailPage.html');
+    const verifyLink = `${baseUrl}?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+
+    // Send Email via Edge Function
+    const { data: edgeData, error: edgeError } = await db.functions.invoke('send-verification-email', {
+        body: { email, verifyLink }
+    });
+
+    if (edgeError || !edgeData?.success) {
+        return setError('Registration succeeded, but failed to send verification email.');
+    }
+
+    showSuccess(successEl, 'Account created! Please check your email to verify your account.');
+    setButtonLoading(btnId, false, 'Done');
 }
 
 // ─── LOGIN ─────────────────────────────────────────────────────────────────
@@ -208,7 +213,7 @@ async function handleLogin() {
     // ── Student / Staff Login ───────────────────────────────────────────────
     const { data: user, error } = await db
         .from('User')
-        .select('user_id, email, role')
+        .select('user_id, email, role, is_verified')
         .eq('email', email)
         .eq('password', hashedPass)
         .eq('role', role)
@@ -216,6 +221,10 @@ async function handleLogin() {
 
     if (error || !user) {
         return setError('Invalid email, password, or role.');
+    }
+
+    if (user.is_verified === false) {
+        return setError('Please verify your email address before logging in. Check your inbox.');
     }
 
     store.setItem('user_id',    user.user_id);
@@ -370,6 +379,67 @@ async function handleResetPassword() {
     if (updateError) return setError('Failed to reset password. Please try again.');
 
     showSuccess(successEl, 'Password reset successfully!');
+    setButtonLoading(btnId, false, 'Redirecting...');
+    setTimeout(() => { window.location.href = '../LogInPage/LogInPage.html'; }, 2000);
+}
+
+// ─── VERIFY EMAIL ────────────────────────────────────────────────────────
+async function handleVerifyEmail() {
+    const errorEl   = 'verifyError';
+    const successEl = 'verifySuccess';
+    const btnId     = 'verifyBtn';
+    
+    // Read from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    const token = urlParams.get('token');
+
+    hideMessage(errorEl);
+    hideMessage(successEl);
+
+    const setError = (msg) => {
+        setButtonLoading(btnId, false, 'Verify Email');
+        return showError(errorEl, msg);
+    };
+
+    if (!email || !token) {
+        return setError('Invalid or broken verification link. Please request a new one.');
+    }
+
+    setButtonLoading(btnId, true);
+
+    // 1. Verify token
+    const { data: userData, error: fetchError } = await db.from('User')
+        .select('verification_token, is_verified')
+        .eq('email', email)
+        .maybeSingle();
+
+    if (fetchError || !userData) {
+        return setError('Account not found.');
+    }
+
+    if (userData.is_verified) {
+        showSuccess(successEl, 'Email already verified! Redirecting to login...');
+        setButtonLoading(btnId, false, 'Redirecting...');
+        setTimeout(() => { window.location.href = '../LogInPage/LogInPage.html'; }, 2000);
+        return;
+    }
+
+    if (userData.verification_token !== token) {
+        return setError('Invalid verification token.');
+    }
+
+    // 2. Update is_verified
+    const { error: updateError } = await db.from('User')
+        .update({ 
+            is_verified: true,
+            verification_token: null
+        })
+        .eq('email', email);
+
+    if (updateError) return setError('Failed to verify email. Please try again.');
+
+    showSuccess(successEl, 'Email verified successfully! You can now log in.');
     setButtonLoading(btnId, false, 'Redirecting...');
     setTimeout(() => { window.location.href = '../LogInPage/LogInPage.html'; }, 2000);
 }
