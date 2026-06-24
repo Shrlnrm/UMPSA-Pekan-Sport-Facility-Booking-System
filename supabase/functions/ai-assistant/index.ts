@@ -14,8 +14,11 @@ serve(async (req) => {
   try {
     const { systemPrompt, userMessage } = await req.json()
 
-    // The secure OpenRouter API Key provided by the user, obfuscated to bypass GitHub secret scanning
-    const OPENROUTER_API_KEY = atob("c2stb3ItdjEtNTQxMTM5YzYwYzYyMDZmYjhlODI2YjdmZjUwOGY1ODI1NjRjYTZkYjM0MTRkZGZkNTE2M2VmMmIxZTQwMzE1OQ==")
+    // Fetch the API key securely from Supabase Secrets
+    const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY')
+    if (!OPENROUTER_API_KEY) {
+      throw new Error("Missing OPENROUTER_API_KEY in Supabase Secrets. Please add it in the Supabase Dashboard.")
+    }
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
