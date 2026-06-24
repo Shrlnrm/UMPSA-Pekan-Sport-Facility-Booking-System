@@ -1770,7 +1770,7 @@
                     return lastDate < todayCheck;
                 })();
 
-                if (isPassed || currentSubTab === 'passed') {
+                if (isPassed || currentSubTab === 'passed' || g.status === 'Passed') {
                     statusHtml = `<span class="${baseStyle} text-gray-400">PASSED</span>`;
                     actionHtml = ''; // No action column for passed
                 } else if (g.status === 'Confirmed') {
@@ -2937,13 +2937,13 @@
         }
 
         async function predictCrowd() {
-            if (!selectedFacilityId) {
-                alert("Please select a facility from the dropdown first to get accurate predictions.");
+            if (!selectedFacility || !selectedFacility.facility_id) {
+                alert("Please select a facility first to get accurate predictions.");
                 return;
             }
             
-            const facilityData = facilitiesCache.find(f => f.facility_id === selectedFacilityId);
-            const facilityName = facilityData ? facilityData.name : "this facility";
+            const selectedFacilityId = selectedFacility.facility_id;
+            const facilityName = selectedFacility.name || "this facility";
 
             const box = document.getElementById('ai-prediction-box');
             const content = document.getElementById('ai-prediction-content');

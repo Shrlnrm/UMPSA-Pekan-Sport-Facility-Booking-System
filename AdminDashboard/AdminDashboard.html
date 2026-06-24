@@ -1971,7 +1971,7 @@
                 const lastDate = b.end_date || b.date;
                 const isPassed = b.status === 'Confirmed' && lastDate < todayCheck;
 
-                if (isPassed) {
+                if (isPassed || b.status === 'Passed') {
                     statusHtml = `<span class="${baseStyle} text-gray-400">PASSED</span>`;
                 } else if (b.status === 'Confirmed') {
                     statusHtml = `<span class="${baseStyle} text-primary-teal">CONFIRMED</span>`;
@@ -2167,7 +2167,7 @@
                 let statusHtml = '';
                 let actionHtml = '';
 
-                if (isPassed || currentAdminBookingsTab === 'passed') {
+                if (isPassed || currentAdminBookingsTab === 'passed' || g.status === 'Passed') {
                     statusHtml = `<span class="${baseStyle} text-gray-400">PASSED</span>`;
                     actionHtml = ''; // No action for passed
                 } else if (g.status === 'Confirmed') {
