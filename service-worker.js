@@ -65,3 +65,48 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+
+// ─── PUSH NOTIFICATIONS ──────────────────────────────────────────────────
+self.addEventListener('push', function(event) {
+  if (!event.data) return;
+
+  try {
+    const data = event.data.json();
+    const title = data.title || 'UMPSA Sports';
+    const options = {
+      body: data.body || 'You have a new notification.',
+      icon: '/UMPSA-Pekan-Sport-Facility-Booking-System/icons/icon-192x192.png',
+      badge: '/UMPSA-Pekan-Sport-Facility-Booking-System/icons/icon-192x192.png',
+      data: data.url || '/UMPSA-Pekan-Sport-Facility-Booking-System/index.html',
+      vibrate: [200, 100, 200]
+    };
+
+    event.waitUntil(
+      self.registration.showNotification(title, options)
+    );
+  } catch (err) {
+    console.error('Error parsing push data', err);
+  }
+});
+
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  
+  const urlToOpen = event.notification.data;
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(windowClients) {
+      // Check if there is already a window/tab open with the target URL
+      for (let i = 0; i < windowClients.length; i++) {
+        let client = windowClients[i];
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // If not, open a new window/tab
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});

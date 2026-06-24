@@ -5,6 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <!-- Auth Forward (Keep Logged In) -->
+    <script>
+        const uId = localStorage.getItem('user_id') || sessionStorage.getItem('user_id');
+        if (uId) window.location.href = '../UserDashboard/UserDashboard.html';
+        const aId = localStorage.getItem('admin_id') || sessionStorage.getItem('admin_id');
+        if (aId) window.location.href = '../AdminDashboard/AdminDashboard.html';
+    </script>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
