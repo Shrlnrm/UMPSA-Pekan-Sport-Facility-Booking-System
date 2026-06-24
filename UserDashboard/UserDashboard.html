@@ -597,9 +597,8 @@
                         <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-4 sm:p-8 mb-4 sm:mb-6">
                             <div class="flex items-center justify-between mb-4 sm:mb-8">
                                 <h2 id="booking-title" class="text-primary-blue font-bold text-base sm:text-lg">Reserve Facility</h2>
-                                <button type="button" onclick="predictCrowd()" class="shrink-0 text-[10px] sm:text-xs text-primary-blue border border-primary-blue hover:bg-primary-blue hover:text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-full flex items-center transition-colors font-medium shadow-sm bg-white whitespace-nowrap">
-                                    <span class="hidden sm:inline">Predict Crowds</span>
-                                    <span class="sm:hidden">Predict</span>
+                                <button type="button" onclick="predictCrowd()" class="shrink-0 text-[10px] sm:text-xs text-primary-blue border border-primary-blue hover:bg-primary-blue hover:text-white px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full flex items-center transition-colors font-medium shadow-sm bg-white whitespace-nowrap">
+                                    Predict Crowds
                                 </button>
                             </div>
 
@@ -2976,7 +2975,7 @@
                     }).join('\n');
                 }
 
-                const systemPrompt = "You are an intelligent, professional, and highly capable AI Assistant for UMPSA Sports Facilities. Your objective is to analyze historical booking data for a facility and predict the LEAST crowded timeslots and days. Use the provided data to make a data-driven recommendation. Keep your response very concise (maximum 3 short sentences), highly professional, and DO NOT use any emojis or slang. Ensure perfect grammar, spelling, and spacing in your response (e.g. 'time is', not 'timeis').";
+                const systemPrompt = "You are an intelligent AI Assistant for UMPSA Sports Facilities. Predict the LEAST crowded timeslots based on data. Keep your response extremely brief, straight to the point, and only provide useful insights using the absolute minimum amount of words (max 1-2 short sentences). DO NOT use emojis or slang. Ensure perfect grammar, spelling, and spacing in your response (e.g. 'time is', not 'timeis') and pls don't use the em dash (—).";
                 const userMessage = `Recent booking data for ${facilityName}:\n${bookingStats}\n\nBased on this data, what are the best days and times to visit to avoid crowds?`;
 
                 // Call Supabase Edge Function
