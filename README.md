@@ -1,6 +1,6 @@
 # UMPSA Pekan Sport Facility Booking System
 
-A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA) Pekan campus. Students and staff can browse, search, and book sport facilities — and admins can manage bookings, facilities, announcements, and reports all in one place.
+A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sultan Abdullah (UMPSA) Pekan campus. Students and staff can browse, search, and book sport facilities and admins can manage bookings, facilities, announcements, and reports all in one place.
 
 ## Features
 
@@ -41,7 +41,7 @@ A web-based sport facility booking system for Universiti Malaysia Pahang Al-Sult
    - **Full Name**
    - **UMPSA Email** (must be an official UMPSA email address)
    - **Password** (minimum 6 characters)
-4. Click **Register** — you will be redirected to the Login page.
+4. Click **Register** you will be redirected to the Login page.
 5. Log in with your email and password to access the User Dashboard.
 
 > To reset your password, click **Forgot Password?** on the Login page and follow the email link.
